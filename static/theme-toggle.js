@@ -16,6 +16,11 @@
     // Apply theme to document
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
+        updateToggleButton(theme);
+    }
+    
+    // Update toggle button text and aria-label
+    function updateToggleButton(theme) {
         const toggle = document.getElementById('theme-toggle');
         if (toggle) {
             toggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
@@ -31,19 +36,19 @@
         applyTheme(newTheme);
     }
     
+    // Apply theme immediately to prevent flash (only set attribute, button doesn't exist yet)
+    document.documentElement.setAttribute('data-theme', getCurrentTheme());
+    
     // Initialize theme on page load
     document.addEventListener('DOMContentLoaded', function() {
         const theme = getCurrentTheme();
-        applyTheme(theme);
+        updateToggleButton(theme);
         
         const toggle = document.getElementById('theme-toggle');
         if (toggle) {
             toggle.addEventListener('click', toggleTheme);
         }
     });
-    
-    // Apply theme immediately to prevent flash
-    applyTheme(getCurrentTheme());
     
     // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {

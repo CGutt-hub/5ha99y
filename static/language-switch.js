@@ -26,8 +26,8 @@
             'nav-contact': 'kontakt',
             'footer-info': 'Diese Seite synchronisiert sich automatisch mit GitHub (Projekte) und ORCID (Publikationen). Letzter Build:',
             'lang-toggle-title': 'Zu Englisch wechseln',
-            'theme-toggle-title-dark': 'Zum Hellen Modus wechseln',
-            'theme-toggle-title-light': 'Zum Dunklen Modus wechseln'
+            'theme-toggle-title-dark': 'Zum hellen Modus wechseln',
+            'theme-toggle-title-light': 'Zum dunklen Modus wechseln'
         }
     };
     
@@ -39,16 +39,22 @@
     // Apply language
     function applyLanguage(lang) {
         document.documentElement.setAttribute('lang', lang);
-        
-        // Update all elements with data-i18n attribute
+        updateTranslations(lang);
+        updateLanguageButton(lang);
+    }
+    
+    // Update all translatable elements
+    function updateTranslations(lang) {
         document.querySelectorAll('[data-i18n]').forEach(function(element) {
             const key = element.getAttribute('data-i18n');
             if (translations[lang] && translations[lang][key]) {
                 element.textContent = translations[lang][key];
             }
         });
-        
-        // Update language toggle button
+    }
+    
+    // Update language toggle button
+    function updateLanguageButton(lang) {
         const toggle = document.getElementById('lang-toggle');
         if (toggle) {
             toggle.textContent = lang === 'en' ? 'DE' : 'EN';
@@ -64,17 +70,18 @@
         applyLanguage(newLang);
     }
     
+    // Set language attribute immediately to prevent flash
+    document.documentElement.setAttribute('lang', getCurrentLanguage());
+    
     // Initialize language on page load
     document.addEventListener('DOMContentLoaded', function() {
         const lang = getCurrentLanguage();
-        applyLanguage(lang);
+        updateTranslations(lang);
+        updateLanguageButton(lang);
         
         const toggle = document.getElementById('lang-toggle');
         if (toggle) {
             toggle.addEventListener('click', toggleLanguage);
         }
     });
-    
-    // Apply language immediately
-    applyLanguage(getCurrentLanguage());
 })();
