@@ -20,8 +20,8 @@ To make the contact form functional, you need to get a free access key from Web3
 ### Step 2: Update the Form
 
 1. Open `content/_index.md`
-2. Find the line: `<input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">`
-3. Replace `YOUR_ACCESS_KEY_HERE` with your actual access key
+2. Find the line: `<input type="hidden" name="access_key" value="REPLACE_WITH_YOUR_WEB3FORMS_KEY">`
+3. Replace `REPLACE_WITH_YOUR_WEB3FORMS_KEY` with your actual access key
 4. Commit and push the changes
 
 ### Alternative: Use a Different Form Service

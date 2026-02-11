@@ -42,8 +42,7 @@ Participant in Europe's largest hacker association, advocating for digital right
 Have a question or want to collaborate? Send me a message using the form below:
 
 <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" class="contact-form">
-<input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
-<input type="hidden" name="subject" value="New Contact Form Submission">
+<input type="hidden" name="access_key" value="REPLACE_WITH_YOUR_WEB3FORMS_KEY">
 <input type="hidden" name="redirect" value="https://cgutt-hub.github.io/cagatay-gutt.github.io">
 
 <div class="form-group">
@@ -57,8 +56,8 @@ Have a question or want to collaborate? Send me a message using the form below:
 </div>
 
 <div class="form-group">
-<label for="subject-field">Subject *</label>
-<input type="text" id="subject-field" name="subject-field" required>
+<label for="subject">Subject *</label>
+<input type="text" id="subject" name="subject" required>
 </div>
 
 <div class="form-group">
@@ -67,7 +66,7 @@ Have a question or want to collaborate? Send me a message using the form below:
 </div>
 
 <div class="form-group">
-<input type="checkbox" name="botcheck" class="hidden">
+<input type="checkbox" name="botcheck" class="hidden" aria-label="Leave this field empty">
 </div>
 
 <button type="submit" class="submit-btn">Send Message</button>
