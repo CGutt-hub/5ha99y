@@ -15,13 +15,13 @@ compile_sass = true
 build_search_index = false
 
 # Whether to generate a feed file
-generate_feeds = false
+generate_feeds = true
 
 # Multi-language configuration
 [languages.de]
 title = "Çağatay Özcan Jagiello Gutt"
 description = "Student der Kognitionswissenschaft (M.Sc.) & Molekularbiologe (B.Sc.) | Forschung zu künstlichem Bewusstsein, BCI & HMI | Physiological Computing & KI"
-generate_feeds = false
+generate_feeds = true
 
 [languages.de.translations]
 home = "startseite"
