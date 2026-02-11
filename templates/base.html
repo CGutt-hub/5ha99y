@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,12 +11,19 @@
     <header>
         <h1><a href="{{ get_url(path='/') }}">Çağatay Özcan Jagiello Gutt</a></h1>
         <nav>
-            <a href="{{ get_url(path='/') }}">home</a>
-            <a href="{{ get_url(path='cv/') }}">cv</a>
-            <a href="{{ get_url(path='publications/') }}">publications</a>
-            <a href="{{ get_url(path='projects/') }}">projects</a>
-            <a href="{{ get_url(path='blog/') }}">blog</a>
-            <a href="{{ get_url(path='contact/') }}">contact</a>
+            <a href="{{ get_url(path='/') }}">{{ trans(key="home", lang=lang) }}</a>
+            <a href="{{ get_url(path='cv/') }}">{{ trans(key="cv", lang=lang) }}</a>
+            <a href="{{ get_url(path='publications/') }}">{{ trans(key="publications", lang=lang) }}</a>
+            <a href="{{ get_url(path='projects/') }}">{{ trans(key="projects", lang=lang) }}</a>
+            <a href="{{ get_url(path='blog/') }}">{{ trans(key="blog", lang=lang) }}</a>
+            <a href="{{ get_url(path='contact/') }}">{{ trans(key="contact", lang=lang) }}</a>
+            <span class="lang-switch">
+                {% if lang == "en" %}
+                    <a href="{{ get_url(path='@/_index.md', lang='de') }}" class="lang-link">🇩🇪 DE</a>
+                {% else %}
+                    <a href="{{ get_url(path='@/_index.md', lang='en') }}" class="lang-link">🇬🇧 EN</a>
+                {% endif %}
+            </span>
         </nav>
     </header>
     
@@ -25,7 +32,7 @@
     </main>
     
     <footer>
-        <p class="site-info"><em>This site syncs automatically with GitHub (projects) and ORCID (publications). Last build: {{ now() | date(format="%Y-%m-%d") }}</em></p>
+        <p class="site-info"><em>{{ trans(key="site_info", lang=lang) }} {{ now() | date(format="%Y-%m-%d") }}</em></p>
         <div class="contact-links">
             <a href="https://www.linkedin.com/in/cagatay-gutt" target="_blank">LinkedIn</a>
             <a href="https://orcid.org/0000-0002-1774-532X" target="_blank">ORCID</a>

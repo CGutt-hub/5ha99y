@@ -58,6 +58,26 @@ nav a:hover {
     border-bottom: 1px solid #d4af37;
 }
 
+.lang-switch {
+    float: right;
+    margin-left: 20px;
+}
+
+.lang-link {
+    color: #d4af37 !important;
+    font-weight: 600;
+    padding: 4px 8px;
+    border: 1px solid #d4af37;
+    border-radius: 3px;
+    text-decoration: none;
+}
+
+.lang-link:hover {
+    background-color: #d4af37;
+    color: #1a1a1a !important;
+    border-bottom: 1px solid #d4af37 !important;
+}
+
 main {
     min-height: 60vh;
 }

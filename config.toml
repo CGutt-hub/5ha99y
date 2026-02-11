@@ -15,8 +15,23 @@ compile_sass = true
 build_search_index = false
 
 # Whether to generate a feed file
-generate_feeds = true
-feed_filenames = ["rss.xml", "atom.xml"]
+generate_feeds = false
+
+# Multi-language configuration
+[languages.de]
+title = "Çağatay Özcan Jagiello Gutt"
+description = "Student der Kognitionswissenschaft (M.Sc.) & Molekularbiologe (B.Sc.) | Forschung zu künstlichem Bewusstsein, BCI & HMI | Physiological Computing & KI"
+generate_feeds = false
+
+[languages.de.translations]
+home = "startseite"
+cv = "lebenslauf"
+publications = "publikationen"
+projects = "projekte"
+blog = "blog"
+contact = "kontakt"
+site_info = "Diese Seite synchronisiert sich automatisch mit GitHub (Projekte) und ORCID (Publikationen). Letzter Build:"
+last_build = "Letzter Build:"
 
 [markdown]
 
@@ -26,3 +41,12 @@ theme = "catppuccin-mocha"
 [extra]
 # Put all your custom variables here
 author = "Çağatay Özcan Jagiello Gutt"
+
+[languages.en.translations]
+home = "home"
+cv = "cv"
+publications = "publications"
+projects = "projects"
+blog = "blog"
+contact = "contact"
+site_info = "This site syncs automatically with GitHub (projects) and ORCID (publications). Last build:"
