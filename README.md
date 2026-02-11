@@ -34,21 +34,49 @@ This will fetch data and rebuild the site locally.
 
 The site automatically deploys to GitHub Pages when you push to the `main` branch.
 
-### Setup Instructions
+### Repository Visibility Requirements
 
-1. Create a new repository named `cagatay.gutt.github.io` on GitHub
-2. Initialize git and push:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/cagatay/gutt.github.io.git
-   git push -u origin main
-   ```
-3. Go to repository Settings → Pages
-4. Under "Build and deployment", select "GitHub Actions" as the source
-5. Your site will be live at https://cagatay.gutt.github.io
+**Important:** GitHub Pages visibility depends on your account type:
+
+- **Free GitHub Account:** Repository MUST be **public** for GitHub Pages to work
+- **GitHub Pro/Team/Enterprise:** Repository CAN be **private** and still use GitHub Pages
+
+If you have a free account and want to keep your repository private, you'll need to either:
+1. Upgrade to GitHub Pro ($4/month as of 2024), or
+2. Keep the repository public
+
+**Current Status:** Based on the workflow runs, your repository appears to be **public** and GitHub Pages is working correctly.
+
+### GitHub Pages URL
+
+This site is configured to use the **FREE standard GitHub Pages URL**:
+
+**https://cgutt-hub.github.io/cagatay-gutt.github.io**
+
+✅ **Completely FREE** - No domain purchase required  
+✅ **No DNS configuration** - Works immediately after deployment  
+✅ **Simple setup** - Just merge to main and it's live!
+
+#### How to Deploy
+
+1. **Merge to main branch** - The pull request will trigger GitHub Actions
+2. **Wait for build** - GitHub Actions will automatically:
+   - Fetch data from your GitHub, OSF, and ORCID profiles
+   - Build the site with Zola
+   - Deploy to the `gh-pages` branch
+3. **Site is live!** - Your website will be accessible at the URL above
+
+#### Custom Domain (Optional)
+
+If you want to use a custom domain like `www.your-domain.com`:
+
+1. **Purchase a domain** from a registrar (Namecheap, Google Domains, etc.) - ~$10-15/year
+2. **Add CNAME file** to `static/CNAME` with your domain name
+3. **Update base_url** in `config.toml` to match your domain
+4. **Configure DNS** - Add a CNAME record pointing to `cgutt-hub.github.io`
+5. **Enable in GitHub** - Go to Settings → Pages and enter your custom domain
+
+For most users, the free GitHub Pages URL works perfectly!
 
 ## Project Structure
 
