@@ -1,0 +1,192 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+    line-height: 1.7;
+    color: #d4d4d4;
+    background-color: #1a1a1a;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+header {
+    border-bottom: 2px solid #d4af37;
+    padding-bottom: 25px;
+    margin-bottom: 40px;
+}
+
+header h1 {
+    margin-bottom: 8px;
+    font-size: 1.4em;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+header h1 a {
+    color: #f0f0f0;
+    text-decoration: none;
+}
+
+header h1 a:hover {
+    color: #d4af37;
+}
+
+header h1 a::before {
+    content: '⟩ ';
+    color: #d4af37;
+}
+
+nav {
+    margin-top: 15px;
+}
+
+nav a {
+    margin-right: 20px;
+    color: #b8b8b8;
+    text-decoration: none;
+    transition: all 0.2s;
+    border-bottom: 1px solid transparent;
+}
+
+nav a:hover {
+    color: #d4af37;
+    border-bottom: 1px solid #d4af37;
+}
+
+main {
+    min-height: 60vh;
+}
+
+article h1 {
+    margin-bottom: 25px;
+    color: #f0f0f0;
+    font-weight: 600;
+    font-size: 1.8em;
+}
+
+.content {
+    margin-top: 20px;
+}
+
+.content h2 {
+    margin-top: 35px;
+    margin-bottom: 18px;
+    color: #d4af37;
+    font-weight: 600;
+    font-size: 1.3em;
+}
+
+.content h2::before {
+    content: '━ ';
+    color: #555;
+}
+
+.content h3 {
+    margin-top: 25px;
+    margin-bottom: 12px;
+    color: #e8e8e8;
+    font-weight: 500;
+}
+
+.content p {
+    margin-bottom: 18px;
+    color: #d4d4d4;
+}
+
+.content ul, .content ol {
+    margin-left: 35px;
+    margin-bottom: 18px;
+}
+
+.content li {
+    margin-bottom: 8px;
+    color: #d4d4d4;
+}
+
+.content a {
+    color: #d4af37;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.content a:hover {
+    border-bottom: 1px solid #d4af37;
+}
+
+.content code {
+    background-color: #0d0d0d;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    color: #ce9178;
+    border: 1px solid #2a2a2a;
+}
+
+.content pre {
+    background-color: #0d0d0d;
+    padding: 15px;
+    border-radius: 2px;
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border-left: 2px solid #d4af37;
+}
+
+.content pre code {
+    background-color: transparent;
+    padding: 0;
+    color: #d4d4d4;
+    border: none;
+}
+
+.content hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 30px 0;
+}
+
+.content blockquote {
+    border-left: 2px solid #d4af37;
+    padding-left: 20px;
+    margin: 20px 0;
+    color: #b8b8b8;
+    font-style: italic;
+    background-color: #0d0d0d;
+    padding: 10px 20px;
+}
+
+.content strong {
+    color: #d4af37;
+    font-weight: 600;
+}
+
+footer {
+    margin-top: 60px;
+    padding-top: 25px;
+    border-top: 1px solid #333;
+    text-align: center;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.contact-links {
+    margin-bottom: 15px;
+}
+
+.contact-links a {
+    margin: 0 10px;
+    color: #b8b8b8;
+    text-decoration: none;
+    transition: all 0.2s;
+    border-bottom: 1px solid transparent;
+}
+
+.contact-links a:hover {
+    color: #d4af37;
+    border-bottom: 1px solid #d4af37;
+}

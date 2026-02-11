@@ -1,0 +1,27 @@
+# The URL the site will be built for
+base_url = "https://cagatay.gutt.github.io"
+
+# The site title and description
+title = "Çağatay Özcan Jagiello Gutt"
+description = "Cognitive Science Student (M.Sc.) & Molecular Biologist (B.Sc.) | Artificial Consciousness, BCI & HMI Research | Physiological Computing & AI"
+
+# The default language
+default_language = "en"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = false
+
+# Whether to generate a feed file
+generate_feed = true
+feed_filenames = ["rss.xml", "atom.xml"]
+
+[markdown]
+# Whether to do syntax highlighting
+highlight_code = true
+
+[extra]
+# Put all your custom variables here
+author = "Çağatay Özcan Jagiello Gutt"

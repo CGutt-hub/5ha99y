@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<article>
+    <h1>{{ section.title }}</h1>
+    <div class="content">
+        {{ section.content | safe }}
+
+        <hr>
+
+        {% if section.pages %}
+            {% for page in section.pages %}
+            <div class="blog-post-preview">
+                <h3><a href="{{ page.permalink }}">{{ page.title }}</a></h3>
+                <p class="post-meta">{{ page.date | date(format="%B %d, %Y") }}</p>
+                {% if page.description %}
+                <p>{{ page.description }}</p>
+                {% endif %}
+                <p><a href="{{ page.permalink }}">Read more →</a></p>
+            </div>
+            <hr>
+            {% endfor %}
+        {% else %}
+            <p><em>No posts yet.</em></p>
+        {% endif %}
+    </div>
+</article>
+{% endblock content %}
