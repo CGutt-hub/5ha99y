@@ -19,8 +19,9 @@ generate_feeds = true
 feed_filenames = ["rss.xml", "atom.xml"]
 
 [markdown]
-# Whether to do syntax highlighting
-highlight_code = true
+
+[markdown.highlighting]
+theme = "catppuccin-mocha"
 
 [extra]
 # Put all your custom variables here
