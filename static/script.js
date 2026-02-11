@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateThemeIcon(savedTheme);
 
     // Load saved language preference or default to EN
-    let savedLanguage = localStorage.getItem('language') || 'en';
+    const savedLanguage = localStorage.getItem('language') || 'en';
     updateLanguageLabel(savedLanguage);
 
     // Theme toggle event listener
@@ -32,9 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const newLanguage = currentLanguage === 'en' ? 'de' : 'en';
         localStorage.setItem('language', newLanguage);
         updateLanguageLabel(newLanguage);
-        // In a full implementation, this would reload the page with the new language
-        // For now, we just update the button label
-        alert(`Language switching to ${newLanguage.toUpperCase()} - Full i18n implementation required`);
     });
 
     function updateThemeIcon(theme) {
