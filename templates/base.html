@@ -19,7 +19,8 @@
             <a href="{{ get_url(path='contact/') }}">{% if lang == "de" %}kontakt{% else %}contact{% endif %}</a>
             <span class="lang-switcher">
                 {% if lang == "de" %}
-                <a href="{{ config.base_url }}{{ current_path }}">EN</a> | <strong>DE</strong>
+                {% set en_path = current_path | replace(from="/de", to="") %}
+                <a href="{{ config.base_url }}{{ en_path }}">EN</a> | <strong>DE</strong>
                 {% else %}
                 <strong>EN</strong> | <a href="{{ config.base_url }}/de{{ current_path }}">DE</a>
                 {% endif %}

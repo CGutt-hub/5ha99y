@@ -13,9 +13,6 @@ default_language = "en"
 title = "Çağatay Özcan Jagiello Gutt"
 description = "Kognitionswissenschaftler (M.Sc.) & Molekularbiologe (B.Sc.) | Künstliches Bewusstsein, BCI & HMI Forschung | Physiological Computing & KI"
 
-# Whether to automatically compile all Sass files in the sass directory
-compile_sass = true
-
 # Whether to build a search index to be used later on by a JavaScript library
 build_search_index = false
 
