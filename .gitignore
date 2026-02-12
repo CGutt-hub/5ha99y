@@ -2,11 +2,10 @@
 public/
 
 # Auto-generated content (created by scripts/fetch_data.py)
-data/
+data/*.json
+!data/posted_items.json
 content/projects.md
 content/publications.md
-content/blog/????-??-??-new-project-*.md
-content/blog/????-??-??-new-publication-*.md
 
 # Development artifacts
 artifacts/
