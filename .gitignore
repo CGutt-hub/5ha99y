@@ -1,5 +1,13 @@
+# Build output
 public/
-data/
+
+# Auto-generated content (created by scripts/fetch_data.py)
+data/*.json
+!data/posted_items.json
 content/projects.md
 content/publications.md
+
+# Development artifacts
 artifacts/
+__pycache__/
+*.pyc
