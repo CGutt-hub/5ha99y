@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New | Çağatay Özcan Jagiello Gutt</title>
+    <title>Çağatay Özcan Jagiello Gutt</title>
     <link rel="stylesheet" href="https://cgutt-hub.github.io/5ha99y/style.css">
     <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="https://cgutt-hub.github.io/5ha99y/blog/atom.xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,23 +43,86 @@
     
     <main>
         
-<div class="content">
-    <h1>Posts tagged "new"</h1>
-    
-    <ul class="post-list">
-    
-        <li class="post-item">
-            <span class="post-date">2026-02-12</span>
-            <h3 class="post-title"><a href="https:&#x2F;&#x2F;cgutt-hub.github.io&#x2F;5ha99y&#x2F;blog&#x2F;new-project-5ha99y&#x2F;">New Project: 5ha99y</a></h3>
-            
-            <p>A new project has been added to my open backoffice</p>
-            
-        </li>
-    
-    </ul>
-    
-    <p><a href="https://cgutt-hub.github.io/5ha99y/blog">← Back to blog</a></p>
+<article>
+    <h1>SSH Access</h1>
+    <div class="content">
+        <h2 id="zero-trust-ssh-bastion">Zero Trust SSH Bastion</h2>
+<p>Access your server securely through the browser using Cloudflare Zero Trust.</p>
+<div class="ssh-access-card">
+    <h3>🔐 Browser-Based SSH Terminal</h3>
+    <p>Click below to open a secure SSH session directly in your browser. Authentication is handled through Cloudflare Access.</p>
+    <a href="#" class="ssh-button ssh-disabled" onclick="alert('SSH endpoint not configured yet. Check back soon!'); return false;">
+        Launch SSH Terminal
+    </a>
+    <p class="ssh-note"><em>🚧 Coming soon - SSH endpoint is being configured.</em></p>
 </div>
+<hr />
+<h3 id="how-it-works">How It Works</h3>
+<p>This SSH bastion uses <strong>Cloudflare Zero Trust</strong> to provide secure, browser-based access to remote servers:</p>
+<ol>
+<li><strong>Zero Trust Architecture</strong>: No VPN required - authentication happens at the edge</li>
+<li><strong>Browser-Based Terminal</strong>: Full SSH terminal rendered directly in your browser</li>
+<li><strong>Identity-Aware Access</strong>: Only authorized users can connect</li>
+<li><strong>Audit Logging</strong>: All sessions are logged for security compliance</li>
+</ol>
+<h3 id="requirements">Requirements</h3>
+<ul>
+<li>Authorized email/identity in Cloudflare Access</li>
+<li>Modern web browser (Chrome, Firefox, Safari, Edge)</li>
+<li>Valid credentials for the target server</li>
+</ul>
+<hr />
+<h3 id="security-features">Security Features</h3>
+<table><thead><tr><th>Feature</th><th>Description</th></tr></thead><tbody>
+<tr><td><strong>MFA Support</strong></td><td>Multi-factor authentication via identity provider</td></tr>
+<tr><td><strong>Session Recording</strong></td><td>Optional session capture for audit purposes</td></tr>
+<tr><td><strong>Short-Lived Certificates</strong></td><td>Automatic certificate rotation</td></tr>
+<tr><td><strong>IP Restrictions</strong></td><td>Optional geo/IP-based access rules</td></tr>
+</tbody></table>
+<style>
+.ssh-access-card {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.ssh-access-card h3 {
+    margin-top: 0;
+    color: #fff;
+}
+
+.ssh-button {
+    display: inline-block;
+    background: #f6821f;
+    color: #fff !important;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.ssh-button:hover {
+    background: #ff9633;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(246, 130, 31, 0.4);
+}
+
+.ssh-note {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+</style>
+
+    </div>
+</article>
 
     </main>
     
