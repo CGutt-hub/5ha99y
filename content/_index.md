@@ -36,7 +36,7 @@ For me, developing responsible technology is not just a technical challenge, but
 
 ## Community & Engagement
 
-### Volt Deutschland
+### Volt Europa
 Active member working toward progressive, evidence-based policy and European cooperation. I focus on **data analytics** and **digital policy**, advocating for open and transparent governance, evidence-based decision-making, and the responsible use of technology in public institutions.
 
 ### Chaos Computer Club (CCC)
