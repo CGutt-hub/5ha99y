@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 """
 Fetch and sync data from external platforms (GitHub, ORCID)
-This script updates the website content automatically.
+This script updates the website content automatically and generates blog posts
+for new repositories, repository updates, and new publications.
 """
 
 import json
+import os
 import re
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import TypedDict
 
 # Configuration
 GITHUB_USERNAME = "CGutt-hub"
 ORCID_ID = "0000-0002-1774-532X"
+WEBSITE_REPO = "5ha99y"  # This repo name for tracking website changes
 
 
 class GitHubRepo(TypedDict):
@@ -24,6 +27,8 @@ class GitHubRepo(TypedDict):
     language: str | None
     stars: int
     updated: str
+    pushed_at: str
+    commits_url: str
 
 
 class OrcidWork(TypedDict):
@@ -39,6 +44,12 @@ class OSFProject(TypedDict):
     created: str
 
 
+class TrackedState(TypedDict):
+    repos: dict[str, str]  # repo_name -> last_pushed_at
+    publications: list[str]  # list of publication titles
+    last_website_commit: str | None  # SHA of last website commit
+
+
 def slugify(text: str) -> str:
     """Convert text to URL-friendly slug"""
     text = text.lower()
@@ -49,8 +60,13 @@ def slugify(text: str) -> str:
 def fetch_github_repos() -> list[GitHubRepo]:
     """Fetch public repositories from GitHub with README content"""
     url = f"https://api.github.com/users/{GITHUB_USERNAME}/repos"
+    headers = {}
+    # Use GitHub token if available for higher rate limits
+    if os.environ.get('GITHUB_TOKEN'):
+        headers['Authorization'] = f"token {os.environ['GITHUB_TOKEN']}"
+    
     try:
-        response = requests.get(url, params={"sort": "updated", "per_page": 10})
+        response = requests.get(url, params={"sort": "updated", "per_page": 20}, headers=headers)
         response.raise_for_status()
         repos = response.json()
         
@@ -59,12 +75,12 @@ def fetch_github_repos() -> list[GitHubRepo]:
         repos.sort(key=lambda x: (x['stargazers_count'], x['updated_at']), reverse=True)
         
         result: list[GitHubRepo] = []
-        for repo in repos[:5]:  # Top 5 repos
+        for repo in repos[:10]:  # Top 10 repos
             # Fetch README content
             readme_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo['name']}/readme"
             readme_content = "No README available."
             try:
-                readme_response = requests.get(readme_url, headers={'Accept': 'application/vnd.github.v3.raw'})
+                readme_response = requests.get(readme_url, headers={**headers, 'Accept': 'application/vnd.github.v3.raw'})
                 if readme_response.status_code == 200:
                     readme_content = readme_response.text.strip()
             except:
@@ -77,12 +93,34 @@ def fetch_github_repos() -> list[GitHubRepo]:
                 'url': repo['html_url'],
                 'language': repo['language'],
                 'stars': repo['stargazers_count'],
-                'updated': repo['updated_at']
+                'updated': repo['updated_at'],
+                'pushed_at': repo['pushed_at'],
+                'commits_url': repo['commits_url'].replace('{/sha}', '')
             })
         
         return result
     except Exception as e:
         print(f"Error fetching GitHub repos: {e}")
+        return []
+
+
+def fetch_recent_commits(repo_name: str, since: str | None = None) -> list[dict]:
+    """Fetch recent commits for a repository"""
+    url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/commits"
+    headers = {}
+    if os.environ.get('GITHUB_TOKEN'):
+        headers['Authorization'] = f"token {os.environ['GITHUB_TOKEN']}"
+    
+    params = {"per_page": 5}
+    if since:
+        params['since'] = since
+    
+    try:
+        response = requests.get(url, params=params, headers=headers)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        print(f"Error fetching commits for {repo_name}: {e}")
         return []
 
 def fetch_orcid_works() -> list[OrcidWork]:
@@ -228,18 +266,27 @@ def save_data_file(data: object, filename: str) -> None:
     print(f"Saved {filename}")
 
 
-def load_posted_items() -> dict[str, list[str]]:
-    """Load list of items that already have blog posts"""
+def load_posted_items() -> TrackedState:
+    """Load tracking state for blog posts"""
     data_dir = Path(__file__).parent.parent / 'data'
     filepath = data_dir / 'posted_items.json'
     if filepath.exists():
         with open(filepath, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {'repos': [], 'publications': []}
+            data = json.load(f)
+            # Migrate old format if needed
+            if isinstance(data.get('repos'), list):
+                # Convert list to dict with empty timestamps
+                data['repos'] = {name: '' for name in data['repos']}
+            return {
+                'repos': data.get('repos', {}),
+                'publications': data.get('publications', []),
+                'last_website_commit': data.get('last_website_commit')
+            }
+    return {'repos': {}, 'publications': [], 'last_website_commit': None}
 
 
-def save_posted_items(posted: dict[str, list[str]]) -> None:
-    """Save list of items that have blog posts"""
+def save_posted_items(posted: TrackedState) -> None:
+    """Save tracking state for blog posts"""
     data_dir = Path(__file__).parent.parent / 'data'
     data_dir.mkdir(exist_ok=True)
     filepath = data_dir / 'posted_items.json'
@@ -259,6 +306,8 @@ def generate_blog_post_for_repo(repo: GitHubRepo) -> tuple[str, str]:
 title = "New Project: {repo['name']}"
 date = {today}
 description = "A new project has been added to my open backoffice"
+[taxonomies]
+tags = ["project", "github", "new"]
 +++
 
 A new project is now available in my [GitHub backoffice](https://github.com/{GITHUB_USERNAME}):
@@ -270,6 +319,40 @@ A new project is now available in my [GitHub backoffice](https://github.com/{GIT
 **Language:** {lang}
 
 This project contains analysis pipelines, data, and documentation following my commitment to open and transparent science.
+
+[View on GitHub →]({repo['url']}) | [See all projects →](/projects/)
+"""
+    return filename, content
+
+
+def generate_blog_post_for_repo_update(repo: GitHubRepo, commits: list[dict]) -> tuple[str, str]:
+    """Generate a blog post for repository updates"""
+    today = datetime.now().strftime('%Y-%m-%d')
+    slug = slugify(f"update-{repo['name']}")
+    filename = f"{today}-{slug}.md"
+    
+    # Format commit messages
+    commit_list = ""
+    for commit in commits[:5]:
+        msg = commit.get('commit', {}).get('message', '').split('\n')[0][:80]
+        sha = commit.get('sha', '')[:7]
+        commit_list += f"- `{sha}` {msg}\n"
+    
+    content = f"""+++
+title = "Project Update: {repo['name']}"
+date = {today}
+description = "Recent updates to {repo['name']}"
+[taxonomies]
+tags = ["project", "github", "update"]
++++
+
+Recent activity in [{repo['name']}]({repo['url']}):
+
+## Recent Commits
+
+{commit_list}
+
+This project is actively maintained as part of my commitment to open and transparent science.
 
 [View on GitHub →]({repo['url']}) | [See all projects →](/projects/)
 """
@@ -290,6 +373,8 @@ def generate_blog_post_for_publication(work: OrcidWork) -> tuple[str, str]:
 title = "New Publication: {work['title']}"
 date = {today}
 description = "A new publication has been added to my research output"
+[taxonomies]
+tags = ["publication", "research", "orcid"]
 +++
 
 A new publication is now available in my [ORCID front office](https://orcid.org/{ORCID_ID}):
@@ -302,6 +387,40 @@ A new publication is now available in my [ORCID front office](https://orcid.org/
 This work represents my ongoing commitment to open and transparent science.
 
 [View on ORCID →](https://orcid.org/{ORCID_ID}) | [See all publications →](/publications/)
+"""
+    return filename, content
+
+
+def generate_blog_post_for_website_update(commits: list[dict]) -> tuple[str, str]:
+    """Generate a blog post for website updates"""
+    today = datetime.now().strftime('%Y-%m-%d')
+    slug = slugify(f"website-update")
+    filename = f"{today}-{slug}.md"
+    
+    # Format commit messages
+    commit_list = ""
+    for commit in commits[:5]:
+        msg = commit.get('commit', {}).get('message', '').split('\n')[0][:80]
+        sha = commit.get('sha', '')[:7]
+        commit_list += f"- `{sha}` {msg}\n"
+    
+    content = f"""+++
+title = "Website Update"
+date = {today}
+description = "Recent updates to this website"
+[taxonomies]
+tags = ["website", "update", "meta"]
++++
+
+This website has been updated with the following changes:
+
+## Recent Changes
+
+{commit_list}
+
+The site continues to sync automatically with GitHub (projects) and ORCID (publications).
+
+[View source on GitHub →](https://github.com/{GITHUB_USERNAME}/{WEBSITE_REPO})
 """
     return filename, content
 

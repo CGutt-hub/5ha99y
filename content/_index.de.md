@@ -3,15 +3,15 @@ title = "Startseite"
 +++
 
 ```
-5ha99y@research-station in ~
+5ha99y@lab in ~
 ❯ whoami
 5ha99y
 
-5ha99y@research-station in ~/about
+5ha99y@lab in ~/about
 ❯ cat 5ha99y.txt
 Çağatay Özcan Jagiello Gutt
-Kognitionswissenschaft-Student (M.Sc.) & Molekularbiologe (B.Sc.)
-Wissenschaftlicher Mitarbeiter @ IfADo - Leibniz-Institut für Arbeitsforschung an der TU Dortmund
+Kognitionswissenschaften-Student (M.Sc.) & Molekularbiologe (B.Sc.)
+Wissenschaftliche Hilfskraft @ IfADo - Leibniz-Institut für Arbeitsforschung an der TU Dortmund
 ```
 
 ## Forschungsphilosophie

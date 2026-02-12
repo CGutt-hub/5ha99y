@@ -3,11 +3,11 @@ title = "Home"
 +++
 
 ```
-5ha99y@research-station in ~
+5ha99y@lab in ~
 ❯ whoami
 5ha99y
 
-5ha99y@research-station in ~/about
+5ha99y@lab in ~/about
 ❯ cat 5ha99y.txt
 Çağatay Özcan Jagiello Gutt
 Cognitive Science Student (M.Sc.) & Molecular Biologist (B.Sc.)
