@@ -75,30 +75,39 @@ header {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
     margin-left: 20px;
 }
 
-.lang-switch {
-    background: transparent;
-    border: 2px solid var(--accent-color);
-    border-radius: 4px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+.toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 0.85em;
-    font-weight: 600;
+    font-weight: 500;
+}
+
+.lang-link {
+    color: var(--link-color);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.lang-link:hover {
     color: var(--accent-color);
-    transition: all 0.3s ease;
 }
 
-.lang-switch:hover {
-    background-color: var(--accent-color);
-    color: var(--bg-color);
+.lang-link.active {
+    color: var(--accent-color);
+    background-color: var(--code-bg);
+    border: 1px solid var(--accent-color);
 }
 
-.lang-icon {
-    line-height: 1;
+.toggle-separator {
+    color: var(--border-color);
+    font-weight: 300;
 }
 
 .theme-switch {
@@ -276,29 +285,78 @@ article h1 {
 }
 
 footer {
-    margin-top: 60px;
-    padding-top: 25px;
+    margin-top: 80px;
+    padding-top: 30px;
     border-top: 1px solid var(--border-color);
-    text-align: center;
     color: var(--footer-color);
-    font-size: 0.9em;
+    font-size: 0.85em;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.footer-main {
+    text-align: center;
+}
+
+.site-info {
+    margin-bottom: 15px;
+    color: var(--link-color);
+    font-style: italic;
 }
 
 .contact-links {
-    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .contact-links a {
-    margin: 0 10px;
     color: var(--link-color);
     text-decoration: none;
     transition: all 0.2s;
+    padding: 2px 0;
     border-bottom: 1px solid transparent;
 }
 
 .contact-links a:hover {
     color: var(--accent-color);
-    border-bottom: 1px solid var(--accent-color);
+    border-bottom-color: var(--accent-color);
+}
+
+.footer-sep {
+    color: var(--border-color);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-bottom p {
+    margin-bottom: 5px;
+}
+
+.footer-tech {
+    font-size: 0.9em;
+    color: var(--footer-color);
+}
+
+.footer-tech a {
+    color: var(--accent-color);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.footer-tech a:hover {
+    border-bottom-color: var(--accent-color);
 }
 
 /* Contact Form Styles */
