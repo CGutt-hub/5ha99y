@@ -3,16 +3,14 @@ title = "Home"
 +++
 
 ```
-cagatay@research-station in ~
+5ha99y@research-station in ~
 ❯ whoami
+5ha99y
+
+5ha99y@research-station in ~/about
+❯ cat 5ha99y.txt
 Çağatay Özcan Jagiello Gutt
-
-cagatay@research-station in ~/about
-❯ cat role.txt
 Cognitive Science Student (M.Sc.) & Molecular Biologist (B.Sc.)
-
-cagatay@research-station in ~/about
-❯ cat affiliation.txt
 Research Assistant @ IfADo - Leibniz-Institut für Arbeitsforschung an der TU Dortmund
 ```
 
