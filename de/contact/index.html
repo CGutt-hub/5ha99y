@@ -1,32 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Çağatay Özcan Jagiello Gutt</title>
     <link rel="stylesheet" href="https://cgutt-hub.github.io/5ha99y/style.css">
     <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="https://cgutt-hub.github.io/5ha99y/blog/atom.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
         <div class="header-content">
             <div class="header-left">
-                <h1><a href="https://cgutt-hub.github.io/5ha99y/de/">Çağatay Özcan Jagiello Gutt</a></h1>
+                <h1><a href="https://cgutt-hub.github.io/5ha99y">Çağatay Özcan Jagiello Gutt</a></h1>
                 <nav>
                     
-                    <a href="https://cgutt-hub.github.io/5ha99y/de/">startseite</a>
-                    <a href="https://cgutt-hub.github.io/5ha99y/de/cv">lebenslauf</a>
-                    <a href="https://cgutt-hub.github.io/5ha99y/de/publications">publikationen</a>
-                    <a href="https://cgutt-hub.github.io/5ha99y/de/projects">projekte</a>
-                    <a href="https://cgutt-hub.github.io/5ha99y/de/blog">blog</a>
-                    <a href="https://cgutt-hub.github.io/5ha99y/de/contact">kontakt</a>
+                    
+                    <a href="https://cgutt-hub.github.io/5ha99y">startseite</a>
+                    <a href="https://cgutt-hub.github.io/5ha99y/cv">lebenslauf</a>
+                    <a href="https://cgutt-hub.github.io/5ha99y/publications">publikationen</a>
+                    <a href="https://cgutt-hub.github.io/5ha99y/projects">projekte</a>
+                    <a href="https://cgutt-hub.github.io/5ha99y/blog">blog</a>
+                    <a href="https://cgutt-hub.github.io/5ha99y/contact">kontakt</a>
                     
                 </nav>
             </div>
             <div class="header-right">
-                <button id="lang-toggle" class="lang-switch" aria-label="Toggle language">
-                    <span class="lang-icon">EN</span>
-                </button>
+                <div class="toggle-group">
+                    <a href="https://cgutt-hub.github.io/5ha99y" class="lang-link ">EN</a>
+                    <span class="toggle-separator">|</span>
+                    <a href="https://cgutt-hub.github.io/5ha99y/de/" class="lang-link active">DE</a>
+                </div>
                 <button id="theme-toggle" class="theme-switch" aria-label="Toggle theme">
                     <span class="theme-icon">☀️</span>
                 </button>
@@ -72,14 +78,24 @@
     </main>
     
     <footer>
-        <p class="site-info"><em>This site syncs automatically with GitHub (projects) and ORCID (publications). Last build: 2026-02-12</em></p>
-        <div class="contact-links">
-            <a href="https://www.linkedin.com/in/cagatay-gutt" target="_blank">LinkedIn</a>
-            <a href="https://orcid.org/0000-0002-1774-532X" target="_blank">ORCID</a>
-            <a href="https://github.com/CGutt-hub" target="_blank">GitHub</a>
-            <a href="https://cgutt-hub.github.io/5ha99y/blog/atom.xml" target="_blank">RSS</a>
+        <div class="footer-content">
+            <div class="footer-main">
+                <p class="site-info">Diese Seite synchronisiert automatisch mit GitHub (Projekte) und ORCID (Publikationen).</p>
+                <div class="contact-links">
+                    <a href="https://www.linkedin.com/in/cagatay-gutt" target="_blank" rel="noopener">LinkedIn</a>
+                    <span class="footer-sep">·</span>
+                    <a href="https://orcid.org/0000-0002-1774-532X" target="_blank" rel="noopener">ORCID</a>
+                    <span class="footer-sep">·</span>
+                    <a href="https://github.com/CGutt-hub" target="_blank" rel="noopener">GitHub</a>
+                    <span class="footer-sep">·</span>
+                    <a href="https://cgutt-hub.github.io/5ha99y/blog/atom.xml" target="_blank" rel="noopener">RSS</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Çağatay Özcan Jagiello Gutt</p>
+                <p class="footer-tech">Erstellt mit <a href="https://www.getzola.org/" target="_blank" rel="noopener">Zola</a> · Letzter Build: 2026-02-12</p>
+            </div>
         </div>
-        <p>&copy; 2026 Çağatay Özcan Jagiello Gutt</p>
     </footer>
     
     <script>
@@ -106,27 +122,6 @@
             themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
         }
 
-        // Language switching functionality
-        const langToggle = document.getElementById('lang-toggle');
-        if (langToggle) {
-            langToggle.addEventListener('click', () => {
-                const currentPath = window.location.pathname;
-                const basePath = 'https://cgutt-hub.github.io/5ha99y';
-                const basePathParsed = new URL(basePath).pathname.replace(/\/$/, '');
-                
-                // Check if we're on German version
-                if (currentPath.includes('/de/') || currentPath.endsWith('/de')) {
-                    // Switch to English - remove /de/
-                    const newPath = currentPath.replace('/de/', '/').replace(/\/de$/, '/');
-                    window.location.href = newPath;
-                } else {
-                    // Switch to German - add /de/
-                    const pathAfterBase = currentPath.replace(basePathParsed, '');
-                    const newPath = basePathParsed + '/de' + (pathAfterBase || '/');
-                    window.location.href = newPath;
-                }
-            });
-        }
     </script>
 </body>
 </html>
