@@ -17,6 +17,44 @@ Access your server securely through the browser using Cloudflare Zero Trust.
 
 ---
 
+## Client Setup
+
+Download and run the installer for your device to set up the Cloudflare client:
+
+<div class="download-section">
+    <div class="download-card">
+        <h4>🪟 Windows</h4>
+        <p>Run in PowerShell as Administrator</p>
+        <a href="/5ha99y/scripts/install-cloudflared.ps1" download class="download-button">
+            Download PowerShell Script
+        </a>
+        <pre class="install-cmd">irm https://cgutt-hub.github.io/5ha99y/scripts/install-cloudflared.ps1 | iex</pre>
+    </div>
+    <div class="download-card">
+        <h4>🐧 Linux / 🍎 macOS</h4>
+        <p>Run in Terminal</p>
+        <a href="/5ha99y/scripts/install-cloudflared.sh" download class="download-button">
+            Download Shell Script
+        </a>
+        <pre class="install-cmd">curl -fsSL https://cgutt-hub.github.io/5ha99y/scripts/install-cloudflared.sh | bash</pre>
+    </div>
+</div>
+
+---
+
+## Quick Start Guide
+
+### Step 1: Install the Client
+Run the appropriate command above for your device. This installs `cloudflared`.
+
+### Step 2: Access via Browser
+Click the **Launch SSH Terminal** button above (once configured). You'll be prompted to authenticate.
+
+### Step 3: Connect
+After authentication, the browser-based terminal opens. Log in with your server credentials.
+
+---
+
 ### How It Works
 
 This SSH bastion uses **Cloudflare Zero Trust** to provide secure, browser-based access to remote servers:
@@ -82,5 +120,54 @@ This SSH bastion uses **Cloudflare Zero Trust** to provide secure, browser-based
     font-size: 0.9rem;
     opacity: 0.9;
     margin-bottom: 0;
+}
+
+.download-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.download-card {
+    background: var(--bg-secondary, #1a1a2e);
+    border: 1px solid var(--border-color, #333);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.download-card h4 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+.download-button {
+    display: inline-block;
+    background: #10b981;
+    color: #fff !important;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0.5rem 0;
+    transition: all 0.2s ease;
+}
+
+.download-button:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.install-cmd {
+    background: #0d1117;
+    color: #58a6ff;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    overflow-x: auto;
+    margin-top: 1rem;
+    text-align: left;
+    white-space: nowrap;
 }
 </style>
