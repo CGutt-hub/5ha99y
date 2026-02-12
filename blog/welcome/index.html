@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çağatay Özcan Jagiello Gutt</title>
+    <link rel="stylesheet" href="https://cgutt-hub.github.io/cagatay-gutt.github.io/style.css">
+    <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/atom.xml">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1><a href="https://cgutt-hub.github.io/cagatay-gutt.github.io">Çağatay Özcan Jagiello Gutt</a></h1>
+                <nav>
+                    <a href="https://cgutt-hub.github.io/cagatay-gutt.github.io">home</a>
+                    <a href="https://cgutt-hub.github.io/cagatay-gutt.github.io/cv">cv</a>
+                    <a href="https://cgutt-hub.github.io/cagatay-gutt.github.io/publications">publications</a>
+                    <a href="https://cgutt-hub.github.io/cagatay-gutt.github.io/projects">projects</a>
+                    <a href="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog">blog</a>
+                    <a href="https://cgutt-hub.github.io/cagatay-gutt.github.io/contact">contact</a>
+                </nav>
+            </div>
+            <div class="header-right">
+                <button id="theme-toggle" class="theme-switch" aria-label="Toggle theme">
+                    <span class="theme-icon">☀️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        
+<article>
+    <h1>Welcome to My Research Hub</h1>
+    <div class="content">
+        <p><em>February 11, 2026</em></p>
+        
+        <hr>
+
+        <p>This website serves as my central scientific presence, automatically syncing with GitHub (active projects), ORCID (publications), and other platforms.</p>
+<h2 id="what-to-expect">What to Expect</h2>
+<p>This blog will feature:</p>
+<ul>
+<li><strong>Research updates</strong> — Progress on neural-autonomic synchrony and consciousness research</li>
+<li><strong>Volt engagement</strong> — Data analytics and digital policy insights</li>
+<li><strong>Technical insights</strong> — Tools, methods, and open science practices</li>
+<li><strong>CCC reflections</strong> — Digital rights and technological transparency</li>
+</ul>
+<h2 id="philosophy">Philosophy</h2>
+<p>Everything here operates on principles of <strong>open and transparent science</strong>. Code, data, and ideas are shared to advance collaborative knowledge.</p>
+<hr />
+<p><em>To add new posts, simply create a markdown file in <code>content/blog/</code> with this format and commit to GitHub.</em></p>
+
+
+        <hr>
+
+        <p><a href="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog">← Back to all posts</a></p>
+    </div>
+</article>
+
+    </main>
+    
+    <footer>
+        <p class="site-info"><em>This site syncs automatically with GitHub (projects) and ORCID (publications). Last build: 2026-02-12</em></p>
+        <div class="contact-links">
+            <a href="https://www.linkedin.com/in/cagatay-gutt" target="_blank">LinkedIn</a>
+            <a href="https://orcid.org/0000-0002-1774-532X" target="_blank">ORCID</a>
+            <a href="https://github.com/CGutt-hub" target="_blank">GitHub</a>
+            <a href="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/atom.xml" target="_blank">RSS</a>
+        </div>
+        <p>&copy; 2026 Çağatay Özcan Jagiello Gutt</p>
+    </footer>
+    
+    <script>
+        // Theme switching functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.querySelector('.theme-icon');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference or default to 'dark'
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+    </script>
+</body>
+</html>

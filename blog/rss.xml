@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Çağatay Özcan Jagiello Gutt - Thoughts &amp; Updates</title>
+      <link>https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/</link>
+      <description>Cognitive Science Student (M.Sc.) &amp; Molecular Biologist (B.Sc.) | Artificial Consciousness, BCI &amp; HMI Research | Physiological Computing &amp; AI</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Wed, 11 Feb 2026 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Welcome to My Research Hub</title>
+          <pubDate>Wed, 11 Feb 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/welcome/</link>
+          <guid>https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/welcome/</guid>
+          <description xml:base="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/welcome/">&lt;p&gt;This website serves as my central scientific presence, automatically syncing with GitHub (active projects), ORCID (publications), and other platforms.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-to-expect&quot;&gt;What to Expect&lt;&#x2F;h2&gt;
+&lt;p&gt;This blog will feature:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Research updates&lt;&#x2F;strong&gt; — Progress on neural-autonomic synchrony and consciousness research&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Volt engagement&lt;&#x2F;strong&gt; — Data analytics and digital policy insights&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Technical insights&lt;&#x2F;strong&gt; — Tools, methods, and open science practices&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;CCC reflections&lt;&#x2F;strong&gt; — Digital rights and technological transparency&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;philosophy&quot;&gt;Philosophy&lt;&#x2F;h2&gt;
+&lt;p&gt;Everything here operates on principles of &lt;strong&gt;open and transparent science&lt;&#x2F;strong&gt;. Code, data, and ideas are shared to advance collaborative knowledge.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;To add new posts, simply create a markdown file in &lt;code&gt;content&#x2F;blog&#x2F;&lt;&#x2F;code&gt; with this format and commit to GitHub.&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>

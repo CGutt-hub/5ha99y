@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Çağatay Özcan Jagiello Gutt - Thoughts &amp; Updates</title>
+    <subtitle>Cognitive Science Student (M.Sc.) &amp; Molecular Biologist (B.Sc.) | Artificial Consciousness, BCI &amp; HMI Research | Physiological Computing &amp; AI</subtitle>
+    <link rel="self" type="application/atom+xml" href="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-02-11T00:00:00+00:00</updated>
+    <id>https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Welcome to My Research Hub</title>
+        <published>2026-02-11T00:00:00+00:00</published>
+        <updated>2026-02-11T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/welcome/"/>
+        <id>https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/welcome/</id>
+        
+        <content type="html" xml:base="https://cgutt-hub.github.io/cagatay-gutt.github.io/blog/welcome/">&lt;p&gt;This website serves as my central scientific presence, automatically syncing with GitHub (active projects), ORCID (publications), and other platforms.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;what-to-expect&quot;&gt;What to Expect&lt;&#x2F;h2&gt;
+&lt;p&gt;This blog will feature:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Research updates&lt;&#x2F;strong&gt; — Progress on neural-autonomic synchrony and consciousness research&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Volt engagement&lt;&#x2F;strong&gt; — Data analytics and digital policy insights&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Technical insights&lt;&#x2F;strong&gt; — Tools, methods, and open science practices&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;CCC reflections&lt;&#x2F;strong&gt; — Digital rights and technological transparency&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;philosophy&quot;&gt;Philosophy&lt;&#x2F;h2&gt;
+&lt;p&gt;Everything here operates on principles of &lt;strong&gt;open and transparent science&lt;&#x2F;strong&gt;. Code, data, and ideas are shared to advance collaborative knowledge.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;&lt;em&gt;To add new posts, simply create a markdown file in &lt;code&gt;content&#x2F;blog&#x2F;&lt;&#x2F;code&gt; with this format and commit to GitHub.&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
