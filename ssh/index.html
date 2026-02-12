@@ -23,7 +23,6 @@
                     <a href="https://cgutt-hub.github.io/5ha99y/publications">publications</a>
                     <a href="https://cgutt-hub.github.io/5ha99y/projects">projects</a>
                     <a href="https://cgutt-hub.github.io/5ha99y/blog">blog</a>
-                    <a href="https://cgutt-hub.github.io/5ha99y/ssh">ssh</a>
                     <a href="https://cgutt-hub.github.io/5ha99y/contact">contact</a>
                     
                 </nav>
@@ -56,6 +55,35 @@
     </a>
     <p class="ssh-note"><em>🚧 Coming soon - SSH endpoint is being configured.</em></p>
 </div>
+<hr />
+<h2 id="client-setup">Client Setup</h2>
+<p>Download and run the installer for your device to set up the Cloudflare client:</p>
+<div class="download-section">
+    <div class="download-card">
+        <h4>🪟 Windows</h4>
+        <p>Run in PowerShell as Administrator</p>
+        <a href="/5ha99y/scripts/install-cloudflared.ps1" download class="download-button">
+            Download PowerShell Script
+        </a>
+        <pre class="install-cmd">irm https://cgutt-hub.github.io/5ha99y/scripts/install-cloudflared.ps1 | iex</pre>
+    </div>
+    <div class="download-card">
+        <h4>🐧 Linux / 🍎 macOS</h4>
+        <p>Run in Terminal</p>
+        <a href="/5ha99y/scripts/install-cloudflared.sh" download class="download-button">
+            Download Shell Script
+        </a>
+        <pre class="install-cmd">curl -fsSL https://cgutt-hub.github.io/5ha99y/scripts/install-cloudflared.sh | bash</pre>
+    </div>
+</div>
+<hr />
+<h2 id="quick-start-guide">Quick Start Guide</h2>
+<h3 id="step-1-install-the-client">Step 1: Install the Client</h3>
+<p>Run the appropriate command above for your device. This installs <code>cloudflared</code>.</p>
+<h3 id="step-2-access-via-browser">Step 2: Access via Browser</h3>
+<p>Click the <strong>Launch SSH Terminal</strong> button above (once configured). You'll be prompted to authenticate.</p>
+<h3 id="step-3-connect">Step 3: Connect</h3>
+<p>After authentication, the browser-based terminal opens. Log in with your server credentials.</p>
 <hr />
 <h3 id="how-it-works">How It Works</h3>
 <p>This SSH bastion uses <strong>Cloudflare Zero Trust</strong> to provide secure, browser-based access to remote servers:</p>
@@ -118,6 +146,55 @@
     font-size: 0.9rem;
     opacity: 0.9;
     margin-bottom: 0;
+}
+
+.download-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.download-card {
+    background: var(--bg-secondary, #1a1a2e);
+    border: 1px solid var(--border-color, #333);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.download-card h4 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+.download-button {
+    display: inline-block;
+    background: #10b981;
+    color: #fff !important;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0.5rem 0;
+    transition: all 0.2s ease;
+}
+
+.download-button:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.install-cmd {
+    background: #0d1117;
+    color: #58a6ff;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    overflow-x: auto;
+    margin-top: 1rem;
+    text-align: left;
+    white-space: nowrap;
 }
 </style>
 
