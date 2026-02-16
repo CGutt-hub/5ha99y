@@ -11,3 +11,4 @@ content/publications.md
 artifacts/
 __pycache__/
 *.pyc
+zola
