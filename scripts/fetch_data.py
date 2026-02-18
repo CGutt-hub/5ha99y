@@ -65,7 +65,9 @@ def slugify(text: str) -> str:
 def sanitize_markdown(text: str) -> str:
     """Sanitize markdown content to prevent Zola build errors.
     Fixes empty links like [text]() that cause 'missing URL' errors."""
-    # Replace links with empty URLs: [text]() -> text
+    # Replace nested badge links with empty outer URL: [![alt](img)]() -> ![alt](img)
+    text = re.sub(r'\[!\[([^\]]*)\]\(([^)]+)\)\]\(\s*\)', r'![\1](\2)', text)
+    # Replace simple links with empty URLs: [text]() -> text
     text = re.sub(r'\[([^\]]*)\]\(\s*\)', r'\1', text)
     return text
 
