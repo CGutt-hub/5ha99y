@@ -392,7 +392,7 @@
             <h1>Paper Finder</h1>
             <p>AI-powered academic paper search with semantic ranking, filtering, and citation export.</p>
 
-            <h2>Why Paper Finder?</h2>
+            <h2>What is Paper Finder?</h2>
 
             <p>Academic research moves fast. Keeping up with new papers across multiple sources while filtering for quality and relevance is time-consuming. Paper Finder combines arXiv and Semantic Scholar searches with OpenAI-powered semantic ranking to surface the most relevant papers for your research interests.</p>
 
@@ -413,12 +413,30 @@
                 <li><strong>CLI Automation</strong> — Schedule recurring searches via GitHub Actions or cron for continuous monitoring</li>
             </ul>
 
-            <blockquote>
-                <strong>Note:</strong> This is a <strong>testing interface</strong> for one-time searches. 
-                For continuous monitoring and batch downloads, install the 
-                <a href="https://github.com/CGutt-hub/paperFinder" target="_blank" rel="noopener">Python CLI tool</a> 
-                with scheduled GitHub Actions or local automation.
-            </blockquote>
+            <h2>Download & Installation</h2>
+
+            <div class="card">
+                <p>Paper Finder is available as both an open-source Python CLI tool and this web testing interface. For continuous monitoring and batch downloads, install the CLI tool with scheduled GitHub Actions or local automation.</p>
+
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <a href="https://github.com/CGutt-hub/paperFinder/archive/refs/heads/main.zip" style="display: inline-block;">
+                        <button type="button">Download ZIP</button>
+                    </a>
+                    <a href="https://github.com/CGutt-hub/paperFinder" target="_blank" rel="noopener" style="display: inline-block;">
+                        <button type="button" style="background: var(--bg-tertiary); color: var(--text-primary);">View on GitHub</button>
+                    </a>
+                </div>
+
+                <p style="margin-top: 1.5rem; font-size: var(--font-size-sm); color: var(--text-muted);">
+                    <strong>Requirements:</strong> Python 3.8+, OpenAI API key, optional Zotero & Semantic Scholar keys<br>
+                    <strong>License:</strong> MIT<br>
+                    <strong>Status:</strong> Active development
+                </p>
+            </div>
+
+            <h2>Try It Online</h2>
+
+            <p>Use the search interface below for one-time queries. For recurring searches, use the CLI tool above.</p>
 
             <!-- Search -->
             <div class="card">
