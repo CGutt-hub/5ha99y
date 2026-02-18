@@ -593,7 +593,7 @@ footer .footer-content {
     color: var(--text-muted);
 }
 
-button[type="submit"] {
+button {
     background: var(--accent-primary);
     color: var(--bg-primary);
     padding: 0.875rem 2rem;
@@ -607,10 +607,15 @@ button[type="submit"] {
     text-transform: lowercase;
 }
 
-button[type="submit"]:hover {
+button:hover:not(:disabled) {
     background: var(--accent-hover);
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* ============================================
