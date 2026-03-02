@@ -181,6 +181,6 @@ Ich bin der **offenen und transparenten Wissenschaft** verpflichtet und glaube, 
 
 ## Persönliche Interessen
 
-**Bouldern** — Freizeitklettern für körperliche Balance und Problemlösung
+**Klettern & Bouldern** — Freizeitklettern und Bouldern für körperliche Balance und Problemlösung
 
 **Musik** — Multiinstrumentalist mit formaler Klavierausbildung und autodidaktischer Erfahrung mit Gitarre, Mundharmonika, Schlagzeug und verschiedenen Volksinstrumenten wie Tin Whistle und Maultrommel
