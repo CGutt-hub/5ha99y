@@ -11,14 +11,14 @@ title = "Lebenslauf"
 ## Bildung
 
 ### M.Sc. in Kognitionswissenschaft
-**Ruhr-Universität Bochum** | *Oktober 2023 - Voraussichtlich Oktober 2024*
+**[Ruhr-Universität Bochum](https://www.ruhr-uni-bochum.de/)** | *Oktober 2023 - Voraussichtlich Oktober 2024*
 
 **Schwerpunkte:** Robotik & KI, Bewusstseinsforschung, Nicht-invasive Hirnbildgebung & Stimulation
 
 **Masterarbeit:** Neural-Autonome Synchronie und Verkörperte Integration
 
 ### B.Sc. in Molekularbiologie
-**Westfälische Hochschule, Recklinghausen** | *September 2017 - März 2022* | Note: 2,9
+**[Westfälische Hochschule, Recklinghausen](https://www.w-hs.de/)** | *September 2017 - März 2022* | Note: 2,9
 
 **Schwerpunkt:** Life Science Informatik
 
@@ -34,7 +34,7 @@ Qualifikation: Fachhochschulreife
 ## Akademische Forschungserfahrung
 
 ### Projektleitung (Masterarbeit)
-**Leibniz-Institut für Arbeitsforschung an der TU Dortmund (IfADo)**  
+**[Leibniz-Institut für Arbeitsforschung an der TU Dortmund (IfADo)](https://www.ifado.de/)**  
 *März 2024 - Voraussichtlich Oktober 2024*
 
 - Leitung eines End-to-End-Forschungsprojekts zu neuronalen Korrelaten von Emotion, Management des gesamten Lebenszyklus von Versuchsdesign und ethischer Genehmigung (DSGVO, Ethikkommission) bis zur finalen Analyse
@@ -43,14 +43,14 @@ Qualifikation: Fachhochschulreife
 - Anwendung fortgeschrittener Signalverarbeitungs- und statistischer Methoden zur Quantifizierung neural-autonomer Synchronie, Verknüpfung präfrontaler Hirnaktivität mit Dynamiken des autonomen Nervensystems
 
 ### Wissenschaftliche Hilfskraft
-**Abteilung Ergonomie, IfADo, Dortmund**  
+**Abteilung Ergonomie, [IfADo](https://www.ifado.de/), Dortmund**  
 *Februar 2023 - Aktuell*
 
 - Bedienung komplexer experimenteller Aufbauten für soziotechnische Interaktionsstudien ("Walking and Seeing"-Projekt), einschließlich Datenerfassung und vorläufiger Analyse
 - Vielseitige Forschungsunterstützung über mehrere Abteilungsprojekte hinweg, von Probandenscreening bis Datenmanagement
 
 ### Studentische Hilfskraft
-**CardioScienceLab, Universitätsklinikum Essen**  
+**CardioScienceLab, [Universitätsklinikum Essen](https://www.uk-essen.de/)**  
 *April 2023 - März 2024*
 
 - Erfassung von Patientenakten und Vorbereitung entsprechender Blutproben für den Transport zu kooperierender Institution (ISAS)
@@ -60,13 +60,13 @@ Qualifikation: Fachhochschulreife
 ## Industrieerfahrung
 
 ### Praktikant in der Qualitätssicherung
-**ista SE, Essen**  
+**[ista SE](https://www.ista.com/), Essen**  
 *Juni 2022 - Oktober 2022*
 
 - Analyse interner Arbeitsabläufe und Entwicklung von Automatisierungsskripten zur Verbesserung der Datenintegrität und Effizienz
 
 ### Werkstudent in Organisation & IT
-**Bank11, Neuss**  
+**[Bank11](https://www.bank11.de/), Neuss**  
 *Juli 2019 - August 2019*
 
 - Unterstützung des täglichen Betriebs in der Abteilung Organisation und Informationstechnologie, Beitrag zum Workflow-Management und IT-Support
@@ -76,13 +76,13 @@ Qualifikation: Fachhochschulreife
 ## Lehrerfahrung
 
 ### Privatlehrer
-**Station Lernen, Essen**  
+**[Station Lernen](https://station-lernen.de/), Essen**  
 *Januar 2019 - Oktober 2022*
 
 - Unterricht von Grund- und Sekundarschülern in MINT-Fächern in Gruppensettings
 
 ### Akademischer Tutor
-**Westfälische Hochschule, Recklinghausen**  
+**[Westfälische Hochschule, Recklinghausen](https://www.w-hs.de/)**  
 *September 2017*
 
 - Absolvierung pädagogischer Ausbildung und Vermittlung grundlegender MINT-Inhalte an Studienvorbereitungsstudenten
@@ -148,7 +148,7 @@ B.Sc. Molekularbiologie, Westfälische Hochschule (2022) | Note: 2,6
 
 ## Gemeinschaft und Engagement
 
-### Volt Europa — Politik & Datenanalyse
+### [Volt Europa](https://www.volteuropa.org/) — Politik & Datenanalyse
 *Januar 2026 - Aktuell*
 
 Aktives Mitglied mit Fokus auf Politikentwicklung und datengesteuerter Entscheidungsfindung für progressive, evidenzbasierte europäische Politik:
@@ -167,7 +167,7 @@ Aktives Mitglied mit Fokus auf Politikentwicklung und datengesteuerter Entscheid
 
 **Schwerpunkte:** Offene Governance, Zugänglichkeit, wirtschaftliche Gleichheit, Innovationsinfrastruktur, Demokratisierung von Wissen, evidenzbasierte Entscheidungsfindung
 
-### Chaos Computer Club (CCC) — Unterstützendes Mitglied
+### [Chaos Computer Club (CCC)](https://www.ccc.de/) — Unterstützendes Mitglied
 
 Unterstützende Mitgliedschaft in Europas größter Hackervereinigung mit Fokus auf digitale Rechte, Datenschutz und technologische Transparenz. Die Übereinstimmung mit CCC-Werten spiegelt sich in Politikarbeit wider, die offene Infrastrukturen und ethischen Technologieeinsatz fördert.
 
