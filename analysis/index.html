@@ -376,7 +376,7 @@
 
 <div class="analysis-layout">
     <div class="analysis-top-bar">
-        <h1>📊 Real-Time Research Analysis</h1>
+        <h1>📊 Open Data</h1>
     </div>
     
     <div class="analysis-body">
@@ -416,6 +416,10 @@
 <script>
 // Analysis data embedded from research repositories
 <p>const plotsData = [];</p>
+<p>// Load jsPDF library for PDF generation
+const jsPDFScript = document.createElement('script');
+jsPDFScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+document.head.appendChild(jsPDFScript);</p>
 <p>// Download functions for open data sharing
 function downloadJSON(data, filename) {
 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -432,6 +436,118 @@ URL.revokeObjectURL(url);
 const filename = <code>${plotItem.repo_name}_${plotItem.file_path.replace(/\//g, '_')}</code>;
 downloadJSON(plotItem, filename);
 }</p>
+<p>async function findParquetFile(plotItem) {
+// Try to find associated parquet file by checking common patterns
+const basePath = plotItem.file_path.replace(/.json$/, '').replace(/[_-]?(plot|figure|viz|visual|chart|graph)s?/i, '');
+const dirPath = plotItem.file_path.substring(0, plotItem.file_path.lastIndexOf('/'));</p>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>const possiblePaths = [</span></span>
+<span class="giallo-l"><span>    basePath + &#39;.parquet&#39;,</span></span>
+<span class="giallo-l"><span>    basePath + &#39;_data.parquet&#39;,</span></span>
+<span class="giallo-l"><span>    dirPath + &#39;/data.parquet&#39;,</span></span>
+<span class="giallo-l"><span>    dirPath + &#39;/processed_data.parquet&#39;,</span></span>
+<span class="giallo-l"><span>    &#39;data.parquet&#39;,</span></span>
+<span class="giallo-l"><span>    &#39;processed_data.parquet&#39;</span></span>
+<span class="giallo-l"><span>];</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>// Try to fetch each possible parquet file</span></span>
+<span class="giallo-l"><span>for (const path of possiblePaths) {</span></span>
+<span class="giallo-l"><span>    try {</span></span>
+<span class="giallo-l"><span>        const url = `https://raw.githubusercontent.com/CGutt-hub/${plotItem.repo_name}/main/${path}`;</span></span>
+<span class="giallo-l"><span>        const response = await fetch(url);</span></span>
+<span class="giallo-l"><span>        if (response.ok) {</span></span>
+<span class="giallo-l"><span>            return await response.arrayBuffer();</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span>    } catch (e) {</span></span>
+<span class="giallo-l"><span>        continue;</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"><span>return null;</span></span></code></pre>
+<p>}</p>
+<p>async function downloadPlotPDFA(plotItem, plotIndex) {
+try {
+// Wait for jsPDF to load
+if (typeof jsPDF === 'undefined') {
+await new Promise(resolve =&gt; {
+const checkInterval = setInterval(() =&gt; {
+if (typeof jsPDF !== 'undefined') {
+clearInterval(checkInterval);
+resolve();
+}
+}, 100);
+});
+}</p>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>    const { jsPDF } = window.jspdf;</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Convert plot to image</span></span>
+<span class="giallo-l"><span>    const plotContainer = document.getElementById(`plot-container-${plotIndex}`);</span></span>
+<span class="giallo-l"><span>    const plotImage = await Plotly.toImage(plotContainer, {</span></span>
+<span class="giallo-l"><span>        format: &#39;png&#39;,</span></span>
+<span class="giallo-l"><span>        width: 1200,</span></span>
+<span class="giallo-l"><span>        height: 800</span></span>
+<span class="giallo-l"><span>    });</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Create PDF document</span></span>
+<span class="giallo-l"><span>    const pdf = new jsPDF({</span></span>
+<span class="giallo-l"><span>        orientation: &#39;landscape&#39;,</span></span>
+<span class="giallo-l"><span>        unit: &#39;mm&#39;,</span></span>
+<span class="giallo-l"><span>        format: &#39;a4&#39;</span></span>
+<span class="giallo-l"><span>    });</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Add metadata</span></span>
+<span class="giallo-l"><span>    pdf.setProperties({</span></span>
+<span class="giallo-l"><span>        title: plotItem.file_path,</span></span>
+<span class="giallo-l"><span>        subject: `Research data from ${plotItem.repo_name}`,</span></span>
+<span class="giallo-l"><span>        author: &#39;Çağatay Özcan Jagiello Gutt&#39;,</span></span>
+<span class="giallo-l"><span>        keywords: &#39;research, open data, analysis&#39;,</span></span>
+<span class="giallo-l"><span>        creator: &#39;Open Data - 5ha99y&#39;</span></span>
+<span class="giallo-l"><span>    });</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Add title</span></span>
+<span class="giallo-l"><span>    pdf.setFontSize(16);</span></span>
+<span class="giallo-l"><span>    pdf.text(plotItem.file_path, 10, 15);</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Add repository info</span></span>
+<span class="giallo-l"><span>    pdf.setFontSize(10);</span></span>
+<span class="giallo-l"><span>    pdf.text(`Repository: ${plotItem.repo_name}`, 10, 22);</span></span>
+<span class="giallo-l"><span>    pdf.text(`Updated: ${new Date(plotItem.updated).toLocaleString()}`, 10, 27);</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Add plot image</span></span>
+<span class="giallo-l"><span>    pdf.addImage(plotImage, &#39;PNG&#39;, 10, 35, 277, 185);</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Try to fetch and attach parquet file</span></span>
+<span class="giallo-l"><span>    const parquetData = await findParquetFile(plotItem);</span></span>
+<span class="giallo-l"><span>    if (parquetData) {</span></span>
+<span class="giallo-l"><span>        // Add note about attached data</span></span>
+<span class="giallo-l"><span>        pdf.setFontSize(8);</span></span>
+<span class="giallo-l"><span>        pdf.text(&#39;Source data downloaded separately as parquet file&#39;, 10, 225);</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        // Download PDF first</span></span>
+<span class="giallo-l"><span>        const pdfFilename = `${plotItem.repo_name.replace(/\//g, &#39;_&#39;)}_${plotItem.file_path.replace(/\//g, &#39;_&#39;).replace(&#39;.json&#39;, &#39;&#39;)}.pdf`;</span></span>
+<span class="giallo-l"><span>        pdf.save(pdfFilename);</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        // Then download parquet</span></span>
+<span class="giallo-l"><span>        const parquetBlob = new Blob([parquetData], { type: &#39;application/octet-stream&#39; });</span></span>
+<span class="giallo-l"><span>        const parquetFilename = `${plotItem.repo_name.replace(/\//g, &#39;_&#39;)}_data.parquet`;</span></span>
+<span class="giallo-l"><span>        const a = document.createElement(&#39;a&#39;);</span></span>
+<span class="giallo-l"><span>        a.href = URL.createObjectURL(parquetBlob);</span></span>
+<span class="giallo-l"><span>        a.download = parquetFilename;</span></span>
+<span class="giallo-l"><span>        document.body.appendChild(a);</span></span>
+<span class="giallo-l"><span>        a.click();</span></span>
+<span class="giallo-l"><span>        document.body.removeChild(a);</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        alert(&#39;Downloaded PDF and source parquet data file&#39;);</span></span>
+<span class="giallo-l"><span>    } else {</span></span>
+<span class="giallo-l"><span>        // Just download PDF</span></span>
+<span class="giallo-l"><span>        const pdfFilename = `${plotItem.repo_name.replace(/\//g, &#39;_&#39;)}_${plotItem.file_path.replace(/\//g, &#39;_&#39;).replace(&#39;.json&#39;, &#39;&#39;)}.pdf`;</span></span>
+<span class="giallo-l"><span>        pdf.save(pdfFilename);</span></span>
+<span class="giallo-l"><span>        alert(&#39;Downloaded PDF (no parquet source file found)&#39;);</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>} catch (error) {</span></span>
+<span class="giallo-l"><span>    console.error(&#39;Error generating PDF:&#39;, error);</span></span>
+<span class="giallo-l"><span>    alert(`Error generating PDF: ${error.message}`);</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>}</p>
 <p>function downloadAllData() {
 const timestamp = new Date().toISOString().split('T')[0];
 const filename = <code>research-analysis-export_${timestamp}.json</code>;
@@ -597,7 +713,10 @@ const downloadSection = document.getElementById('download-all-section');</p>
 <span class="giallo-l"><span>            &lt;p&gt;</span></span>
 <span class="giallo-l"><span>                &lt;strong&gt;Last Updated:&lt;/strong&gt; ${new Date(plotItem.updated).toLocaleString()}</span></span>
 <span class="giallo-l"><span>                &lt;button class=&quot;download-btn&quot; onclick=&quot;downloadPlotData(plotsData[${index}])&quot;&gt;</span></span>
-<span class="giallo-l"><span>                    📥 Download Data</span></span>
+<span class="giallo-l"><span>                    📥 JSON</span></span>
+<span class="giallo-l"><span>                &lt;/button&gt;</span></span>
+<span class="giallo-l"><span>                &lt;button class=&quot;download-btn&quot; onclick=&quot;downloadPlotPDFA(plotsData[${index}], ${index})&quot;&gt;</span></span>
+<span class="giallo-l"><span>                    📄 PDF/A + Parquet</span></span>
 <span class="giallo-l"><span>                &lt;/button&gt;</span></span>
 <span class="giallo-l"><span>            &lt;/p&gt;</span></span>
 <span class="giallo-l"><span>        &lt;/div&gt;</span></span>
