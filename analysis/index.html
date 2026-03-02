@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çağatay Özcan Jagiello Gutt</title>
+    <link rel="stylesheet" href="https://cgutt-hub.github.io/5ha99y/style.css">
+    <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="https://cgutt-hub.github.io/5ha99y/blog/atom.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <h1><a href="https://cgutt-hub.github.io/5ha99y">Çağatay Özcan Jagiello Gutt</a></h1>
+                <nav>
+                    
+                    
+                    <a href="https://cgutt-hub.github.io/5ha99y">home</a>
+                    <a href="https://cgutt-hub.github.io/5ha99y/cv">cv</a>
+                    <a href="https://cgutt-hub.github.io/5ha99y/publications">publications</a>
+                    <a href="https://cgutt-hub.github.io/5ha99y/projects">projects</a>
+                    <div class="nav-dropdown">
+                        <a href="#" class="dropdown-trigger">tools ▾</a>
+                        <div class="dropdown-menu">
+                            <a href="https://cgutt-hub.github.io/5ha99y/paper-finder">Paper Finder</a>
+                            <a href="https://cgutt-hub.github.io/5ha99y/analysis-toolbox">Analysis Toolbox</a>
+                            <a href="https://cgutt-hub.github.io/5ha99y/survey-workbench">Survey Workbench</a>
+                        </div>
+                    </div>
+                    <a href="https://cgutt-hub.github.io/5ha99y/blog">blog</a>
+                    <a href="https://cgutt-hub.github.io/5ha99y/contact">contact</a>
+                    
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="toggle-group">
+                    <a href="https://cgutt-hub.github.io/5ha99y" class="lang-link active">EN</a>
+                    <span class="toggle-separator">|</span>
+                    <a href="https://cgutt-hub.github.io/5ha99y/de/" class="lang-link ">DE</a>
+                </div>
+                <button id="theme-toggle" class="theme-switch" aria-label="Toggle theme">
+                    <span class="theme-icon">☀️</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <main>
+        
+<article>
+    <h1>Real-Time Research Analysis</h1>
+    <div class="content">
+        <p><em>Live analysis results and visualizations from active experiments. Public-facing results automatically updated from ongoing research using the Analysis Toolbox.</em></p>
+<div id="plot-loading">Loading analysis results...</div>
+<div id="plot-container"></div>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+<script>
+// Analysis data embedded from research repositories
+const plotsData = [];
+
+// Render all analysis results
+function renderPlots() {
+    const container = document.getElementById('plot-container');
+    const loading = document.getElementById('plot-loading');
+    
+    if (plotsData.length === 0) {
+        container.innerHTML = '<p><em>No analysis results available yet. Results from running experiments will appear here automatically.</em></p>' +
+                            '<h3>About This Page</h3>' +
+                            '<p>This page displays public-facing results from active research experiments. ' +
+                            'The Analysis Toolbox generates JSON representations of participant data at every analysis step, ' +
+                            'enabling real-time transparency into ongoing research processes.</p>' +
+                            '<h3>How Results Appear Here</h3>' +
+                            '<ol>' +
+                            '<li>Experiments generate analysis outputs using the Analysis Toolbox</li>' +
+                            '<li>Results are exported as JSON format (Plotly schema preferred)</li>' +
+                            '<li>Files are stored in analysis repositories (not backoffice testing)</li>' +
+                            '<li>Public-facing results sync automatically to this page</li>' +
+                            '<li>Updates reflect the current state of ongoing experiments</li>' +
+                            '</ol>';
+        loading.style.display = 'none';
+        return;
+    }
+    
+    loading.style.display = 'none';
+    
+    plotsData.forEach((plotItem, index) => {
+        // Create section for each analysis result
+        const section = document.createElement('div');
+        section.style.marginBottom = '40px';
+        section.style.borderBottom = '1px solid #ccc';
+        section.style.paddingBottom = '20px';
+        
+        // Add metadata
+        const header = document.createElement('div');
+        header.innerHTML = `
+            <h3>📊 ${plotItem.file_path}</h3>
+            <p><strong>Repository:</strong> <a href="${plotItem.repo_url}" target="_blank">${plotItem.repo_name}</a></p>
+            <p><strong>Last Updated:</strong> ${new Date(plotItem.updated).toLocaleString()}</p>
+        `;
+        section.appendChild(header);
+        
+        // Create plot div
+        const plotDiv = document.createElement('div');
+        plotDiv.id = `plot-${index}`;
+        plotDiv.style.width = '100%';
+        plotDiv.style.height = '600px';
+        section.appendChild(plotDiv);
+        
+        container.appendChild(section);
+        
+        // Try to render with Plotly
+        try {
+            const plotData = plotItem.plot_data;
+            
+            // Handle different JSON formats from Analysis Toolbox
+            if (plotData.data && plotData.layout) {
+                // Plotly JSON format (preferred)
+                Plotly.newPlot(`plot-${index}`, plotData.data, plotData.layout, {responsive: true});
+            } else if (Array.isArray(plotData)) {
+                // Array of traces
+                Plotly.newPlot(`plot-${index}`, plotData, {}, {responsive: true});
+            } else if (plotData.x && plotData.y) {
+                // Simple x, y data
+                Plotly.newPlot(`plot-${index}`, [plotData], {}, {responsive: true});
+            } else {
+                // Unknown format - show JSON
+                plotDiv.innerHTML = `<pre style="background: #f5f5f5; padding: 15px; overflow: auto;">${JSON.stringify(plotData, null, 2)}</pre>`;
+            }
+        } catch (error) {
+            plotDiv.innerHTML = `<p style="color: red;">Error rendering analysis: ${error.message}</p>` +
+                              `<details><summary>View raw JSON</summary><pre style="background: #f5f5f5; padding: 15px; overflow: auto;">${JSON.stringify(plotItem.plot_data, null, 2)}</pre></details>`;
+        }
+    });
+}
+
+// Render when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderPlots);
+} else {
+    renderPlots();
+}
+</script>
+<hr />
+<h2 id="about-real-time-analysis">About Real-Time Analysis</h2>
+<p>This page provides <strong>transparent access to ongoing experimental analyses</strong>. Results are automatically synchronized from research repositories, where the Analysis Toolbox processes participant data through each pipeline step. This enables real-time observation of data processing and analysis workflows as they happen.</p>
+<p><strong>Data Processing:</strong> Analysis Toolbox generates JSON representations at each analysis step<br />
+<strong>Update Frequency:</strong> Automatically synchronized on repository updates<br />
+<strong>Transparency:</strong> Public-facing results from active experiments (backoffice testing excluded)</p>
+<h3 id="open-science-in-practice">Open Science in Practice</h3>
+<p>By making analysis results immediately visible, this page embodies the principles of open and transparent science. Observers can track analytical decisions, data transformations, and emerging patterns as research progresses—not just after completion.</p>
+
+    </div>
+</article>
+
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-main">
+                <p class="site-info">This site syncs automatically with GitHub (projects) and ORCID (publications).</p>
+                <div class="contact-links">
+                    <a href="https://www.linkedin.com/in/cagatay-gutt" target="_blank" rel="noopener">LinkedIn</a>
+                    <span class="footer-sep">·</span>
+                    <a href="https://orcid.org/0000-0002-1774-532X" target="_blank" rel="noopener">ORCID</a>
+                    <span class="footer-sep">·</span>
+                    <a href="https://github.com/CGutt-hub" target="_blank" rel="noopener">GitHub</a>
+                    <span class="footer-sep">·</span>
+                    <a href="https://cgutt-hub.github.io/5ha99y/blog/atom.xml" target="_blank" rel="noopener">RSS</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Çağatay Özcan Jagiello Gutt</p>
+                <p class="footer-tech">Built with <a href="https://www.getzola.org/" target="_blank" rel="noopener">Zola</a> · Last build: 2026-03-02</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Theme switching functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.querySelector('.theme-icon');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference or default to 'dark'
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Dropdown menu functionality (mobile-friendly)
+        const dropdowns = document.querySelectorAll('.nav-dropdown');
+        
+        dropdowns.forEach(dropdown => {
+            const trigger = dropdown.querySelector('.dropdown-trigger');
+            
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Close other dropdowns
+                dropdowns.forEach(other => {
+                    if (other !== dropdown) {
+                        other.classList.remove('active');
+                    }
+                });
+                
+                // Toggle current dropdown
+                dropdown.classList.toggle('active');
+            });
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
