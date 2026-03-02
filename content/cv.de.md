@@ -11,7 +11,7 @@ title = "Lebenslauf"
 ## Bildung
 
 ### M.Sc. in Kognitionswissenschaft
-**[Ruhr-Universität](https://www.ruhr-uni-bochum.de/), Bochum** | *Oktober 2023 - Voraussichtlich Oktober 2024*
+**[Ruhr-Universität](https://www.ruhr-uni-bochum.de/), Bochum** | *Oktober 2023 - Laufend*
 
 **Qualifikation:** Master of Science in Kognitionswissenschaft
 
@@ -43,7 +43,7 @@ title = "Lebenslauf"
 
 ### Projektleitung (Masterarbeit)
 **[Leibniz-Institut für Arbeitsforschung an der TU Dortmund (IfADo)](https://www.ifado.de/), Dortmund**  
-*März 2024 - Voraussichtlich Oktober 2024*
+*März 2024 - Laufend*
 
 - Leitung eines End-to-End-Forschungsprojekts zu neuronalen Korrelaten von Emotion, Management des gesamten Lebenszyklus von Versuchsdesign und ethischer Genehmigung (DSGVO, Ethikkommission) bis zur finalen Analyse
 - Betreuung von zwei studentischen Hilfskräften während der Projektdurchführung

@@ -11,7 +11,7 @@ title = "CV"
 ## Education
 
 ### M.Sc. in Cognitive Science
-**[Ruhr University](https://www.ruhr-uni-bochum.de/en), Bochum** | *October 2023 - Expected October 2024*
+**[Ruhr University](https://www.ruhr-uni-bochum.de/en), Bochum** | *October 2023 - Ongoing*
 
 **Qualification:** Master of Science in Cognitive Science
 
@@ -43,7 +43,7 @@ title = "CV"
 
 ### Project Lead (Master's Thesis)
 **[Leibniz Research Centre for Working Environment and Human Factors (IfADo)](https://www.ifado.de/en/), Dortmund**  
-*March 2024 - Expected October 2024*
+*March 2024 - Ongoing*
 
 - Led end-to-end research project on neural correlates of emotion, managing full lifecycle from experimental design and ethical approval (GDPR, IRB) to final analysis
 - Supervised two student assistants throughout project execution
