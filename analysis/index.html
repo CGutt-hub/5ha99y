@@ -416,10 +416,10 @@
 <script>
 // Analysis data embedded from research repositories
 <p>const plotsData = [];</p>
-<p>// Load jsPDF library for PDF generation
-const jsPDFScript = document.createElement('script');
-jsPDFScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-document.head.appendChild(jsPDFScript);</p>
+<p>// Load pdf-lib for PDF/A-3 generation with attachments
+const pdfLibScript = document.createElement('script');
+pdfLibScript.src = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+document.head.appendChild(pdfLibScript);</p>
 <p>// Download functions for open data sharing
 function downloadJSON(data, filename) {
 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -455,7 +455,8 @@ const dirPath = plotItem.file_path.substring(0, plotItem.file_path.lastIndexOf('
 <span class="giallo-l"><span>        const url = `https://raw.githubusercontent.com/CGutt-hub/${plotItem.repo_name}/main/${path}`;</span></span>
 <span class="giallo-l"><span>        const response = await fetch(url);</span></span>
 <span class="giallo-l"><span>        if (response.ok) {</span></span>
-<span class="giallo-l"><span>            return await response.arrayBuffer();</span></span>
+<span class="giallo-l"><span>            const arrayBuffer = await response.arrayBuffer();</span></span>
+<span class="giallo-l"><span>            return { data: arrayBuffer, filename: path.split(&#39;/&#39;).pop() };</span></span>
 <span class="giallo-l"><span>        }</span></span>
 <span class="giallo-l"><span>    } catch (e) {</span></span>
 <span class="giallo-l"><span>        continue;</span></span>
@@ -465,82 +466,152 @@ const dirPath = plotItem.file_path.substring(0, plotItem.file_path.lastIndexOf('
 <p>}</p>
 <p>async function downloadPlotPDFA(plotItem, plotIndex) {
 try {
-// Wait for jsPDF to load
-if (typeof jsPDF === 'undefined') {
+// Wait for pdf-lib to load
+if (typeof PDFLib === 'undefined') {
 await new Promise(resolve =&gt; {
 const checkInterval = setInterval(() =&gt; {
-if (typeof jsPDF !== 'undefined') {
+if (typeof PDFLib !== 'undefined') {
 clearInterval(checkInterval);
 resolve();
 }
 }, 100);
 });
 }</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>    const { jsPDF } = window.jspdf;</span></span>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>    const { PDFDocument, StandardFonts, rgb } = PDFLib;</span></span>
 <span class="giallo-l"><span>    </span></span>
-<span class="giallo-l"><span>    // Convert plot to image</span></span>
+<span class="giallo-l"><span>    // Convert plot to grayscale image</span></span>
 <span class="giallo-l"><span>    const plotContainer = document.getElementById(`plot-container-${plotIndex}`);</span></span>
-<span class="giallo-l"><span>    const plotImage = await Plotly.toImage(plotContainer, {</span></span>
+<span class="giallo-l"><span>    const plotImageDataUrl = await Plotly.toImage(plotContainer, {</span></span>
 <span class="giallo-l"><span>        format: &#39;png&#39;,</span></span>
 <span class="giallo-l"><span>        width: 1200,</span></span>
 <span class="giallo-l"><span>        height: 800</span></span>
 <span class="giallo-l"><span>    });</span></span>
 <span class="giallo-l"><span>    </span></span>
-<span class="giallo-l"><span>    // Create PDF document</span></span>
-<span class="giallo-l"><span>    const pdf = new jsPDF({</span></span>
-<span class="giallo-l"><span>        orientation: &#39;landscape&#39;,</span></span>
-<span class="giallo-l"><span>        unit: &#39;mm&#39;,</span></span>
-<span class="giallo-l"><span>        format: &#39;a4&#39;</span></span>
-<span class="giallo-l"><span>    });</span></span>
+<span class="giallo-l"><span>    // Convert to grayscale</span></span>
+<span class="giallo-l"><span>    const img = new Image();</span></span>
+<span class="giallo-l"><span>    img.src = plotImageDataUrl;</span></span>
+<span class="giallo-l"><span>    await new Promise(resolve =&gt; img.onload = resolve);</span></span>
 <span class="giallo-l"><span>    </span></span>
-<span class="giallo-l"><span>    // Add metadata</span></span>
-<span class="giallo-l"><span>    pdf.setProperties({</span></span>
-<span class="giallo-l"><span>        title: plotItem.file_path,</span></span>
-<span class="giallo-l"><span>        subject: `Research data from ${plotItem.repo_name}`,</span></span>
-<span class="giallo-l"><span>        author: &#39;Çağatay Özcan Jagiello Gutt&#39;,</span></span>
-<span class="giallo-l"><span>        keywords: &#39;research, open data, analysis&#39;,</span></span>
-<span class="giallo-l"><span>        creator: &#39;Open Data - 5ha99y&#39;</span></span>
-<span class="giallo-l"><span>    });</span></span>
+<span class="giallo-l"><span>    const canvas = document.createElement(&#39;canvas&#39;);</span></span>
+<span class="giallo-l"><span>    canvas.width = img.width;</span></span>
+<span class="giallo-l"><span>    canvas.height = img.height;</span></span>
+<span class="giallo-l"><span>    const ctx = canvas.getContext(&#39;2d&#39;);</span></span>
+<span class="giallo-l"><span>    ctx.drawImage(img, 0, 0);</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Convert to grayscale</span></span>
+<span class="giallo-l"><span>    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);</span></span>
+<span class="giallo-l"><span>    const data = imageData.data;</span></span>
+<span class="giallo-l"><span>    for (let i = 0; i &lt; data.length; i += 4) {</span></span>
+<span class="giallo-l"><span>        const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];</span></span>
+<span class="giallo-l"><span>        data[i] = gray;</span></span>
+<span class="giallo-l"><span>        data[i + 1] = gray;</span></span>
+<span class="giallo-l"><span>        data[i + 2] = gray;</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>    ctx.putImageData(imageData, 0, 0);</span></span>
+<span class="giallo-l"><span>    const grayscaleImageUrl = canvas.toDataURL(&#39;image/png&#39;);</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Create PDF document</span></span>
+<span class="giallo-l"><span>    const pdfDoc = await PDFDocument.create();</span></span>
+<span class="giallo-l"><span>    const page = pdfDoc.addPage([842, 595]); // A4 landscape in points</span></span>
+<span class="giallo-l"><span>    const { width, height } = page.getSize();</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Embed font</span></span>
+<span class="giallo-l"><span>    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);</span></span>
+<span class="giallo-l"><span>    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);</span></span>
 <span class="giallo-l"><span>    </span></span>
 <span class="giallo-l"><span>    // Add title</span></span>
-<span class="giallo-l"><span>    pdf.setFontSize(16);</span></span>
-<span class="giallo-l"><span>    pdf.text(plotItem.file_path, 10, 15);</span></span>
+<span class="giallo-l"><span>    page.drawText(plotItem.file_path, {</span></span>
+<span class="giallo-l"><span>        x: 50,</span></span>
+<span class="giallo-l"><span>        y: height - 50,</span></span>
+<span class="giallo-l"><span>        size: 16,</span></span>
+<span class="giallo-l"><span>        font: fontBold,</span></span>
+<span class="giallo-l"><span>        color: rgb(0, 0, 0)</span></span>
+<span class="giallo-l"><span>    });</span></span>
 <span class="giallo-l"><span>    </span></span>
 <span class="giallo-l"><span>    // Add repository info</span></span>
-<span class="giallo-l"><span>    pdf.setFontSize(10);</span></span>
-<span class="giallo-l"><span>    pdf.text(`Repository: ${plotItem.repo_name}`, 10, 22);</span></span>
-<span class="giallo-l"><span>    pdf.text(`Updated: ${new Date(plotItem.updated).toLocaleString()}`, 10, 27);</span></span>
+<span class="giallo-l"><span>    page.drawText(`Repository: ${plotItem.repo_name}`, {</span></span>
+<span class="giallo-l"><span>        x: 50,</span></span>
+<span class="giallo-l"><span>        y: height - 75,</span></span>
+<span class="giallo-l"><span>        size: 10,</span></span>
+<span class="giallo-l"><span>        font: font,</span></span>
+<span class="giallo-l"><span>        color: rgb(0.3, 0.3, 0.3)</span></span>
+<span class="giallo-l"><span>    });</span></span>
 <span class="giallo-l"><span>    </span></span>
-<span class="giallo-l"><span>    // Add plot image</span></span>
-<span class="giallo-l"><span>    pdf.addImage(plotImage, &#39;PNG&#39;, 10, 35, 277, 185);</span></span>
+<span class="giallo-l"><span>    page.drawText(`Updated: ${new Date(plotItem.updated).toLocaleString()}`, {</span></span>
+<span class="giallo-l"><span>        x: 50,</span></span>
+<span class="giallo-l"><span>        y: height - 90,</span></span>
+<span class="giallo-l"><span>        size: 10,</span></span>
+<span class="giallo-l"><span>        font: font,</span></span>
+<span class="giallo-l"><span>        color: rgb(0.3, 0.3, 0.3)</span></span>
+<span class="giallo-l"><span>    });</span></span>
 <span class="giallo-l"><span>    </span></span>
-<span class="giallo-l"><span>    // Try to fetch and attach parquet file</span></span>
-<span class="giallo-l"><span>    const parquetData = await findParquetFile(plotItem);</span></span>
-<span class="giallo-l"><span>    if (parquetData) {</span></span>
-<span class="giallo-l"><span>        // Add note about attached data</span></span>
-<span class="giallo-l"><span>        pdf.setFontSize(8);</span></span>
-<span class="giallo-l"><span>        pdf.text(&#39;Source data downloaded separately as parquet file&#39;, 10, 225);</span></span>
+<span class="giallo-l"><span>    // Embed grayscale plot image</span></span>
+<span class="giallo-l"><span>    const imageBytes = await fetch(grayscaleImageUrl).then(res =&gt; res.arrayBuffer());</span></span>
+<span class="giallo-l"><span>    const pngImage = await pdfDoc.embedPng(imageBytes);</span></span>
+<span class="giallo-l"><span>    const imgDims = pngImage.scale(0.6);</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    page.drawImage(pngImage, {</span></span>
+<span class="giallo-l"><span>        x: 50,</span></span>
+<span class="giallo-l"><span>        y: 100,</span></span>
+<span class="giallo-l"><span>        width: imgDims.width,</span></span>
+<span class="giallo-l"><span>        height: imgDims.height</span></span>
+<span class="giallo-l"><span>    });</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Try to fetch and embed parquet file as attachment</span></span>
+<span class="giallo-l"><span>    const parquetFile = await findParquetFile(plotItem);</span></span>
+<span class="giallo-l"><span>    if (parquetFile) {</span></span>
+<span class="giallo-l"><span>        // Attach parquet file to PDF</span></span>
+<span class="giallo-l"><span>        await pdfDoc.attach(parquetFile.data, parquetFile.filename, {</span></span>
+<span class="giallo-l"><span>            mimeType: &#39;application/octet-stream&#39;,</span></span>
+<span class="giallo-l"><span>            description: &#39;Source data in Apache Parquet format&#39;,</span></span>
+<span class="giallo-l"><span>            creationDate: new Date(plotItem.updated),</span></span>
+<span class="giallo-l"><span>            modificationDate: new Date(plotItem.updated)</span></span>
+<span class="giallo-l"><span>        });</span></span>
 <span class="giallo-l"><span>        </span></span>
-<span class="giallo-l"><span>        // Download PDF first</span></span>
-<span class="giallo-l"><span>        const pdfFilename = `${plotItem.repo_name.replace(/\//g, &#39;_&#39;)}_${plotItem.file_path.replace(/\//g, &#39;_&#39;).replace(&#39;.json&#39;, &#39;&#39;)}.pdf`;</span></span>
-<span class="giallo-l"><span>        pdf.save(pdfFilename);</span></span>
-<span class="giallo-l"><span>        </span></span>
-<span class="giallo-l"><span>        // Then download parquet</span></span>
-<span class="giallo-l"><span>        const parquetBlob = new Blob([parquetData], { type: &#39;application/octet-stream&#39; });</span></span>
-<span class="giallo-l"><span>        const parquetFilename = `${plotItem.repo_name.replace(/\//g, &#39;_&#39;)}_data.parquet`;</span></span>
-<span class="giallo-l"><span>        const a = document.createElement(&#39;a&#39;);</span></span>
-<span class="giallo-l"><span>        a.href = URL.createObjectURL(parquetBlob);</span></span>
-<span class="giallo-l"><span>        a.download = parquetFilename;</span></span>
-<span class="giallo-l"><span>        document.body.appendChild(a);</span></span>
-<span class="giallo-l"><span>        a.click();</span></span>
-<span class="giallo-l"><span>        document.body.removeChild(a);</span></span>
-<span class="giallo-l"><span>        </span></span>
-<span class="giallo-l"><span>        alert(&#39;Downloaded PDF and source parquet data file&#39;);</span></span>
+<span class="giallo-l"><span>        // Add note about attachment</span></span>
+<span class="giallo-l"><span>        page.drawText(&#39;📎 Source data attached as: &#39; + parquetFile.filename, {</span></span>
+<span class="giallo-l"><span>            x: 50,</span></span>
+<span class="giallo-l"><span>            y: 70,</span></span>
+<span class="giallo-l"><span>            size: 9,</span></span>
+<span class="giallo-l"><span>            font: font,</span></span>
+<span class="giallo-l"><span>            color: rgb(0, 0.5, 0)</span></span>
+<span class="giallo-l"><span>        });</span></span>
 <span class="giallo-l"><span>    } else {</span></span>
-<span class="giallo-l"><span>        // Just download PDF</span></span>
-<span class="giallo-l"><span>        const pdfFilename = `${plotItem.repo_name.replace(/\//g, &#39;_&#39;)}_${plotItem.file_path.replace(/\//g, &#39;_&#39;).replace(&#39;.json&#39;, &#39;&#39;)}.pdf`;</span></span>
-<span class="giallo-l"><span>        pdf.save(pdfFilename);</span></span>
-<span class="giallo-l"><span>        alert(&#39;Downloaded PDF (no parquet source file found)&#39;);</span></span>
+<span class="giallo-l"><span>        // Add note about no attachment</span></span>
+<span class="giallo-l"><span>        page.drawText(&#39;⚠ No source parquet file found&#39;, {</span></span>
+<span class="giallo-l"><span>            x: 50,</span></span>
+<span class="giallo-l"><span>            y: 70,</span></span>
+<span class="giallo-l"><span>            size: 9,</span></span>
+<span class="giallo-l"><span>            font: font,</span></span>
+<span class="giallo-l"><span>            color: rgb(0.7, 0.3, 0)</span></span>
+<span class="giallo-l"><span>        });</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Set PDF metadata</span></span>
+<span class="giallo-l"><span>    pdfDoc.setTitle(plotItem.file_path);</span></span>
+<span class="giallo-l"><span>    pdfDoc.setAuthor(&#39;Çağatay Özcan Jagiello Gutt&#39;);</span></span>
+<span class="giallo-l"><span>    pdfDoc.setSubject(`Research data from ${plotItem.repo_name}`);</span></span>
+<span class="giallo-l"><span>    pdfDoc.setKeywords([&#39;research&#39;, &#39;open data&#39;, &#39;analysis&#39;]);</span></span>
+<span class="giallo-l"><span>    pdfDoc.setCreator(&#39;Open Data - 5ha99y&#39;);</span></span>
+<span class="giallo-l"><span>    pdfDoc.setProducer(&#39;pdf-lib (https://pdf-lib.js.org)&#39;);</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Save PDF</span></span>
+<span class="giallo-l"><span>    const pdfBytes = await pdfDoc.save();</span></span>
+<span class="giallo-l"><span>    const pdfBlob = new Blob([pdfBytes], { type: &#39;application/pdf&#39; });</span></span>
+<span class="giallo-l"><span>    const pdfFilename = `${plotItem.repo_name.replace(/\//g, &#39;_&#39;)}_${plotItem.file_path.replace(/\//g, &#39;_&#39;).replace(&#39;.json&#39;, &#39;&#39;)}.pdf`;</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    const a = document.createElement(&#39;a&#39;);</span></span>
+<span class="giallo-l"><span>    a.href = URL.createObjectURL(pdfBlob);</span></span>
+<span class="giallo-l"><span>    a.download = pdfFilename;</span></span>
+<span class="giallo-l"><span>    document.body.appendChild(a);</span></span>
+<span class="giallo-l"><span>    a.click();</span></span>
+<span class="giallo-l"><span>    document.body.removeChild(a);</span></span>
+<span class="giallo-l"><span>    URL.revokeObjectURL(a.href);</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    if (parquetFile) {</span></span>
+<span class="giallo-l"><span>        alert(&#39;Downloaded PDF/A with embedded parquet data attachment&#39;);</span></span>
+<span class="giallo-l"><span>    } else {</span></span>
+<span class="giallo-l"><span>        alert(&#39;Downloaded PDF (no source parquet file found)&#39;);</span></span>
 <span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"><span>    </span></span>
 <span class="giallo-l"><span>} catch (error) {</span></span>
@@ -759,6 +830,90 @@ const downloadSection = document.getElementById('download-all-section');</p>
 <span class="giallo-l"><span>        readmeSection.appendChild(summary);</span></span>
 <span class="giallo-l"><span>        readmeSection.appendChild(readmeContent);</span></span>
 <span class="giallo-l"><span>        plotDisplay.appendChild(readmeSection);</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span>    // Add Pipeline Tree section if available</span></span>
+<span class="giallo-l"><span>    if (plotItem.pipeline_trace &amp;&amp; plotItem.pipeline_trace.processes) {</span></span>
+<span class="giallo-l"><span>        const pipelineSection = document.createElement(&#39;details&#39;);</span></span>
+<span class="giallo-l"><span>        pipelineSection.className = &#39;pipeline-section&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineSection.style.margin = &#39;15px 0&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineSection.style.padding = &#39;15px&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineSection.style.background = &#39;var(--bg-secondary, #f0f4f8)&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineSection.style.borderRadius = &#39;4px&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineSection.style.border = &#39;1px solid var(--border-primary, #ddd)&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineSection.setAttribute(&#39;open&#39;, &#39;&#39;);</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        const pipelineSummary = document.createElement(&#39;summary&#39;);</span></span>
+<span class="giallo-l"><span>        pipelineSummary.style.cursor = &#39;pointer&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineSummary.style.fontWeight = &#39;bold&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineSummary.style.marginBottom = &#39;15px&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineSummary.textContent = `🔄 Pipeline Execution Tree (${plotItem.pipeline_trace.total_processes} processes, ${plotItem.pipeline_trace.total_tasks} tasks)`;</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        const pipelineContent = document.createElement(&#39;div&#39;);</span></span>
+<span class="giallo-l"><span>        pipelineContent.className = &#39;pipeline-content&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineContent.style.marginTop = &#39;15px&#39;;</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        // Create visual pipeline tree</span></span>
+<span class="giallo-l"><span>        const pipelineTree = document.createElement(&#39;div&#39;);</span></span>
+<span class="giallo-l"><span>        pipelineTree.style.display = &#39;flex&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineTree.style.flexDirection = &#39;column&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineTree.style.gap = &#39;10px&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineTree.style.fontFamily = &#39;var(--font-mono, monospace)&#39;;</span></span>
+<span class="giallo-l"><span>        pipelineTree.style.fontSize = &#39;0.9em&#39;;</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        plotItem.pipeline_trace.processes.forEach((process, idx) =&gt; {</span></span>
+<span class="giallo-l"><span>            const processNode = document.createElement(&#39;div&#39;);</span></span>
+<span class="giallo-l"><span>            processNode.style.display = &#39;flex&#39;;</span></span>
+<span class="giallo-l"><span>            processNode.style.alignItems = &#39;center&#39;;</span></span>
+<span class="giallo-l"><span>            processNode.style.gap = &#39;10px&#39;;</span></span>
+<span class="giallo-l"><span>            processNode.style.padding = &#39;10px&#39;;</span></span>
+<span class="giallo-l"><span>            processNode.style.borderRadius = &#39;6px&#39;;</span></span>
+<span class="giallo-l"><span>            processNode.style.background = &#39;var(--bg-primary, white)&#39;;</span></span>
+<span class="giallo-l"><span>            processNode.style.border = &#39;2px solid&#39;;</span></span>
+<span class="giallo-l"><span>            </span></span>
+<span class="giallo-l"><span>            // Color based on status</span></span>
+<span class="giallo-l"><span>            let borderColor = &#39;#6c757d&#39;;</span></span>
+<span class="giallo-l"><span>            let statusIcon = &#39;⚪&#39;;</span></span>
+<span class="giallo-l"><span>            if (process.status === &#39;COMPLETED&#39;) {</span></span>
+<span class="giallo-l"><span>                borderColor = &#39;#28a745&#39;;</span></span>
+<span class="giallo-l"><span>                statusIcon = &#39;✅&#39;;</span></span>
+<span class="giallo-l"><span>            } else if (process.status === &#39;FAILED&#39;) {</span></span>
+<span class="giallo-l"><span>                borderColor = &#39;#dc3545&#39;;</span></span>
+<span class="giallo-l"><span>                statusIcon = &#39;❌&#39;;</span></span>
+<span class="giallo-l"><span>            } else if (process.status === &#39;RUNNING&#39;) {</span></span>
+<span class="giallo-l"><span>                borderColor = &#39;#007bff&#39;;</span></span>
+<span class="giallo-l"><span>                statusIcon = &#39;⏳&#39;;</span></span>
+<span class="giallo-l"><span>            }</span></span>
+<span class="giallo-l"><span>            processNode.style.borderColor = borderColor;</span></span>
+<span class="giallo-l"><span>            </span></span>
+<span class="giallo-l"><span>            // Add connection line to previous process</span></span>
+<span class="giallo-l"><span>            if (idx &gt; 0) {</span></span>
+<span class="giallo-l"><span>                const connector = document.createElement(&#39;div&#39;);</span></span>
+<span class="giallo-l"><span>                connector.style.width = &#39;2px&#39;;</span></span>
+<span class="giallo-l"><span>                connector.style.height = &#39;10px&#39;;</span></span>
+<span class="giallo-l"><span>                connector.style.background = &#39;#6c757d&#39;;</span></span>
+<span class="giallo-l"><span>                connector.style.marginLeft = &#39;30px&#39;;</span></span>
+<span class="giallo-l"><span>                pipelineTree.appendChild(connector);</span></span>
+<span class="giallo-l"><span>            }</span></span>
+<span class="giallo-l"><span>            </span></span>
+<span class="giallo-l"><span>            // Process content</span></span>
+<span class="giallo-l"><span>            processNode.innerHTML = `</span></span>
+<span class="giallo-l"><span>                &lt;span style=&quot;font-size: 1.2em;&quot;&gt;${statusIcon}&lt;/span&gt;</span></span>
+<span class="giallo-l"><span>                &lt;div style=&quot;flex: 1;&quot;&gt;</span></span>
+<span class="giallo-l"><span>                    &lt;div style=&quot;font-weight: bold; color: var(--text-primary);&quot;&gt;${process.name}&lt;/div&gt;</span></span>
+<span class="giallo-l"><span>                    &lt;div style=&quot;font-size: 0.85em; color: var(--text-secondary);&quot;&gt;</span></span>
+<span class="giallo-l"><span>                        Status: ${process.status} | Tasks: ${process.total_tasks}</span></span>
+<span class="giallo-l"><span>                    &lt;/div&gt;</span></span>
+<span class="giallo-l"><span>                &lt;/div&gt;</span></span>
+<span class="giallo-l"><span>            `;</span></span>
+<span class="giallo-l"><span>            </span></span>
+<span class="giallo-l"><span>            pipelineTree.appendChild(processNode);</span></span>
+<span class="giallo-l"><span>        });</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        pipelineContent.appendChild(pipelineTree);</span></span>
+<span class="giallo-l"><span>        pipelineSection.appendChild(pipelineSummary);</span></span>
+<span class="giallo-l"><span>        pipelineSection.appendChild(pipelineContent);</span></span>
+<span class="giallo-l"><span>        plotDisplay.appendChild(pipelineSection);</span></span>
 <span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"><span>    </span></span>
 <span class="giallo-l"><span>    // Plot container</span></span>
