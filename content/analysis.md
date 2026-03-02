@@ -1,32 +1,26 @@
 +++
 title = "Real-Time Research Analysis"
+template = "page.html"
 +++
 
 <style>
-/* Analysis Toolbox-inspired layout with website theming */
+/* Analysis Toolbox-inspired layout adapted for in-page use */
 .analysis-layout {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     display: flex;
     flex-direction: column;
+    min-height: calc(100vh - 200px);
+    margin: -20px;
     background: var(--bg-primary);
 }
 
 .analysis-top-bar {
-    height: 60px;
     background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-primary);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    flex-shrink: 0;
+    border-bottom: 2px solid var(--border-primary);
+    padding: 20px 30px;
 }
 
 .analysis-top-bar h1 {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     color: var(--text-primary);
     margin: 0;
 }
@@ -34,29 +28,33 @@ title = "Real-Time Research Analysis"
 .analysis-body {
     display: flex;
     flex: 1;
-    overflow: hidden;
+    min-height: 700px;
 }
 
 .analysis-sidebar {
-    width: 300px;
+    width: 320px;
     background: var(--bg-secondary);
     border-right: 1px solid var(--border-primary);
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 100px);
+    overflow: hidden;
 }
 
 .search-container {
-    padding: 15px;
+    padding: 20px;
     border-bottom: 1px solid var(--border-primary);
+    flex-shrink: 0;
 }
 
 .search-box {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 14px;
     background: var(--bg-tertiary);
     border: 1px solid var(--border-primary);
-    border-radius: 4px;
+    border-radius: 6px;
     color: var(--text-primary);
     font-family: var(--font-mono);
     font-size: 0.9rem;
@@ -65,38 +63,39 @@ title = "Real-Time Research Analysis"
 .search-box:focus {
     outline: none;
     border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
 }
 
 .file-explorer {
     flex: 1;
     overflow-y: auto;
-    padding: 15px;
+    padding: 15px 20px;
 }
 
 .explorer-header {
-    font-size: 0.85rem;
-    font-weight: bold;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: var(--text-secondary);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
 }
 
 .repo-section {
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .repo-name {
-    font-weight: bold;
+    font-weight: 700;
     color: var(--accent-primary);
-    margin-bottom: 5px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 5px;
-    border-radius: 4px;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
     transition: all 0.2s;
+    font-size: 0.95rem;
 }
 
 .repo-name:hover {
@@ -105,10 +104,11 @@ title = "Real-Time Research Analysis"
 }
 
 .repo-toggle {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     display: inline-block;
-    width: 16px;
+    width: 14px;
     transition: transform 0.2s;
+    color: var(--text-secondary);
 }
 
 .repo-toggle.expanded {
@@ -116,7 +116,8 @@ title = "Real-Time Research Analysis"
 }
 
 .file-list {
-    margin-left: 20px;
+    margin-left: 26px;
+    margin-top: 6px;
     display: none;
 }
 
@@ -125,13 +126,14 @@ title = "Real-Time Research Analysis"
 }
 
 .file-item {
-    padding: 6px 10px;
-    margin: 2px 0;
+    padding: 8px 12px;
+    margin: 3px 0;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 5px;
     font-size: 0.85rem;
     color: var(--text-secondary);
-    transition: all 0.2s;
+    transition: all 0.15s;
+    font-family: var(--font-mono);
 }
 
 .file-item:hover {
@@ -140,8 +142,8 @@ title = "Real-Time Research Analysis"
 }
 
 .file-item.active {
-    background: var(--accent-subtle);
-    color: var(--accent-primary);
+    background: var(--accent-primary);
+    color: white;
     font-weight: 600;
 }
 
@@ -151,20 +153,25 @@ title = "Real-Time Research Analysis"
 
 .analysis-main {
     flex: 1;
-    overflow-y: auto;
-    padding: 30px;
+    padding: 40px;
     background: var(--bg-primary);
+    overflow-y: auto;
 }
 
 .empty-state {
     text-align: center;
-    padding: 60px 20px;
+    padding: 80px 20px;
     color: var(--text-secondary);
 }
 
 .empty-state h2 {
     color: var(--text-primary);
     margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.empty-state p {
+    font-size: 1.05rem;
 }
 
 .plot-display {
@@ -173,29 +180,36 @@ title = "Real-Time Research Analysis"
 
 .plot-display.active {
     display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .plot-header {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
     border-bottom: 2px solid var(--border-primary);
 }
 
 .plot-header h2 {
     color: var(--text-primary);
-    margin-bottom: 10px;
-    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-size: 1.75rem;
 }
 
 .plot-meta {
     color: var(--text-secondary);
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-size: 0.95rem;
+    line-height: 1.8;
 }
 
 .plot-meta a {
     color: var(--accent-primary);
     text-decoration: none;
+    font-weight: 600;
 }
 
 .plot-meta a:hover {
@@ -204,23 +218,24 @@ title = "Real-Time Research Analysis"
 
 .plot-container {
     width: 100%;
-    height: 600px;
+    height: 650px;
     background: var(--bg-secondary);
-    border-radius: 6px;
-    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-primary);
+    padding: 15px;
 }
 
 .download-btn {
     display: inline-block;
-    padding: 8px 16px;
+    padding: 10px 18px;
     margin-left: 15px;
     background: var(--accent-primary);
-    color: var(--bg-primary);
+    color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-family: var(--font-mono);
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     text-decoration: none;
     transition: all 0.2s;
@@ -228,15 +243,16 @@ title = "Real-Time Research Analysis"
 
 .download-btn:hover {
     background: var(--accent-hover);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .download-all-section {
     background: var(--bg-secondary);
     border: 1px solid var(--border-primary);
-    border-radius: 6px;
-    padding: 20px;
-    margin-bottom: 30px;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 35px;
     display: none;
 }
 
@@ -244,15 +260,15 @@ title = "Real-Time Research Analysis"
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
+    gap: 25px;
 }
 
 .download-all-btn {
-    padding: 12px 24px;
+    padding: 14px 28px;
     background: var(--accent-primary);
-    color: var(--bg-primary);
+    color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-family: var(--font-mono);
     font-size: 0.95rem;
     font-weight: 700;
@@ -264,24 +280,39 @@ title = "Real-Time Research Analysis"
 .download-all-btn:hover {
     background: var(--accent-hover);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 @media (max-width: 968px) {
     .analysis-sidebar {
-        width: 250px;
+        width: 280px;
+    }
+    
+    .analysis-main {
+        padding: 25px;
     }
 }
 
 @media (max-width: 768px) {
+    .analysis-layout {
+        margin: -10px;
+    }
+    
     .analysis-body {
         flex-direction: column;
     }
     
     .analysis-sidebar {
         width: 100%;
-        max-height: 300px;
+        max-height: 350px;
         border-right: none;
         border-bottom: 1px solid var(--border-primary);
+        position: relative;
+        height: auto;
+    }
+    
+    .analysis-main {
+        padding: 20px;
     }
     
     .download-all-section.visible {
@@ -290,7 +321,7 @@ title = "Real-Time Research Analysis"
     }
     
     .plot-container {
-        height: 400px;
+        height: 450px;
     }
 }
 </style>
@@ -303,7 +334,7 @@ title = "Real-Time Research Analysis"
     <div class="analysis-body">
         <aside class="analysis-sidebar">
             <div class="search-container">
-                <input type="text" id="search-box" class="search-box" placeholder="Search files...">
+                <input type="text" id="search-box" class="search-box" placeholder="🔍 Search files...">
             </div>
             
             <div class="file-explorer">
@@ -321,7 +352,7 @@ title = "Real-Time Research Analysis"
             <div id="download-all-section" class="download-all-section">
                 <div>
                     <strong>Open Data Export</strong>
-                    <p style="margin: 5px 0 0 0; color: var(--text-secondary); font-size: 0.85rem;">
+                    <p style="margin: 5px 0 0 0; color: var(--text-secondary); font-size: 0.9rem;">
                         Download all analysis data for independent verification and open-source analysis
                     </p>
                 </div>
