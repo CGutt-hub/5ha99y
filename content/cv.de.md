@@ -176,3 +176,11 @@ Engagement bei Europas größter Hackervereinigung für digitale Rechte, Datensc
 ## Philosophie
 
 Ich bin der **offenen und transparenten Wissenschaft** verpflichtet und glaube, dass die tiefgreifendsten Fortschritte in KI, Brain-Computer-Interfaces und Mensch-Maschine-Interaktion aus kollaborativen Ansätzen entstehen, die in verkörperter Kognition verwurzelt sind. Mein Hintergrund, der von Molekularbiologie bis Kognitionswissenschaft reicht, bietet eine multiskalare Perspektive auf Bewusstsein – sowohl biologisches als auch künstliches.
+
+---
+
+## Persönliche Interessen
+
+**Bouldern** — Freizeitklettern für körperliche Balance und Problemlösung
+
+**Musik** — Multiinstrumentalist mit formaler Klavierausbildung und autodidaktischer Erfahrung mit Gitarre, Mundharmonika, Schlagzeug und verschiedenen Volksinstrumenten wie Tin Whistle und Maultrommel

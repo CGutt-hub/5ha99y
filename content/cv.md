@@ -176,3 +176,11 @@ Engagement with Europe's largest hacker association on digital rights, privacy, 
 ## Philosophy
 
 I am committed to **open and transparent science**, believing that the most profound advancements in AI, Brain-Computer Interfaces, and Human-Machine Interaction emerge from collaborative approaches grounded in embodied cognition. My background spanning molecular biology to cognitive science provides a multi-scale perspective on consciousness—both biological and artificial.
+
+---
+
+## Personal Interests
+
+**Bouldering** — Recreational climbing for physical balance and problem-solving
+
+**Music** — Multi-instrumentalist with formal piano training and self-taught experience across guitar, harmonica, drums, and various folk instruments including tin whistle and mouth harp
