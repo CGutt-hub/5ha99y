@@ -189,14 +189,38 @@
     color: var(--text-primary);
 }
 
+.file-item:hover .sidebar-download-btn {
+    opacity: 1;
+}
+
 .file-item.active {
     background: var(--accent-primary);
     color: white;
     font-weight: 600;
 }
 
+.file-item.active .sidebar-download-btn {
+    background: white;
+    border-color: white;
+    opacity: 0.9;
+}
+
 .file-item.hidden-by-search {
     display: none;
+}
+
+.sidebar-download-btn {
+    opacity: 0.6;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.sidebar-download-btn:hover {
+    opacity: 1 !important;
+    transform: scale(1.1);
+}
+
+.sidebar-download-btn:active {
+    transform: scale(0.95);
 }
 
 .analysis-main {
@@ -656,14 +680,64 @@ const fileTree = document.getElementById('file-tree');</p>
 <span class="giallo-l"><span>    repoMap[repoName].forEach(plot =&gt; {</span></span>
 <span class="giallo-l"><span>        const fileItem = document.createElement(&#39;div&#39;);</span></span>
 <span class="giallo-l"><span>        fileItem.className = &#39;file-item&#39;;</span></span>
-<span class="giallo-l"><span>        fileItem.textContent = plot.file_path;</span></span>
 <span class="giallo-l"><span>        fileItem.dataset.index = plot.index;</span></span>
 <span class="giallo-l"><span>        fileItem.dataset.repoName = plot.repo_name;</span></span>
 <span class="giallo-l"><span>        fileItem.dataset.filePath = plot.file_path;</span></span>
 <span class="giallo-l"><span>        </span></span>
-<span class="giallo-l"><span>        fileItem.onclick = () =&gt; {</span></span>
+<span class="giallo-l"><span>        // Create file name span</span></span>
+<span class="giallo-l"><span>        const fileName = document.createElement(&#39;span&#39;);</span></span>
+<span class="giallo-l"><span>        fileName.textContent = plot.file_path;</span></span>
+<span class="giallo-l"><span>        fileName.style.flex = &#39;1&#39;;</span></span>
+<span class="giallo-l"><span>        fileName.style.cursor = &#39;pointer&#39;;</span></span>
+<span class="giallo-l"><span>        fileName.onclick = () =&gt; {</span></span>
 <span class="giallo-l"><span>            showPlot(plot.index);</span></span>
 <span class="giallo-l"><span>        };</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        // Create download buttons container</span></span>
+<span class="giallo-l"><span>        const downloadBtns = document.createElement(&#39;div&#39;);</span></span>
+<span class="giallo-l"><span>        downloadBtns.style.display = &#39;flex&#39;;</span></span>
+<span class="giallo-l"><span>        downloadBtns.style.gap = &#39;4px&#39;;</span></span>
+<span class="giallo-l"><span>        downloadBtns.style.marginLeft = &#39;8px&#39;;</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        // JSON download button</span></span>
+<span class="giallo-l"><span>        const jsonBtn = document.createElement(&#39;button&#39;);</span></span>
+<span class="giallo-l"><span>        jsonBtn.innerHTML = &#39;📥&#39;;</span></span>
+<span class="giallo-l"><span>        jsonBtn.title = &#39;Download JSON&#39;;</span></span>
+<span class="giallo-l"><span>        jsonBtn.className = &#39;sidebar-download-btn&#39;;</span></span>
+<span class="giallo-l"><span>        jsonBtn.style.padding = &#39;2px 6px&#39;;</span></span>
+<span class="giallo-l"><span>        jsonBtn.style.fontSize = &#39;0.75em&#39;;</span></span>
+<span class="giallo-l"><span>        jsonBtn.style.border = &#39;1px solid var(--border-primary)&#39;;</span></span>
+<span class="giallo-l"><span>        jsonBtn.style.borderRadius = &#39;3px&#39;;</span></span>
+<span class="giallo-l"><span>        jsonBtn.style.background = &#39;var(--bg-tertiary)&#39;;</span></span>
+<span class="giallo-l"><span>        jsonBtn.style.cursor = &#39;pointer&#39;;</span></span>
+<span class="giallo-l"><span>        jsonBtn.onclick = (e) =&gt; {</span></span>
+<span class="giallo-l"><span>            e.stopPropagation();</span></span>
+<span class="giallo-l"><span>            downloadPlotData(plotsData[plot.index]);</span></span>
+<span class="giallo-l"><span>        };</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        // PDF/A download button</span></span>
+<span class="giallo-l"><span>        const pdfBtn = document.createElement(&#39;button&#39;);</span></span>
+<span class="giallo-l"><span>        pdfBtn.innerHTML = &#39;📄&#39;;</span></span>
+<span class="giallo-l"><span>        pdfBtn.title = &#39;Download PDF/A + Parquet&#39;;</span></span>
+<span class="giallo-l"><span>        pdfBtn.className = &#39;sidebar-download-btn&#39;;</span></span>
+<span class="giallo-l"><span>        pdfBtn.style.padding = &#39;2px 6px&#39;;</span></span>
+<span class="giallo-l"><span>        pdfBtn.style.fontSize = &#39;0.75em&#39;;</span></span>
+<span class="giallo-l"><span>        pdfBtn.style.border = &#39;1px solid var(--border-primary)&#39;;</span></span>
+<span class="giallo-l"><span>        pdfBtn.style.borderRadius = &#39;3px&#39;;</span></span>
+<span class="giallo-l"><span>        pdfBtn.style.background = &#39;var(--bg-tertiary)&#39;;</span></span>
+<span class="giallo-l"><span>        pdfBtn.style.cursor = &#39;pointer&#39;;</span></span>
+<span class="giallo-l"><span>        pdfBtn.onclick = (e) =&gt; {</span></span>
+<span class="giallo-l"><span>            e.stopPropagation();</span></span>
+<span class="giallo-l"><span>            downloadPlotPDFA(plotsData[plot.index], plot.index);</span></span>
+<span class="giallo-l"><span>        };</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        downloadBtns.appendChild(jsonBtn);</span></span>
+<span class="giallo-l"><span>        downloadBtns.appendChild(pdfBtn);</span></span>
+<span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        fileItem.appendChild(fileName);</span></span>
+<span class="giallo-l"><span>        fileItem.appendChild(downloadBtns);</span></span>
+<span class="giallo-l"><span>        fileItem.style.display = &#39;flex&#39;;</span></span>
+<span class="giallo-l"><span>        fileItem.style.alignItems = &#39;center&#39;;</span></span>
 <span class="giallo-l"><span>        </span></span>
 <span class="giallo-l"><span>        fileList.appendChild(fileItem);</span></span>
 <span class="giallo-l"><span>    });</span></span>
@@ -685,7 +759,7 @@ const fileTree = document.getElementById('file-tree');</p>
 <span class="giallo-l"><span>if (fileTree.firstChild) {</span></span>
 <span class="giallo-l"><span>    const firstRepo = fileTree.firstChild.querySelector(&#39;.repo-name&#39;);</span></span>
 <span class="giallo-l"><span>    firstRepo.click();</span></span>
-<span class="giallo-l"><span>    const firstFile = fileTree.firstChild.querySelector(&#39;.file-item&#39;);</span></span>
+<span class="giallo-l"><span>    const firstFile = fileTree.firstChild.querySelector(&#39;.file-item span&#39;);</span></span>
 <span class="giallo-l"><span>    if (firstFile) {</span></span>
 <span class="giallo-l"><span>        firstFile.click();</span></span>
 <span class="giallo-l"><span>    }</span></span>
@@ -781,15 +855,7 @@ const downloadSection = document.getElementById('download-all-section');</p>
 <span class="giallo-l"><span>        &lt;h2&gt;📊 ${plotItem.file_path}&lt;/h2&gt;</span></span>
 <span class="giallo-l"><span>        &lt;div class=&quot;plot-meta&quot;&gt;</span></span>
 <span class="giallo-l"><span>            &lt;p&gt;&lt;strong&gt;Repository:&lt;/strong&gt; &lt;a href=&quot;${plotItem.repo_url}&quot; target=&quot;_blank&quot;&gt;${plotItem.repo_name}&lt;/a&gt;&lt;/p&gt;</span></span>
-<span class="giallo-l"><span>            &lt;p&gt;</span></span>
-<span class="giallo-l"><span>                &lt;strong&gt;Last Updated:&lt;/strong&gt; ${new Date(plotItem.updated).toLocaleString()}</span></span>
-<span class="giallo-l"><span>                &lt;button class=&quot;download-btn&quot; onclick=&quot;downloadPlotData(plotsData[${index}])&quot;&gt;</span></span>
-<span class="giallo-l"><span>                    📥 JSON</span></span>
-<span class="giallo-l"><span>                &lt;/button&gt;</span></span>
-<span class="giallo-l"><span>                &lt;button class=&quot;download-btn&quot; onclick=&quot;downloadPlotPDFA(plotsData[${index}], ${index})&quot;&gt;</span></span>
-<span class="giallo-l"><span>                    📄 PDF/A + Parquet</span></span>
-<span class="giallo-l"><span>                &lt;/button&gt;</span></span>
-<span class="giallo-l"><span>            &lt;/p&gt;</span></span>
+<span class="giallo-l"><span>            &lt;p&gt;&lt;strong&gt;Last Updated:&lt;/strong&gt; ${new Date(plotItem.updated).toLocaleString()}&lt;/p&gt;</span></span>
 <span class="giallo-l"><span>        &lt;/div&gt;</span></span>
 <span class="giallo-l"><span>    `;</span></span>
 <span class="giallo-l"><span>    plotDisplay.appendChild(header);</span></span>
