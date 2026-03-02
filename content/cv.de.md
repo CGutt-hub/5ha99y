@@ -25,7 +25,7 @@ title = "Lebenslauf"
 **Bachelorarbeit:** Einfluss des Proteininhibitors Leupeptin auf funktionelle Inhibitoren der sauren Sphingomyelinase im Rahmen der Angiogenese | Note: 2,6
 
 ### Ausbildung zum Chemisch-technischen Assistenten (CTA)
-**Technische Berufliche Schule 1, Bochum** | *August 2014 - Juni 2017* | Note: 2,8
+**[Technische Berufliche Schule 1, Bochum](https://www.tbs1.de/)** | *August 2014 - Juni 2017* | Note: 2,8
 
 Qualifikation: Fachhochschulreife
 
@@ -60,7 +60,7 @@ Qualifikation: Fachhochschulreife
 ## Industrieerfahrung
 
 ### Praktikant in der Qualitätssicherung
-**[ista SE](https://www.ista.com/), Essen**  
+**[ista SE](https://www.ista.com/corporate/), Essen**  
 *Juni 2022 - Oktober 2022*
 
 - Analyse interner Arbeitsabläufe und Entwicklung von Automatisierungsskripten zur Verbesserung der Datenintegrität und Effizienz

@@ -25,7 +25,7 @@ title = "CV"
 **Bachelor's Thesis:** Einfluss des Proteininhibitors Leupeptin auf funktionelle Inhibitoren der sauren Sphingomyelinase im Rahmen der Angiogenese | Grade: 2.6
 
 ### Apprenticeship as Chemical Technical Assistant (CTA)
-**Technische Berufliche Schule 1, Bochum** | *August 2014 - June 2017* | Grade: 2.8
+**[Technische Berufliche Schule 1, Bochum](https://www.tbs1.de/)** | *August 2014 - June 2017* | Grade: 2.8
 
 Qualification: University of Applied Sciences Entrance Qualification
 
@@ -60,7 +60,7 @@ Qualification: University of Applied Sciences Entrance Qualification
 ## Industry Experience
 
 ### Intern in Quality Assurance
-**[ista SE](https://www.ista.com/en/), Essen**  
+**[ista SE](https://www.ista.com/corporate/), Essen**  
 *June 2022 - October 2022*
 
 - Analyzed internal workflows and developed automation scripts to improve data integrity and efficiency
