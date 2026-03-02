@@ -18,14 +18,14 @@ title = "CV"
 **Master's Thesis:** Neural-Autonomic Synchrony and Embodied Integration
 
 ### B.Sc. in Molecular Biology
-**[Westphalian University of Applied Sciences, Recklinghausen](https://www.w-hs.de/en/)** | *September 2017 - March 2022* | Grade: 2.9
+**[Westphalian University of Applied Sciences](https://www.w-hs.de/en/), Recklinghausen** | *September 2017 - March 2022* | Grade: 2.9
 
 **Focus Area:** Life Science Informatics
 
 **Bachelor's Thesis:** Einfluss des Proteininhibitors Leupeptin auf funktionelle Inhibitoren der sauren Sphingomyelinase im Rahmen der Angiogenese | Grade: 2.6
 
 ### Apprenticeship as Chemical Technical Assistant (CTA)
-**[Technische Berufliche Schule 1, Bochum](https://www.tbs1.de/)** | *August 2014 - June 2017* | Grade: 2.8
+**[Technische Berufliche Schule 1](https://www.tbs1.de/), Bochum** | *August 2014 - June 2017* | Grade: 2.8
 
 Qualification: University of Applied Sciences Entrance Qualification
 
@@ -34,7 +34,7 @@ Qualification: University of Applied Sciences Entrance Qualification
 ## Academic Research Experience
 
 ### Project Lead (Master's Thesis)
-**[Leibniz Research Centre for Working Environment and Human Factors (IfADo), Dortmund](https://www.ifado.de/en/)**  
+**[Leibniz Research Centre for Working Environment and Human Factors (IfADo)](https://www.ifado.de/en/), Dortmund**  
 *March 2024 - Expected October 2024*
 
 - Led end-to-end research project on neural correlates of emotion, managing full lifecycle from experimental design and ethical approval (GDPR, IRB) to final analysis
@@ -82,7 +82,7 @@ Qualification: University of Applied Sciences Entrance Qualification
 - Taught primary and secondary school students in STEM subjects in group settings
 
 ### Academic Tutor
-**[Westphalian University of Applied Sciences, Recklinghausen](https://www.w-hs.de/en/)**  
+**[Westphalian University of Applied Sciences](https://www.w-hs.de/en/), Recklinghausen**  
 *September 2017*
 
 - Completed pedagogical training and delivered foundational STEM instruction to pre-university students

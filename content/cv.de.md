@@ -18,14 +18,14 @@ title = "Lebenslauf"
 **Masterarbeit:** Neural-Autonome Synchronie und Verkörperte Integration
 
 ### B.Sc. in Molekularbiologie
-**[Westfälische Hochschule, Recklinghausen](https://www.w-hs.de/)** | *September 2017 - März 2022* | Note: 2,9
+**[Westfälische Hochschule](https://www.w-hs.de/), Recklinghausen** | *September 2017 - März 2022* | Note: 2,9
 
 **Schwerpunkt:** Life Science Informatik
 
 **Bachelorarbeit:** Einfluss des Proteininhibitors Leupeptin auf funktionelle Inhibitoren der sauren Sphingomyelinase im Rahmen der Angiogenese | Note: 2,6
 
 ### Ausbildung zum Chemisch-technischen Assistenten (CTA)
-**[Technische Berufliche Schule 1, Bochum](https://www.tbs1.de/)** | *August 2014 - Juni 2017* | Note: 2,8
+**[Technische Berufliche Schule 1](https://www.tbs1.de/), Bochum** | *August 2014 - Juni 2017* | Note: 2,8
 
 Qualifikation: Fachhochschulreife
 
@@ -34,7 +34,7 @@ Qualifikation: Fachhochschulreife
 ## Akademische Forschungserfahrung
 
 ### Projektleitung (Masterarbeit)
-**[Leibniz-Institut für Arbeitsforschung an der TU Dortmund (IfADo)](https://www.ifado.de/)**  
+**[Leibniz-Institut für Arbeitsforschung an der TU Dortmund (IfADo)](https://www.ifado.de/), Dortmund**  
 *März 2024 - Voraussichtlich Oktober 2024*
 
 - Leitung eines End-to-End-Forschungsprojekts zu neuronalen Korrelaten von Emotion, Management des gesamten Lebenszyklus von Versuchsdesign und ethischer Genehmigung (DSGVO, Ethikkommission) bis zur finalen Analyse
@@ -82,7 +82,7 @@ Qualifikation: Fachhochschulreife
 - Unterricht von Grund- und Sekundarschülern in MINT-Fächern in Gruppensettings
 
 ### Akademischer Tutor
-**[Westfälische Hochschule, Recklinghausen](https://www.w-hs.de/)**  
+**[Westfälische Hochschule](https://www.w-hs.de/), Recklinghausen**  
 *September 2017*
 
 - Absolvierung pädagogischer Ausbildung und Vermittlung grundlegender MINT-Inhalte an Studienvorbereitungsstudenten
