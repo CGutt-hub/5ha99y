@@ -576,6 +576,17 @@ title = "Real-Time Research Analysis"
 
     <main class="analysis-main">
         <div id="plot-loading">Loading analysis results...</div>
+        <div id="download-all-section" style="display: none;">
+            <div class="download-all-container">
+                <div>
+                    <strong>Open Data Export</strong>
+                    <p style="margin: 5px 0; color: var(--text-secondary); font-size: 0.85rem;">
+                        Download all analysis data for independent verification and open-source analysis
+                    </p>
+                </div>
+                <button id="download-all-btn" class="download-all-btn">📥 Download All Data (JSON)</button>
+            </div>
+        </div>
         <div id="plot-container"></div>
     </main>
 </div>
@@ -589,6 +600,35 @@ const plotsData = """
     content += json.dumps(plot_data, indent=2)
     
     content += """;
+
+// Download functions for open data sharing
+function downloadJSON(data, filename) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function downloadPlotData(plotItem) {
+    const filename = `${plotItem.repo_name}_${plotItem.file_path.replace(/\//g, '_')}`;
+    downloadJSON(plotItem, filename);
+}
+
+function downloadAllData() {
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `research-analysis-export_${timestamp}.json`;
+    const exportData = {
+        export_date: new Date().toISOString(),
+        total_plots: plotsData.length,
+        data: plotsData
+    };
+    downloadJSON(exportData, filename);
+}
 
 // Build file tree from plot data
 function buildFileTree() {
@@ -703,6 +743,10 @@ function renderPlots() {
     
     loading.style.display = 'none';
     
+    // Show download all section
+    document.getElementById('download-all-section').style.display = 'block';
+    document.getElementById('download-all-btn').onclick = downloadAllData;
+    
     // Build file tree
     buildFileTree();
     
@@ -719,7 +763,10 @@ function renderPlots() {
         header.innerHTML = `
             <h3>📊 ${plotItem.file_path}</h3>
             <p><strong>Repository:</strong> <a href="${plotItem.repo_url}" target="_blank">${plotItem.repo_name}</a></p>
-            <p><strong>Last Updated:</strong> ${new Date(plotItem.updated).toLocaleString()}</p>
+            <p>
+                <strong>Last Updated:</strong> ${new Date(plotItem.updated).toLocaleString()}
+                <button class="download-btn" onclick="downloadPlotData(plotsData[${index}])">📥 Download Data (JSON)</button>
+            </p>
         `;
         section.appendChild(header);
         
