@@ -63,14 +63,16 @@
 
 .analysis-top-bar {
     background: var(--bg-secondary);
-    border-bottom: 2px solid var(--border-primary);
-    padding: 20px 30px;
+    border-bottom: 1px solid var(--border-primary);
+    padding: 2rem;
 }
 
 .analysis-top-bar h1 {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
+    font-weight: 600;
     color: var(--text-primary);
     margin: 0;
+    letter-spacing: -0.02em;
 }
 
 .analysis-body {
@@ -80,7 +82,7 @@
 }
 
 .analysis-sidebar {
-    width: 320px;
+    width: 300px;
     background: var(--bg-secondary);
     border-right: 1px solid var(--border-primary);
     display: flex;
@@ -189,10 +191,6 @@
     color: var(--text-primary);
 }
 
-.file-item:hover .sidebar-download-btn {
-    opacity: 1;
-}
-
 .file-item.active {
     background: var(--accent-primary);
     color: white;
@@ -202,7 +200,7 @@
 .file-item.active .sidebar-download-btn {
     background: white;
     border-color: white;
-    opacity: 0.9;
+    opacity: 1;
 }
 
 .file-item.hidden-by-search {
@@ -210,8 +208,12 @@
 }
 
 .sidebar-download-btn {
-    opacity: 0.6;
+    display: none;
     transition: opacity 0.2s, transform 0.1s;
+}
+
+.file-item.active .sidebar-download-btn {
+    display: inline-block;
 }
 
 .sidebar-download-btn:hover {
@@ -225,25 +227,30 @@
 
 .analysis-main {
     flex: 1;
-    padding: 40px;
+    padding: 3rem;
     background: var(--bg-primary);
     overflow-y: auto;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .empty-state {
     text-align: center;
-    padding: 80px 20px;
+    padding: 6rem 2rem;
     color: var(--text-secondary);
 }
 
 .empty-state h2 {
     color: var(--text-primary);
-    margin-bottom: 15px;
-    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .empty-state p {
-    font-size: 1.05rem;
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
 .plot-display {
@@ -400,7 +407,7 @@
 
 <div class="analysis-layout">
     <div class="analysis-top-bar">
-        <h1>📊 Open Data</h1>
+        <h1>Open Data</h1>
     </div>
     
     <div class="analysis-body">
