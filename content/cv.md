@@ -13,12 +13,16 @@ title = "CV"
 ### M.Sc. in Cognitive Science
 **[Ruhr-Universität](https://www.ruhr-uni-bochum.de/en), Bochum** | *October 2023 - Expected October 2024*
 
+**Qualification:** Master of Science in Cognitive Science
+
 **Focus Areas:** Robotics & AI, Consciousness Research, Non-invasive Brain Imaging & Stimulation
 
 **Master's Thesis:** Neural-Autonomic Synchrony and Embodied Integration
 
 ### B.Sc. in Molecular Biology
 **[Westphalian University of Applied Sciences](https://www.w-hs.de/en/), Recklinghausen** | *September 2017 - March 2022* | Grade: 2.9
+
+**Qualification:** Bachelor of Science in Molecular Biology
 
 **Focus Area:** Life Science Informatics
 
@@ -27,7 +31,9 @@ title = "CV"
 ### Apprenticeship as Chemical Technical Assistant (CTA)
 **[Technische Berufliche Schule 1](https://www.tbs1.de/), Bochum** | *August 2014 - June 2017* | Grade: 2.8
 
-Qualification: University of Applied Sciences Entrance Qualification
+**Qualification:** State-certified Chemical Technical Assistant (CTA)
+
+**Additional Qualification:** University of Applied Sciences Entrance Qualification
 
 ---
 
@@ -43,7 +49,7 @@ Qualification: University of Applied Sciences Entrance Qualification
 - Applied advanced signal processing and statistical methods to quantify neural-autonomic synchrony, linking prefrontal brain activity with autonomic nervous system dynamics
 
 ### Scientific Research Assistant
-**Department of Ergonomics, [IfADo](https://www.ifado.de/en/), Dortmund**  
+**[Department of Ergonomics](https://www.ifado.de/en/research/ergonomics/), [IfADo](https://www.ifado.de/en/), Dortmund**  
 *February 2023 - Present*
 
 - Operated complex experimental setup for socio-technical interaction studies ("Walking and Seeing" project), including data acquisition and preliminary analysis

@@ -13,12 +13,16 @@ title = "Lebenslauf"
 ### M.Sc. in Kognitionswissenschaft
 **[Ruhr-Universität](https://www.ruhr-uni-bochum.de/), Bochum** | *Oktober 2023 - Voraussichtlich Oktober 2024*
 
+**Qualifikation:** Master of Science in Kognitionswissenschaft
+
 **Schwerpunkte:** Robotik & KI, Bewusstseinsforschung, Nicht-invasive Hirnbildgebung & Stimulation
 
 **Masterarbeit:** Neural-Autonome Synchronie und Verkörperte Integration
 
 ### B.Sc. in Molekularbiologie
 **[Westfälische Hochschule](https://www.w-hs.de/), Recklinghausen** | *September 2017 - März 2022* | Note: 2,9
+
+**Qualifikation:** Bachelor of Science in Molekularbiologie
 
 **Schwerpunkt:** Life Science Informatik
 
@@ -27,7 +31,9 @@ title = "Lebenslauf"
 ### Ausbildung zum Chemisch-technischen Assistenten (CTA)
 **[Technische Berufliche Schule 1](https://www.tbs1.de/), Bochum** | *August 2014 - Juni 2017* | Note: 2,8
 
-Qualifikation: Fachhochschulreife
+**Qualifikation:** Staatlich geprüfter Chemisch-technischer Assistent (CTA)
+
+**Zusatzqualifikation:** Fachhochschulreife
 
 ---
 
@@ -43,7 +49,7 @@ Qualifikation: Fachhochschulreife
 - Anwendung fortgeschrittener Signalverarbeitungs- und statistischer Methoden zur Quantifizierung neural-autonomer Synchronie, Verknüpfung präfrontaler Hirnaktivität mit Dynamiken des autonomen Nervensystems
 
 ### Wissenschaftliche Hilfskraft
-**Abteilung Ergonomie, [IfADo](https://www.ifado.de/), Dortmund**  
+**[Abteilung Ergonomie](https://www.ifado.de/forschung/ergonomie/), [IfADo](https://www.ifado.de/), Dortmund**  
 *Februar 2023 - Aktuell*
 
 - Bedienung komplexer experimenteller Aufbauten für soziotechnische Interaktionsstudien ("Walking and Seeing"-Projekt), einschließlich Datenerfassung und vorläufiger Analyse
