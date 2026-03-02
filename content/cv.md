@@ -11,7 +11,7 @@ title = "CV"
 ## Education
 
 ### M.Sc. in Cognitive Science
-**[Ruhr-Universität Bochum](https://www.ruhr-uni-bochum.de/en)** | *October 2023 - Expected October 2024*
+**[Ruhr-Universität](https://www.ruhr-uni-bochum.de/en), Bochum** | *October 2023 - Expected October 2024*
 
 **Focus Areas:** Robotics & AI, Consciousness Research, Non-invasive Brain Imaging & Stimulation
 
@@ -50,7 +50,7 @@ Qualification: University of Applied Sciences Entrance Qualification
 - Provided versatile research support across multiple departmental projects, from participant screening to data management
 
 ### Student Research Assistant
-**CardioScienceLab, [University Clinic Essen](https://www.uk-essen.de/)**  
+**CardioScienceLab, [University Clinic](https://www.uk-essen.de/), Essen**  
 *April 2023 - March 2024*
 
 - Acquired patient medical records and prepared corresponding blood samples for transport to collaborating institution (ISAS)

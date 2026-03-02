@@ -11,7 +11,7 @@ title = "Lebenslauf"
 ## Bildung
 
 ### M.Sc. in Kognitionswissenschaft
-**[Ruhr-Universität Bochum](https://www.ruhr-uni-bochum.de/)** | *Oktober 2023 - Voraussichtlich Oktober 2024*
+**[Ruhr-Universität](https://www.ruhr-uni-bochum.de/), Bochum** | *Oktober 2023 - Voraussichtlich Oktober 2024*
 
 **Schwerpunkte:** Robotik & KI, Bewusstseinsforschung, Nicht-invasive Hirnbildgebung & Stimulation
 
@@ -50,7 +50,7 @@ Qualifikation: Fachhochschulreife
 - Vielseitige Forschungsunterstützung über mehrere Abteilungsprojekte hinweg, von Probandenscreening bis Datenmanagement
 
 ### Studentische Hilfskraft
-**CardioScienceLab, [Universitätsklinikum Essen](https://www.uk-essen.de/)**  
+**CardioScienceLab, [Universitätsklinikum](https://www.uk-essen.de/), Essen**  
 *April 2023 - März 2024*
 
 - Erfassung von Patientenakten und Vorbereitung entsprechender Blutproben für den Transport zu kooperierender Institution (ISAS)
