@@ -245,11 +245,12 @@ def parse_nextflow_trace(trace_content: str) -> dict[str, Any]:
             })
             processes[base_process]['total_tasks'] += 1
             
-            # Update process status (failed > running > completed)
+            # Update process status (failed > cached > completed)
+            # Note: Only final states visible since trace is pushed after completion
             if status == 'FAILED':
                 processes[base_process]['status'] = 'FAILED'
-            elif status == 'RUNNING' and processes[base_process]['status'] != 'FAILED':
-                processes[base_process]['status'] = 'RUNNING'
+            elif status == 'CACHED' and processes[base_process]['status'] not in ['FAILED']:
+                processes[base_process]['status'] = 'CACHED'
         
         return {
             'processes': list(processes.values()),
@@ -1072,11 +1073,22 @@ function renderPlots() {
             pipelineSummary.style.cursor = 'pointer';
             pipelineSummary.style.fontWeight = 'bold';
             pipelineSummary.style.marginBottom = '15px';
-            pipelineSummary.textContent = `🔄 Pipeline Execution Tree (${plotItem.pipeline_trace.total_processes} processes, ${plotItem.pipeline_trace.total_tasks} tasks)`;
+            pipelineSummary.textContent = `🔄 Analysis Pipeline (${plotItem.pipeline_trace.total_processes} processes, ${plotItem.pipeline_trace.total_tasks} tasks completed)`;
             
             const pipelineContent = document.createElement('div');
             pipelineContent.className = 'pipeline-content';
             pipelineContent.style.marginTop = '15px';
+            
+            // Add explanatory note
+            const note = document.createElement('div');
+            note.style.fontSize = '0.85em';
+            note.style.color = 'var(--text-secondary)';
+            note.style.marginBottom = '15px';
+            note.style.padding = '8px 12px';
+            note.style.background = 'var(--bg-tertiary, #e9ecef)';
+            note.style.borderRadius = '4px';
+            note.innerHTML = '📊 This shows the complete analysis workflow from a participant run. Each process represents a step in the data processing pipeline.';
+            pipelineContent.appendChild(note);
             
             // Create visual pipeline tree
             const pipelineTree = document.createElement('div');
@@ -1096,18 +1108,18 @@ function renderPlots() {
                 processNode.style.background = 'var(--bg-primary, white)';
                 processNode.style.border = '2px solid';
                 
-                // Color based on status
-                let borderColor = '#6c757d';
-                let statusIcon = '⚪';
-                if (process.status === 'COMPLETED') {
-                    borderColor = '#28a745';
-                    statusIcon = '✅';
-                } else if (process.status === 'FAILED') {
+                // Color based on status (only final states visible in public repo)
+                let borderColor = '#28a745';  // Default: completed
+                let statusIcon = '✅';
+                if (process.status === 'FAILED') {
                     borderColor = '#dc3545';
                     statusIcon = '❌';
-                } else if (process.status === 'RUNNING') {
-                    borderColor = '#007bff';
-                    statusIcon = '⏳';
+                } else if (process.status === 'CACHED') {
+                    borderColor = '#17a2b8';
+                    statusIcon = '💾';
+                } else if (process.status === 'COMPLETED') {
+                    borderColor = '#28a745';
+                    statusIcon = '✅';
                 }
                 processNode.style.borderColor = borderColor;
                 
