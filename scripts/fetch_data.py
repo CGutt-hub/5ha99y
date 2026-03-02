@@ -69,6 +69,7 @@ class PlotData(TypedDict):
     plot_data: dict[str, Any]  # The actual plot JSON
     updated: str
     repo_url: str
+    readme: str | None  # Optional README content from plot directory
 
 
 def slugify(text: str) -> str:
@@ -196,7 +197,7 @@ def fetch_osf_projects() -> list[OSFProject]:
 
 
 def search_repo_for_plots(repo_name: str, repo_url: str, updated: str) -> list[PlotData]:
-    """Search a repository for plot JSON files"""
+    """Search a repository for plot JSON files and associated READMEs"""
     
     # Search for files with .json extension in common plot directories
     search_paths = [
@@ -205,6 +206,8 @@ def search_repo_for_plots(repo_name: str, repo_url: str, updated: str) -> list[P
     ]
     
     plot_files: list[PlotData] = []
+    # Track directories that have plots and their READMEs
+    readme_cache: dict[str, str | None] = {}
     
     for search_path in search_paths:
         try:
@@ -245,12 +248,37 @@ def search_repo_for_plots(repo_name: str, repo_url: str, updated: str) -> list[P
                             if json_response.status_code == 200:
                                 plot_json = json_response.json()
                                 
+                                # Fetch README for this directory if not already cached
+                                readme_content: str | None = None
+                                if search_path not in readme_cache:
+                                    try:
+                                        readme_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/{search_path}/README.md" if search_path else f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/readme"
+                                        readme_response = requests.get(readme_url, headers=GITHUB_HEADERS)
+                                        if readme_response.status_code == 200:
+                                            readme_data = readme_response.json()
+                                            if 'content' in readme_data:
+                                                # Decode base64 content
+                                                import base64
+                                                readme_content = base64.b64decode(readme_data['content']).decode('utf-8')
+                                                readme_cache[search_path] = readme_content
+                                                print(f"  Found README for {search_path or 'root'}")
+                                            else:
+                                                readme_cache[search_path] = None
+                                        else:
+                                            readme_cache[search_path] = None
+                                    except Exception as e:
+                                        print(f"  Could not fetch README for {search_path}: {e}")
+                                        readme_cache[search_path] = None
+                                else:
+                                    readme_content = readme_cache[search_path]
+                                
                                 plot_files.append({
                                     'repo_name': repo_name,
                                     'file_path': f"{search_path}/{item['name']}" if search_path else item['name'],
                                     'plot_data': plot_json,
                                     'updated': updated,
-                                    'repo_url': repo_url
+                                    'repo_url': repo_url,
+                                    'readme': readme_content
                                 })
                                 print(f"  Found plot: {repo_name}/{search_path}/{item['name']}" if search_path else f"  Found plot: {repo_name}/{item['name']}")
                         except Exception as e:
@@ -294,9 +322,20 @@ def fetch_all_research_plots() -> list[PlotData]:
         print(f"Error fetching repositories for plots: {e}")
         return []
 
-def generate_projects_page(github_repos: list[GitHubRepo]) -> str:
+def generate_projects_page(github_repos: list[GitHubRepo], lang: str = 'en') -> str:
     """Generate projects page from GitHub data with collapsible sections"""
-    content = """+++
+    if lang == 'de':
+        content = """+++
+title = "Code-Projekte & Repositories"
++++
+
+*Aktive Entwicklungsprojekte via [GitHub](https://github.com/CGutt-hub). Mein offenes Backoffice für kollaborative Wissenschaft.*
+
+---
+
+"""
+    else:
+        content = """+++
 title = "Code Projects & Repositories"
 +++
 
@@ -307,14 +346,33 @@ title = "Code Projects & Repositories"
 """
     
     if not github_repos:
-        content += "*No repositories found.*\n"
+        content += "*Keine Repositories gefunden.*\n" if lang == 'de' else "*No repositories found.*\n"
     else:
         for repo in github_repos:
             stars = f" ⭐ {repo['stars']}" if repo['stars'] > 0 else ""
-            lang = repo['language'] or "Unknown"
-            content += f"""### {repo['name']}
+            repo_lang = repo['language'] or ("Unbekannt" if lang == 'de' else "Unknown")
+            if lang == 'de':
+                content += f"""### {repo['name']}
 
-**Language:** {lang}{stars}  
+**Sprache:** {repo_lang}{stars}  
+**Zuletzt aktualisiert:** {repo['updated'][:10]}
+
+<details>
+<summary>README anzeigen</summary>
+
+{repo['readme']}
+
+</details>
+
+[Auf GitHub ansehen →]({repo['url']})
+
+---
+
+"""
+            else:
+                content += f"""### {repo['name']}
+
+**Language:** {repo_lang}{stars}  
 **Last updated:** {repo['updated'][:10]}
 
 <details>
@@ -330,7 +388,14 @@ title = "Code Projects & Repositories"
 
 """
     
-    content += """
+    if lang == 'de':
+        content += """
+## Entwicklungsphilosophie
+
+Aller Code wird mit dem Engagement für **offene und transparente Wissenschaft** entwickelt. Werkzeuge, Pipelines und Analysecode werden verfügbar gemacht, um Reproduzierbarkeit und kollaborativen Wissensfortschritt zu unterstützen.
+"""
+    else:
+        content += """
 ## Development Philosophy
 
 All code is developed with a commitment to **open and transparent science**. Tools, pipelines, and analysis code are made available to support reproducibility and collaborative advancement of knowledge.
@@ -338,9 +403,20 @@ All code is developed with a commitment to **open and transparent science**. Too
     
     return content
 
-def generate_publications_page(orcid_works: list[OrcidWork]) -> str:
+def generate_publications_page(orcid_works: list[OrcidWork], lang: str = 'en') -> str:
     """Generate publications page from ORCID data (complete research output)"""
-    content = """+++
+    if lang == 'de':
+        content = """+++
+title = "Forschungspublikationen"
++++
+
+*Vollständiger Forschungsoutput via [ORCID](https://orcid.org/0000-0002-1774-532X). Mein offenes Frontoffice für formale Forschung.*
+
+---
+
+"""
+    else:
+        content = """+++
 title = "Research Publications"
 +++
 
@@ -355,7 +431,19 @@ title = "Research Publications"
             year = work.get('year') or 'n.d.'
             raw_type = work.get('type') or 'Publication'
             work_type = raw_type.replace('-', ' ').title()
-            content += f"""### {work['title']}
+            if lang == 'de':
+                content += f"""### {work['title']}
+
+**Jahr:** {year}  
+**Typ:** {work_type}
+
+[Publikation ansehen →](https://orcid.org/0000-0002-1774-532X)
+
+---
+
+"""
+            else:
+                content += f"""### {work['title']}
 
 **Year:** {year}  
 **Type:** {work_type}
@@ -366,11 +454,18 @@ title = "Research Publications"
 
 """
     else:
-        content += "*Publications will appear here automatically from ORCID.*\n\n"
+        content += "*Publikationen erscheinen hier automatisch von ORCID.*\n\n" if lang == 'de' else "*Publications will appear here automatically from ORCID.*\n\n"
     
     content += """---
 
-## Research Philosophy
+"""
+    if lang == 'de':
+        content += """## Forschungsphilosophie
+
+Alle Forschung wird mit dem Engagement für **offene und transparente Wissenschaft** durchgeführt. Daten, Code und Materialien werden wann immer möglich verfügbar gemacht, um Reproduzierbarkeit und kollaborativen Wissensfortschritt zu unterstützen.
+"""
+    else:
+        content += """## Research Philosophy
 
 All research is conducted with a commitment to **open and transparent science**. Data, code, and materials are made available whenever possible to support reproducibility and collaborative advancement of knowledge.
 """
@@ -378,10 +473,18 @@ All research is conducted with a commitment to **open and transparent science**.
     return content
 
 
-def generate_analysis_page(plot_data: list[PlotData]) -> str:
+def generate_analysis_page(plot_data: list[PlotData], lang: str = 'en') -> str:
     """Generate real-time analysis visualization page with Analysis Toolbox-style layout"""
-    content = """+++
-title = "Real-Time Research Analysis"
+    if lang == 'de':
+        content = """+++
+title = "Offene Daten"
+template = "analysis.html"
++++
+
+const plotsData = """
+    else:
+        content = """+++
+title = "Open Data"
 template = "analysis.html"
 +++
 
@@ -589,6 +692,44 @@ function renderPlots() {
             </div>
         `;
         plotDisplay.appendChild(header);
+        
+        // Add README section if available
+        if (plotItem.readme) {
+            const readmeSection = document.createElement('details');
+            readmeSection.className = 'readme-section';
+            readmeSection.style.margin = '15px 0';
+            readmeSection.style.padding = '15px';
+            readmeSection.style.background = 'var(--bg-secondary, #f8f9fa)';
+            readmeSection.style.borderRadius = '4px';
+            readmeSection.style.border = '1px solid var(--border-primary, #ddd)';
+            
+            const summary = document.createElement('summary');
+            summary.style.cursor = 'pointer';
+            summary.style.fontWeight = 'bold';
+            summary.style.marginBottom = '10px';
+            summary.textContent = '📖 Context & Documentation';
+            
+            const readmeContent = document.createElement('div');
+            readmeContent.className = 'readme-content';
+            readmeContent.style.marginTop = '10px';
+            readmeContent.style.lineHeight = '1.6';
+            // Simple markdown-to-HTML (basic support for common patterns)
+            let htmlContent = plotItem.readme
+                .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+                .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+                .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+                .replace(/\\*\\*(.+?)\\*\\*/g, '<strong>$1</strong>')
+                .replace(/\\*(.+?)\\*/g, '<em>$1</em>')
+                .replace(/`(.+?)`/g, '<code>$1</code>')
+                .replace(/\\[(.+?)\\]\\((.+?)\\)/g, '<a href="$2" target="_blank">$1</a>')
+                .replace(/\\n\\n/g, '</p><p>')
+                .replace(/^(.+)$/gm, '<p>$1</p>');
+            readmeContent.innerHTML = htmlContent;
+            
+            readmeSection.appendChild(summary);
+            readmeSection.appendChild(readmeContent);
+            plotDisplay.appendChild(readmeSection);
+        }
         
         // Plot container
         const plotContainer = document.createElement('div');
@@ -995,22 +1136,34 @@ def main():
     save_data_file({'works': orcid_works}, 'orcid.json')
     save_data_file({'plots': plot_data}, 'analysis_plots.json')
     
-    # Generate separate pages for projects, publications, and analysis
-    projects_content = generate_projects_page(github_repos)
-    publications_content = generate_publications_page(orcid_works)
-    analysis_content = generate_analysis_page(plot_data)
+    # Generate separate pages for projects, publications, and analysis (EN + DE)
+    projects_content_en = generate_projects_page(github_repos, 'en')
+    projects_content_de = generate_projects_page(github_repos, 'de')
+    publications_content_en = generate_publications_page(orcid_works, 'en')
+    publications_content_de = generate_publications_page(orcid_works, 'de')
+    analysis_content_en = generate_analysis_page(plot_data, 'en')
+    analysis_content_de = generate_analysis_page(plot_data, 'de')
     
     # Save pages
     content_dir = Path(__file__).parent.parent / 'content'
     
     with open(content_dir / 'projects.md', 'w', encoding='utf-8') as f:
-        f.write(projects_content)
+        f.write(projects_content_en)
+    
+    with open(content_dir / 'projects.de.md', 'w', encoding='utf-8') as f:
+        f.write(projects_content_de)
     
     with open(content_dir / 'publications.md', 'w', encoding='utf-8') as f:
-        f.write(publications_content)
+        f.write(publications_content_en)
+    
+    with open(content_dir / 'publications.de.md', 'w', encoding='utf-8') as f:
+        f.write(publications_content_de)
     
     with open(content_dir / 'analysis.md', 'w', encoding='utf-8') as f:
-        f.write(analysis_content)
+        f.write(analysis_content_en)
+    
+    with open(content_dir / 'analysis.de.md', 'w', encoding='utf-8') as f:
+        f.write(analysis_content_de)
     
     # Generate auto blog posts for new items
     new_posts = generate_auto_blog_posts(github_repos, orcid_works)
@@ -1018,9 +1171,9 @@ def main():
     print(f"[+] Updated {len(github_repos)} GitHub repos")
     print(f"[+] Updated {len(orcid_works)} ORCID works")
     print(f"[+] Found {len(plot_data)} analysis plots")
-    print("[+] Generated projects.md")
-    print("[+] Generated publications.md")
-    print("[+] Generated analysis.md")
+    print("[+] Generated projects.md + projects.de.md")
+    print("[+] Generated publications.md + publications.de.md")
+    print("[+] Generated analysis.md + analysis.de.md")
     print(f"[+] Created {new_posts} new blog posts")
 
 if __name__ == "__main__":
