@@ -376,7 +376,7 @@ def generate_analysis_page(plot_data: list[PlotData]) -> str:
 title = "Real-Time Research Analysis"
 +++
 
-*Live analysis results and visualizations from active experiments. Public-facing results automatically updated from ongoing research using the Analysis Toolbox.*
+*Live analysis results from deployed experiments. Automatically synchronized from public-facing research repositories.*
 
 <div id="plot-loading">Loading analysis results...</div>
 <div id="plot-container"></div>
@@ -397,19 +397,20 @@ function renderPlots() {
     const loading = document.getElementById('plot-loading');
     
     if (plotsData.length === 0) {
-        container.innerHTML = '<p><em>No analysis results available yet. Results from running experiments will appear here automatically.</em></p>' +
+        container.innerHTML = '<p><em>No deployed experiments yet. Results will appear here once experiments are ready for public deployment.</em></p>' +
                             '<h3>About This Page</h3>' +
-                            '<p>This page displays public-facing results from active research experiments. ' +
-                            'The Analysis Toolbox generates JSON representations of participant data at every analysis step, ' +
-                            'enabling real-time transparency into ongoing research processes.</p>' +
-                            '<h3>How Results Appear Here</h3>' +
+                            '<p>This page displays real-time analysis results from deployed research experiments. ' +
+                            'Experiments appear here after analysis pipelines have been validated, pilots completed, and proposals approved.</p>' +
+                            '<h3>Deployment Workflow</h3>' +
                             '<ol>' +
-                            '<li>Experiments generate analysis outputs using the Analysis Toolbox</li>' +
-                            '<li>Results are exported as JSON format (Plotly schema preferred)</li>' +
-                            '<li>Files are stored in analysis repositories (not backoffice testing)</li>' +
-                            '<li>Public-facing results sync automatically to this page</li>' +
-                            '<li>Updates reflect the current state of ongoing experiments</li>' +
-                            '</ol>';
+                            '<li><strong>Analysis Structure</strong> — Pipeline is developed and matured in backoffice</li>' +
+                            '<li><strong>Pilot Testing</strong> — Protocol is validated with pilot participants</li>' +
+                            '<li><strong>Proposal Approval</strong> — Research proposal is submitted and approved</li>' +
+                            '<li><strong>Public Deployment</strong> — Experiment moves to public-facing repository</li>' +
+                            '<li><strong>Real-Time Updates</strong> — Analysis results sync automatically as data is collected</li>' +
+                            '</ol>' +
+                            '<p><strong>Analysis Toolbox</strong> generates JSON representations at each processing step, ' +
+                            'enabling transparent observation of data collection and analysis as it happens.</p>';
         loading.style.display = 'none';
         return;
     }
@@ -478,15 +479,23 @@ if (document.readyState === 'loading') {
 
 ## About Real-Time Analysis
 
-This page provides **transparent access to ongoing experimental analyses**. Results are automatically synchronized from research repositories, where the Analysis Toolbox processes participant data through each pipeline step. This enables real-time observation of data processing and analysis workflows as they happen.
+This page provides **transparent access to deployed experimental analyses**. Only experiments that have completed their validation phase (analysis maturation, pilot testing, proposal approval) are moved to public-facing repositories and synchronized here.
 
-**Data Processing:** Analysis Toolbox generates JSON representations at each analysis step  
-**Update Frequency:** Automatically synchronized on repository updates  
-**Transparency:** Public-facing results from active experiments (backoffice testing excluded)
+### From Development to Deployment
+
+**Backoffice Development** → Analysis structure is built and refined  
+**Pilot Validation** → Protocol is tested with pilot participants  
+**Proposal Approval** → Research proposal is formally approved  
+**Public Deployment** → Experiment repo becomes public-facing  
+**Real-Time Sync** → Results automatically update as data is collected
+
+### Analysis Toolbox Integration
+
+The Analysis Toolbox generates JSON representations at each processing step, creating a transparent record of all analytical decisions and data transformations. This enables real-time observation of research workflows from data collection through final analysis.
 
 ### Open Science in Practice
 
-By making analysis results immediately visible, this page embodies the principles of open and transparent science. Observers can track analytical decisions, data transformations, and emerging patterns as research progresses—not just after completion.
+By making validated experimental analyses immediately visible, this page embodies open and transparent science. Results are shared as they emerge, not months or years later, fostering trust and enabling real-time scientific discourse.
 """
     
     return content
