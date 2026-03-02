@@ -61,7 +61,7 @@ title = "CV"
 **[CardioScienceLab](https://cardiosciencelabs.uk-essen.de/), [University Clinic](https://www.uk-essen.de/), Essen**  
 *April 2023 - March 2024*
 
-- Acquired patient medical records and prepared corresponding blood samples for transport to collaborating institution (ISAS)
+- Acquired patient medical records and prepared corresponding blood samples for transport to collaborating institution ([ISAS](https://www.isas.de/en))
 
 ---
 

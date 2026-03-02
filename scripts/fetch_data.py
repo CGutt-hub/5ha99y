@@ -55,6 +55,14 @@ class TrackedState(TypedDict):
     website: RepoTrackingInfo  # website repo tracking info
 
 
+class PlotData(TypedDict):
+    repo_name: str
+    file_path: str
+    plot_data: dict  # The actual plot JSON
+    updated: str
+    repo_url: str
+
+
 def slugify(text: str) -> str:
     """Convert text to URL-friendly slug"""
     text = text.lower()
@@ -185,6 +193,99 @@ def fetch_osf_projects() -> list[OSFProject]:
         print(f"Error fetching OSF projects: {e}")
         return []
 
+
+def search_repo_for_plots(repo_name: str, repo_url: str, updated: str) -> list[PlotData]:
+    """Search a repository for plot JSON files"""
+    headers = {}
+    if os.environ.get('GITHUB_TOKEN'):
+        headers['Authorization'] = f"token {os.environ['GITHUB_TOKEN']}"
+    
+    # Search for files with .json extension in common plot directories
+    search_paths = [
+        'plots', 'figures', 'results', 'output', 'visualizations', 'analysis',
+        'data/plots', 'data/figures', ''  # '' searches root
+    ]
+    
+    plot_files: list[PlotData] = []
+    
+    for search_path in search_paths:
+        try:
+            # Get contents of directory
+            url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/{search_path}"
+            response = requests.get(url, headers=headers)
+            
+            if response.status_code != 200:
+                continue
+            
+            contents = response.json()
+            if not isinstance(contents, list):
+                continue
+            
+            # Look for .json files that might be plots
+            for item in contents:
+                if item['type'] == 'file' and item['name'].endswith('.json'):
+                    # Check if it might be a plot file (common naming patterns)
+                    name_lower = item['name'].lower()
+                    if any(keyword in name_lower for keyword in ['plot', 'figure', 'chart', 'graph', 'viz', 'visual']):
+                        # Fetch the actual JSON content
+                        try:
+                            json_response = requests.get(item['download_url'], headers=headers)
+                            if json_response.status_code == 200:
+                                plot_json = json_response.json()
+                                
+                                plot_files.append({
+                                    'repo_name': repo_name,
+                                    'file_path': f"{search_path}/{item['name']}" if search_path else item['name'],
+                                    'plot_data': plot_json,
+                                    'updated': updated,
+                                    'repo_url': repo_url
+                                })
+                                print(f"  Found plot: {repo_name}/{search_path}/{item['name']}" if search_path else f"  Found plot: {repo_name}/{item['name']}")
+                        except Exception as e:
+                            print(f"  Error fetching plot JSON from {item['name']}: {e}")
+        except Exception as e:
+            # Directory doesn't exist or other error, continue
+            continue
+    
+    return plot_files
+
+
+def fetch_all_research_plots() -> list[PlotData]:
+    """Fetch all plot JSON files from all repositories"""
+    print("[*] Searching repositories for plot JSONs...")
+    
+    headers = {}
+    if os.environ.get('GITHUB_TOKEN'):
+        headers['Authorization'] = f"token {os.environ['GITHUB_TOKEN']}"
+    
+    # Get all repos
+    url = f"https://api.github.com/users/{GITHUB_USERNAME}/repos"
+    try:
+        response = requests.get(url, params={"sort": "updated", "per_page": 50}, headers=headers)
+        response.raise_for_status()
+        repos = response.json()
+        
+        # Filter out forks and website repo
+        repos = [r for r in repos if not r['fork'] and r['name'] != WEBSITE_REPO]
+        
+        all_plots: list[PlotData] = []
+        
+        for repo in repos:
+            print(f"[*] Scanning {repo['name']}...")
+            plots = search_repo_for_plots(
+                repo_name=repo['name'],
+                repo_url=repo['html_url'],
+                updated=repo['updated_at']
+            )
+            all_plots.extend(plots)
+        
+        print(f"[+] Found {len(all_plots)} plot files across {len(repos)} repositories")
+        return all_plots
+        
+    except Exception as e:
+        print(f"Error fetching repositories for plots: {e}")
+        return []
+
 def generate_projects_page(github_repos: list[GitHubRepo]) -> str:
     """Generate projects page from GitHub data with collapsible sections"""
     content = """+++
@@ -264,6 +365,128 @@ title = "Research Publications"
 ## Research Philosophy
 
 All research is conducted with a commitment to **open and transparent science**. Data, code, and materials are made available whenever possible to support reproducibility and collaborative advancement of knowledge.
+"""
+    
+    return content
+
+
+def generate_analysis_page(plot_data: list[PlotData]) -> str:
+    """Generate real-time analysis visualization page"""
+    content = """+++
+title = "Real-Time Research Analysis"
++++
+
+*Live analysis results and visualizations from active experiments. Public-facing results automatically updated from ongoing research using the Analysis Toolbox.*
+
+<div id="plot-loading">Loading analysis results...</div>
+<div id="plot-container"></div>
+
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+<script>
+// Analysis data embedded from research repositories
+const plotsData = """
+    
+    # Embed plot data as JSON
+    content += json.dumps(plot_data, indent=2)
+    
+    content += """;
+
+// Render all analysis results
+function renderPlots() {
+    const container = document.getElementById('plot-container');
+    const loading = document.getElementById('plot-loading');
+    
+    if (plotsData.length === 0) {
+        container.innerHTML = '<p><em>No analysis results available yet. Results from running experiments will appear here automatically.</em></p>' +
+                            '<h3>About This Page</h3>' +
+                            '<p>This page displays public-facing results from active research experiments. ' +
+                            'The Analysis Toolbox generates JSON representations of participant data at every analysis step, ' +
+                            'enabling real-time transparency into ongoing research processes.</p>' +
+                            '<h3>How Results Appear Here</h3>' +
+                            '<ol>' +
+                            '<li>Experiments generate analysis outputs using the Analysis Toolbox</li>' +
+                            '<li>Results are exported as JSON format (Plotly schema preferred)</li>' +
+                            '<li>Files are stored in analysis repositories (not backoffice testing)</li>' +
+                            '<li>Public-facing results sync automatically to this page</li>' +
+                            '<li>Updates reflect the current state of ongoing experiments</li>' +
+                            '</ol>';
+        loading.style.display = 'none';
+        return;
+    }
+    
+    loading.style.display = 'none';
+    
+    plotsData.forEach((plotItem, index) => {
+        // Create section for each analysis result
+        const section = document.createElement('div');
+        section.style.marginBottom = '40px';
+        section.style.borderBottom = '1px solid #ccc';
+        section.style.paddingBottom = '20px';
+        
+        // Add metadata
+        const header = document.createElement('div');
+        header.innerHTML = `
+            <h3>📊 ${plotItem.file_path}</h3>
+            <p><strong>Repository:</strong> <a href="${plotItem.repo_url}" target="_blank">${plotItem.repo_name}</a></p>
+            <p><strong>Last Updated:</strong> ${new Date(plotItem.updated).toLocaleString()}</p>
+        `;
+        section.appendChild(header);
+        
+        // Create plot div
+        const plotDiv = document.createElement('div');
+        plotDiv.id = `plot-${index}`;
+        plotDiv.style.width = '100%';
+        plotDiv.style.height = '600px';
+        section.appendChild(plotDiv);
+        
+        container.appendChild(section);
+        
+        // Try to render with Plotly
+        try {
+            const plotData = plotItem.plot_data;
+            
+            // Handle different JSON formats from Analysis Toolbox
+            if (plotData.data && plotData.layout) {
+                // Plotly JSON format (preferred)
+                Plotly.newPlot(`plot-${index}`, plotData.data, plotData.layout, {responsive: true});
+            } else if (Array.isArray(plotData)) {
+                // Array of traces
+                Plotly.newPlot(`plot-${index}`, plotData, {}, {responsive: true});
+            } else if (plotData.x && plotData.y) {
+                // Simple x, y data
+                Plotly.newPlot(`plot-${index}`, [plotData], {}, {responsive: true});
+            } else {
+                // Unknown format - show JSON
+                plotDiv.innerHTML = `<pre style="background: #f5f5f5; padding: 15px; overflow: auto;">${JSON.stringify(plotData, null, 2)}</pre>`;
+            }
+        } catch (error) {
+            plotDiv.innerHTML = `<p style="color: red;">Error rendering analysis: ${error.message}</p>` +
+                              `<details><summary>View raw JSON</summary><pre style="background: #f5f5f5; padding: 15px; overflow: auto;">${JSON.stringify(plotItem.plot_data, null, 2)}</pre></details>`;
+        }
+    });
+}
+
+// Render when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderPlots);
+} else {
+    renderPlots();
+}
+</script>
+
+---
+
+## About Real-Time Analysis
+
+This page provides **transparent access to ongoing experimental analyses**. Results are automatically synchronized from research repositories, where the Analysis Toolbox processes participant data through each pipeline step. This enables real-time observation of data processing and analysis workflows as they happen.
+
+**Data Processing:** Analysis Toolbox generates JSON representations at each analysis step  
+**Update Frequency:** Automatically synchronized on repository updates  
+**Transparency:** Public-facing results from active experiments (backoffice testing excluded)
+
+### Open Science in Practice
+
+By making analysis results immediately visible, this page embodies the principles of open and transparent science. Observers can track analytical decisions, data transformations, and emerging patterns as research progresses—not just after completion.
 """
     
     return content
@@ -595,14 +818,17 @@ def main():
     # Fetch data
     github_repos = fetch_github_repos()
     orcid_works = fetch_orcid_works()
+    plot_data = fetch_all_research_plots()
     
     # Save as JSON files for templates
     save_data_file({'repos': github_repos}, 'github.json')
     save_data_file({'works': orcid_works}, 'orcid.json')
+    save_data_file({'plots': plot_data}, 'analysis_plots.json')
     
-    # Generate separate pages for projects and publications
+    # Generate separate pages for projects, publications, and analysis
     projects_content = generate_projects_page(github_repos)
     publications_content = generate_publications_page(orcid_works)
+    analysis_content = generate_analysis_page(plot_data)
     
     # Save pages
     content_dir = Path(__file__).parent.parent / 'content'
@@ -613,13 +839,18 @@ def main():
     with open(content_dir / 'publications.md', 'w', encoding='utf-8') as f:
         f.write(publications_content)
     
+    with open(content_dir / 'analysis.md', 'w', encoding='utf-8') as f:
+        f.write(analysis_content)
+    
     # Generate auto blog posts for new items
     new_posts = generate_auto_blog_posts(github_repos, orcid_works)
     
     print(f"[+] Updated {len(github_repos)} GitHub repos")
     print(f"[+] Updated {len(orcid_works)} ORCID works")
+    print(f"[+] Found {len(plot_data)} analysis plots")
     print("[+] Generated projects.md")
     print("[+] Generated publications.md")
+    print("[+] Generated analysis.md")
     print(f"[+] Created {new_posts} new blog posts")
 
 if __name__ == "__main__":

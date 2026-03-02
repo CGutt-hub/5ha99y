@@ -61,7 +61,7 @@ title = "Lebenslauf"
 **[CardioScienceLab](https://cardiosciencelabs.uk-essen.de/), [Universitätsklinikum](https://www.uk-essen.de/), Essen**  
 *April 2023 - März 2024*
 
-- Erfassung von Patientenakten und Vorbereitung entsprechender Blutproben für den Transport zu kooperierender Institution (ISAS)
+- Erfassung von Patientenakten und Vorbereitung entsprechender Blutproben für den Transport zu kooperierender Institution ([ISAS](https://www.isas.de/))
 
 ---
 
