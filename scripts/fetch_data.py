@@ -9,14 +9,22 @@ import json
 import os
 import re
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import TypedDict
+from typing import TypedDict, Any, cast
 
 # Configuration
 GITHUB_USERNAME = "CGutt-hub"
 ORCID_ID = "0000-0002-1774-532X"
 WEBSITE_REPO = "5ha99y"  # This repo name for tracking website changes
+
+# GitHub API headers with optional token
+GITHUB_HEADERS: dict[str, str] = {
+    'User-Agent': 'Mozilla/5.0'
+}
+GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
+if GITHUB_TOKEN:
+    GITHUB_HEADERS['Authorization'] = f'token {GITHUB_TOKEN}'
 
 
 class GitHubRepo(TypedDict):
@@ -58,7 +66,7 @@ class TrackedState(TypedDict):
 class PlotData(TypedDict):
     repo_name: str
     file_path: str
-    plot_data: dict  # The actual plot JSON
+    plot_data: dict[str, Any]  # The actual plot JSON
     updated: str
     repo_url: str
 
@@ -82,13 +90,9 @@ def sanitize_markdown(text: str) -> str:
 def fetch_github_repos() -> list[GitHubRepo]:
     """Fetch public repositories from GitHub with README content"""
     url = f"https://api.github.com/users/{GITHUB_USERNAME}/repos"
-    headers = {}
-    # Use GitHub token if available for higher rate limits
-    if os.environ.get('GITHUB_TOKEN'):
-        headers['Authorization'] = f"token {os.environ['GITHUB_TOKEN']}"
     
     try:
-        response = requests.get(url, params={"sort": "updated", "per_page": 20}, headers=headers)
+        response = requests.get(url, params={"sort": "updated", "per_page": 20}, headers=GITHUB_HEADERS)
         response.raise_for_status()
         repos = response.json()
         
@@ -102,7 +106,7 @@ def fetch_github_repos() -> list[GitHubRepo]:
             readme_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo['name']}/readme"
             readme_content = "No README available."
             try:
-                readme_response = requests.get(readme_url, headers={**headers, 'Accept': 'application/vnd.github.v3.raw'})
+                readme_response = requests.get(readme_url, headers={**GITHUB_HEADERS, 'Accept': 'application/vnd.github.v3.raw'})
                 if readme_response.status_code == 200:
                     readme_content = sanitize_markdown(readme_response.text.strip())
             except:
@@ -126,19 +130,16 @@ def fetch_github_repos() -> list[GitHubRepo]:
         return []
 
 
-def fetch_recent_commits(repo_name: str, since: str | None = None) -> list[dict]:
+def fetch_recent_commits(repo_name: str, since: str | None = None) -> list[dict[str, Any]]:
     """Fetch recent commits for a repository"""
     url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/commits"
-    headers = {}
-    if os.environ.get('GITHUB_TOKEN'):
-        headers['Authorization'] = f"token {os.environ['GITHUB_TOKEN']}"
     
-    params = {"per_page": 5}
+    params: dict[str, Any] = {"per_page": 5}
     if since:
         params['since'] = since
     
     try:
-        response = requests.get(url, params=params, headers=headers)
+        response = requests.get(url, params=params, headers=GITHUB_HEADERS)
         response.raise_for_status()
         return response.json()
     except Exception as e:
@@ -196,9 +197,6 @@ def fetch_osf_projects() -> list[OSFProject]:
 
 def search_repo_for_plots(repo_name: str, repo_url: str, updated: str) -> list[PlotData]:
     """Search a repository for plot JSON files"""
-    headers = {}
-    if os.environ.get('GITHUB_TOKEN'):
-        headers['Authorization'] = f"token {os.environ['GITHUB_TOKEN']}"
     
     # Search for files with .json extension in common plot directories
     search_paths = [
@@ -212,7 +210,7 @@ def search_repo_for_plots(repo_name: str, repo_url: str, updated: str) -> list[P
         try:
             # Get contents of directory
             url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/{search_path}"
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=GITHUB_HEADERS)
             
             if response.status_code != 200:
                 continue
@@ -221,15 +219,29 @@ def search_repo_for_plots(repo_name: str, repo_url: str, updated: str) -> list[P
             if not isinstance(contents, list):
                 continue
             
+            # Cast to list for type checker
+            contents_list = cast(list[Any], contents)
+            
             # Look for .json files that might be plots
-            for item in contents:
-                if item['type'] == 'file' and item['name'].endswith('.json'):
+            for item in contents_list:
+                if not isinstance(item, dict):
+                    continue
+                
+                # Cast to dict[str, Any] for type checker
+                item_dict = cast(dict[str, Any], item)
+                item_type: Any = item_dict.get('type')
+                item_name: Any = item_dict.get('name')
+                item_download_url: Any = item_dict.get('download_url')
+                
+                if item_type == 'file' and isinstance(item_name, str) and item_name.endswith('.json'):
                     # Check if it might be a plot file (common naming patterns)
-                    name_lower = item['name'].lower()
+                    name_lower = item_name.lower()
                     if any(keyword in name_lower for keyword in ['plot', 'figure', 'chart', 'graph', 'viz', 'visual']):
                         # Fetch the actual JSON content
                         try:
-                            json_response = requests.get(item['download_url'], headers=headers)
+                            if not isinstance(item_download_url, str):
+                                continue
+                            json_response = requests.get(item_download_url, headers=GITHUB_HEADERS)
                             if json_response.status_code == 200:
                                 plot_json = json_response.json()
                                 
@@ -254,14 +266,10 @@ def fetch_all_research_plots() -> list[PlotData]:
     """Fetch all plot JSON files from all repositories"""
     print("[*] Searching repositories for plot JSONs...")
     
-    headers = {}
-    if os.environ.get('GITHUB_TOKEN'):
-        headers['Authorization'] = f"token {os.environ['GITHUB_TOKEN']}"
-    
     # Get all repos
     url = f"https://api.github.com/users/{GITHUB_USERNAME}/repos"
     try:
-        response = requests.get(url, params={"sort": "updated", "per_page": 50}, headers=headers)
+        response = requests.get(url, params={"sort": "updated", "per_page": 50}, headers=GITHUB_HEADERS)
         response.raise_for_status()
         repos = response.json()
         
@@ -637,266 +645,6 @@ if (document.readyState === 'loading') {
 """
     
     return content
-    
-    # Embed plot data as JSON
-    content += json.dumps(plot_data, indent=2)
-    
-    content += """;
-
-// Download functions for open data sharing
-function downloadJSON(data, filename) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-function downloadPlotData(plotItem) {
-    const filename = `${plotItem.repo_name}_${plotItem.file_path.replace(/\\//g, '_')}`;
-    downloadJSON(plotItem, filename);
-}
-
-function downloadAllData() {
-    const timestamp = new Date().toISOString().split('T')[0];
-    const filename = `research-analysis-export_${timestamp}.json`;
-    const exportData = {
-        export_date: new Date().toISOString(),
-        total_plots: plotsData.length,
-        data: plotsData
-    };
-    downloadJSON(exportData, filename);
-}
-
-// Build file tree from plot data
-function buildFileTree() {
-    const fileTree = document.getElementById('file-tree');
-    
-    // Group by repository
-    const repoMap = {};
-    plotsData.forEach((plot, index) => {
-        if (!repoMap[plot.repo_name]) {
-            repoMap[plot.repo_name] = [];
-        }
-        repoMap[plot.repo_name].push({ ...plot, index });
-    });
-    
-    // Create tree structure
-    Object.keys(repoMap).sort().forEach(repoName => {
-        const repoSection = document.createElement('div');
-        repoSection.className = 'repo-section';
-        
-        const repoHeader = document.createElement('div');
-        repoHeader.className = 'repo-name';
-        repoHeader.innerHTML = `<span class="repo-toggle">▶</span> 📁 ${repoName}`;
-        
-        const fileList = document.createElement('div');
-        fileList.className = 'file-list';
-        
-        repoMap[repoName].forEach(plot => {
-            const fileItem = document.createElement('div');
-            fileItem.className = 'file-item';
-            fileItem.textContent = plot.file_path;
-            fileItem.dataset.index = plot.index;
-            fileItem.dataset.repoName = plot.repo_name;
-            fileItem.dataset.filePath = plot.file_path;
-            
-            fileItem.onclick = () => {
-                showPlot(plot.index);
-            };
-            
-            fileList.appendChild(fileItem);
-        });
-        
-        // Toggle expansion
-        repoHeader.onclick = () => {
-            const isExpanded = fileList.classList.toggle('expanded');
-            const toggleIcon = repoHeader.querySelector('.repo-toggle');
-            toggleIcon.textContent = isExpanded ? '▼' : '▶';
-            toggleIcon.classList.toggle('expanded', isExpanded);
-        };
-        
-        repoSection.appendChild(repoHeader);
-        repoSection.appendChild(fileList);
-        fileTree.appendChild(repoSection);
-    });
-    
-    // Expand first repo and show first plot by default
-    if (fileTree.firstChild) {
-        const firstRepo = fileTree.firstChild.querySelector('.repo-name');
-        firstRepo.click();
-        const firstFile = fileTree.firstChild.querySelector('.file-item');
-        if (firstFile) {
-            firstFile.click();
-        }
-    }
-}
-
-// Show a specific plot
-function showPlot(index) {
-    // Update active state in sidebar
-    document.querySelectorAll('.file-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    const activeItem = document.querySelector(`[data-index="${index}"]`);
-    if (activeItem) {
-        activeItem.classList.add('active');
-    }
-    
-    // Hide empty state and all plots
-    document.getElementById('empty-state').style.display = 'none';
-    document.querySelectorAll('.plot-display').forEach(plot => {
-        plot.classList.remove('active');
-    });
-    
-    // Show selected plot
-    const plotDisplay = document.getElementById(`plot-${index}`);
-    if (plotDisplay) {
-        plotDisplay.classList.add('active');
-    }
-}
-
-// Search functionality
-document.getElementById('search-box')?.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase();
-    const fileItems = document.querySelectorAll('.file-item');
-    
-    fileItems.forEach(item => {
-        const repoName = item.dataset.repoName.toLowerCase();
-        const filePath = item.dataset.filePath.toLowerCase();
-        const matches = repoName.includes(query) || filePath.includes(query);
-        
-        if (matches || query === '') {
-            item.classList.remove('hidden-by-search');
-        } else {
-            item.classList.add('hidden-by-search');
-        }
-    });
-});
-
-// Render all analysis results
-function renderPlots() {
-    const plotDisplays = document.getElementById('plot-displays');
-    const emptyState = document.getElementById('empty-state');
-    const downloadSection = document.getElementById('download-all-section');
-    
-    if (plotsData.length === 0) {
-        emptyState.innerHTML = `
-            <h2>No deployed experiments yet</h2>
-            <p><em>Results will appear here once experiments are ready for public deployment.</em></p>
-            <hr style="margin: 30px 0; border: none; border-top: 1px solid var(--border-primary);">
-            <h3>About This Page</h3>
-            <p style="max-width: 600px; margin: 15px auto;">
-                This page displays real-time analysis results from deployed research experiments. 
-                Experiments appear here after analysis pipelines have been validated, pilots completed, and proposals approved.
-            </p>
-            <h3 style="margin-top: 30px;">Deployment Workflow</h3>
-            <ol style="text-align: left; max-width: 600px; margin: 15px auto; line-height: 1.8;">
-                <li><strong>Analysis Structure</strong> — Pipeline is developed and matured in backoffice</li>
-                <li><strong>Pilot Testing</strong> — Protocol is validated with pilot participants</li>
-                <li><strong>Proposal Approval</strong> — Research proposal is submitted and approved</li>
-                <li><strong>Public Deployment</strong> — Experiment moves to public-facing repository</li>
-                <li><strong>Real-Time Updates</strong> — Analysis results sync automatically as data is collected</li>
-            </ol>
-            <p style="max-width: 600px; margin: 20px auto;">
-                <strong>Analysis Toolbox</strong> generates JSON representations at each processing step, 
-                enabling transparent observation of data collection and analysis as it happens.
-            </p>
-        `;
-        return;
-    }
-    
-    // Hide empty state and show download section
-    emptyState.style.display = 'none';
-    downloadSection.classList.add('visible');
-    document.getElementById('download-all-btn').onclick = downloadAllData;
-    
-    // Build file tree
-    buildFileTree();
-    
-    // Create a display for each plot
-    plotsData.forEach((plotItem, index) => {
-        const plotDisplay = document.createElement('div');
-        plotDisplay.className = 'plot-display';
-        plotDisplay.id = `plot-${index}`;
-        
-        // Header with metadata
-        const header = document.createElement('div');
-        header.className = 'plot-header';
-        header.innerHTML = `
-            <h2>📊 ${plotItem.file_path}</h2>
-            <div class="plot-meta">
-                <p><strong>Repository:</strong> <a href="${plotItem.repo_url}" target="_blank">${plotItem.repo_name}</a></p>
-                <p>
-                    <strong>Last Updated:</strong> ${new Date(plotItem.updated).toLocaleString()}
-                    <button class="download-btn" onclick="downloadPlotData(plotsData[${index}])">
-                        📥 Download Data
-                    </button>
-                </p>
-            </div>
-        `;
-        plotDisplay.appendChild(header);
-        
-        // Plot container
-        const plotContainer = document.createElement('div');
-        plotContainer.className = 'plot-container';
-        plotContainer.id = `plot-container-${index}`;
-        plotDisplay.appendChild(plotContainer);
-        
-        plotDisplays.appendChild(plotDisplay);
-        
-        // Render plot with Plotly
-        try {
-            const plotData = plotItem.plot_data;
-            
-            // Handle different JSON formats from Analysis Toolbox
-            if (plotData.data && plotData.layout) {
-                // Plotly JSON format (preferred)
-                Plotly.newPlot(`plot-container-${index}`, plotData.data, plotData.layout, {responsive: true});
-            } else if (Array.isArray(plotData)) {
-                // Array of traces
-                Plotly.newPlot(`plot-container-${index}`, plotData, {}, {responsive: true});
-            } else if (plotData.x && plotData.y) {
-                // Simple x, y data
-                Plotly.newPlot(`plot-container-${index}`, [plotData], {}, {responsive: true});
-            } else {
-                // Unknown format - show JSON
-                plotContainer.innerHTML = `
-                    <pre style="background: var(--code-bg); padding: 15px; overflow: auto; border-radius: 4px; height: 100%;">
-                        ${JSON.stringify(plotData, null, 2)}
-                    </pre>
-                `;
-            }
-        } catch (error) {
-            plotContainer.innerHTML = `
-                <div style="padding: 20px; color: var(--text-secondary);">
-                    <p style="color: red; margin-bottom: 10px;">⚠️ Error rendering analysis: ${error.message}</p>
-                    <details>
-                        <summary style="cursor: pointer; margin-bottom: 10px;">View raw JSON</summary>
-                        <pre style="background: var(--bg-tertiary); padding: 15px; overflow: auto; border-radius: 4px;">
-                            ${JSON.stringify(plotItem.plot_data, null, 2)}
-                        </pre>
-                    </details>
-                </div>
-            `;
-        }
-    });
-}
-
-// Render when page loads
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderPlots);
-} else {
-    renderPlots();
-}
-</script>
-"""
-    
-    return content
 
 def save_data_file(data: object, filename: str) -> None:
     """Save data as JSON for use in templates"""
@@ -918,15 +666,30 @@ def load_posted_items() -> TrackedState:
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
             # Migrate old format if needed
-            repos = data.get('repos', {})
-            if isinstance(repos, list):
+            repos_raw = data.get('repos', {})
+            repos: dict[str, RepoTrackingInfo] = {}
+            
+            if isinstance(repos_raw, list):
                 # Convert list to dict with empty tracking info
-                repos = {name: {'last_pushed': '', 'last_posted': ''} for name in repos}
-            elif isinstance(repos, dict):
-                # Ensure all values are proper dicts (not strings from partial migration)
-                for name, val in repos.items():
-                    if not isinstance(val, dict):
+                repos_list = cast(list[Any], repos_raw)
+                for name in repos_list:
+                    if isinstance(name, str):
                         repos[name] = {'last_pushed': '', 'last_posted': ''}
+            elif isinstance(repos_raw, dict):
+                # Ensure all values are proper dicts (not strings from partial migration)
+                repos_dict = cast(dict[str, Any], repos_raw)
+                for name, val in repos_dict.items():
+                    if isinstance(val, dict):
+                        val_dict = cast(dict[str, Any], val)
+                        if 'last_pushed' in val_dict and 'last_posted' in val_dict:
+                            last_pushed: Any = val_dict.get('last_pushed', '')
+                            last_posted: Any = val_dict.get('last_posted', '')
+                            repos[name] = {'last_pushed': str(last_pushed), 'last_posted': str(last_posted)}
+                        else:
+                            repos[name] = {'last_pushed': '', 'last_posted': ''}
+                    else:
+                        repos[name] = {'last_pushed': '', 'last_posted': ''}
+            
             return {
                 'repos': repos,
                 'publications': data.get('publications', []),
@@ -975,7 +738,7 @@ This project contains analysis pipelines, data, and documentation following my c
     return filename, content
 
 
-def generate_blog_post_for_repo_update(repo: GitHubRepo, commits: list[dict]) -> tuple[str, str]:
+def generate_blog_post_for_repo_update(repo: GitHubRepo, commits: list[dict[str, Any]]) -> tuple[str, str]:
     """Generate a blog post for repository updates"""
     today = datetime.now().strftime('%Y-%m-%d')
     slug = slugify(f"update-{repo['name']}")
@@ -1041,7 +804,7 @@ This work represents my ongoing commitment to open and transparent science.
     return filename, content
 
 
-def generate_blog_post_for_website_update(commits: list[dict]) -> tuple[str, str]:
+def generate_blog_post_for_website_update(commits: list[dict[str, Any]]) -> tuple[str, str]:
     """Generate a blog post for website updates"""
     today = datetime.now().strftime('%Y-%m-%d')
     slug = slugify(f"website-update")
@@ -1129,7 +892,7 @@ def generate_auto_blog_posts(
                 
                 if days_since_post >= 7:
                     # Fetch recent commits
-                    commits = fetch_recent_commits(repo)
+                    commits = fetch_recent_commits(repo['name'])
                     if commits:
                         # Delete old update posts for this repo
                         slug = slugify(f"update-{repo_name}")
@@ -1173,7 +936,7 @@ def generate_auto_blog_posts(
                     pass
             
             if days_since_post >= 7:
-                commits = fetch_recent_commits(website_repo)
+                commits = fetch_recent_commits(website_repo['name'])
                 if commits:
                     # Delete old website update posts
                     slug = slugify(f"website-update")
