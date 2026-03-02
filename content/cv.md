@@ -11,7 +11,7 @@ title = "CV"
 ## Education
 
 ### M.Sc. in Cognitive Science
-**[Ruhr-Universität](https://www.ruhr-uni-bochum.de/en), Bochum** | *October 2023 - Expected October 2024*
+**[Ruhr University](https://www.ruhr-uni-bochum.de/en), Bochum** | *October 2023 - Expected October 2024*
 
 **Qualification:** Master of Science in Cognitive Science
 
@@ -142,7 +142,7 @@ German (Native) · English (Fluent)
 
 ### Master's Thesis
 **Neural-Autonomic Synchrony and Embodied Integration**  
-M.Sc. Cognitive Science, Ruhr-Universität Bochum (2024)
+M.Sc. Cognitive Science, Ruhr University Bochum (2024)
 
 [Download PDF →](#) *(Coming soon)*
 
