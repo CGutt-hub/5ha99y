@@ -264,8 +264,80 @@ def parse_nextflow_trace(trace_content: str) -> dict[str, Any]:
         return {}
 
 
+def search_repo_for_participants(repo_name: str, repo_url: str, updated: str) -> list[PlotData]:
+    """Search for participant-based parquet datasets (e.g., EV_001, EV_002)"""
+    plot_files: list[PlotData] = []
+    
+    try:
+        # Check for EV_results directory with HTML viewer
+        results_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/EV_results"
+        response = requests.get(results_url, headers=GITHUB_HEADERS)
+        
+        if response.status_code == 200:
+            contents = response.json()
+            if isinstance(contents, list):
+                # Look for participant directories (EV_XXX pattern)
+                participant_folders = [
+                    item for item in contents 
+                    if item.get('type') == 'dir' and 
+                    isinstance(item.get('name'), str) and 
+                    item['name'].startswith('EV_') and 
+                    item['name'][3:].isdigit()
+                ]
+                
+                if participant_folders:
+                    print(f"  Found {len(participant_folders)} participant folders (parquet datasets)")
+                    
+                    # Check for HTML viewer
+                    viewer_url = None
+                    for filename in ['EV_results.html', 'EV_procedure_results.html']:
+                        check_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/EV_results/{filename}"
+                        check_resp = requests.get(check_url, headers=GITHUB_HEADERS)
+                        if check_resp.status_code == 200:
+                            viewer_url = f"https://{GITHUB_USERNAME}.github.io/{repo_name}/EV_results/{filename}"
+                            break
+                    
+                    # Fetch README from EV_results
+                    readme_content = None
+                    try:
+                        readme_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/EV_results/README.md"
+                        readme_resp = requests.get(readme_url, headers=GITHUB_HEADERS)
+                        if readme_resp.status_code == 200:
+                            readme_data = readme_resp.json()
+                            if 'content' in readme_data:
+                                import base64
+                                readme_content = base64.b64decode(readme_data['content']).decode('utf-8')
+                    except:
+                        pass
+                    
+                    # Create a single plot entry for the interactive viewer
+                    plot_files.append({
+                        'repo_name': repo_name,
+                        'file_path': f"EV_results (Interactive Viewer - {len(participant_folders)} participants)",
+                        'plot_data': {
+                            'type': 'participant_archive',
+                            'viewer_url': viewer_url,
+                            'participant_count': len(participant_folders),
+                            'participants': [p['name'] for p in participant_folders]
+                        },
+                        'updated': updated,
+                        'repo_url': repo_url,
+                        'readme': readme_content,
+                        'pipeline_trace': None
+                    })
+    except Exception as e:
+        print(f"  Error checking for participant data: {e}")
+    
+    return plot_files
+
+
 def search_repo_for_plots(repo_name: str, repo_url: str, updated: str) -> list[PlotData]:
     """Search a repository for plot JSON files, READMEs, and Nextflow traces"""
+    
+    # First check if this is a participant-based dataset repository
+    participant_plots = search_repo_for_participants(repo_name, repo_url, updated)
+    if participant_plots:
+        return participant_plots
     
     # Search for files with .json extension in common plot directories
     search_paths = [
@@ -1165,8 +1237,43 @@ function renderPlots() {
         try {
             const plotData = plotItem.plot_data;
             
+            // Handle participant archive (continuous analysis datasets)
+            if (plotData.type === 'participant_archive') {
+                if (plotData.viewer_url) {
+                    plotContainer.innerHTML = `
+                        <div style="padding: 20px; text-align: center;">
+                            <p style="font-size: 1.1rem; margin-bottom: 20px; color: var(--text-primary);">
+                                <strong>📊 Interactive Analysis Archive</strong>
+                            </p>
+                            <p style="margin-bottom: 20px; color: var(--text-secondary);">
+                                This repository contains ${plotData.participant_count} participant datasets with real-time analysis results.
+                                Click below to explore the interactive viewer with filtering, export, and procedural workflow visualization.
+                            </p>
+                            <a href="${plotData.viewer_url}" target="_blank" 
+                               style="display: inline-block; padding: 12px 24px; background: var(--accent-primary); 
+                                      color: white; text-decoration: none; border-radius: 6px; font-weight: 600;
+                                      transition: all 0.2s;">
+                                🔬 Open Interactive Viewer
+                            </a>
+                            <details style="margin-top: 30px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+                                <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">📁 Participant Datasets</summary>
+                                <ul style="line-height: 1.8; color: var(--text-secondary);">
+                                    ${plotData.participants.map(p => '<li>' + p + '</li>').join('')}
+                                </ul>
+                            </details>
+                        </div>
+                    `;
+                } else {
+                    plotContainer.innerHTML = `
+                        <div style="padding: 20px; color: var(--text-secondary);">
+                            <p>📊 This repository contains ${plotData.participant_count} participant datasets.</p>
+                            <p style="margin-top: 10px;">HTML viewer not yet deployed. Run <code>zola build</code> to deploy.</p>
+                        </div>
+                    `;
+                }
+            }
             // Handle different JSON formats from Analysis Toolbox
-            if (plotData.data && plotData.layout) {
+            else if (plotData.data && plotData.layout) {
                 // Plotly JSON format (preferred)
                 Plotly.newPlot(`plot-container-${index}`, plotData.data, plotData.layout, {responsive: true});
             } else if (Array.isArray(plotData)) {

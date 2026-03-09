@@ -3,7 +3,28 @@ title = "Offene Daten"
 template = "analysis.html"
 +++
 
-const plotsData = [];
+const plotsData = [
+  {
+    "repo_name": "EmotiView",
+    "file_path": "EV_results (Interactive Viewer - 5 participants)",
+    "plot_data": {
+      "type": "participant_archive",
+      "viewer_url": "https://CGutt-hub.github.io/EmotiView/EV_results/EV_results.html",
+      "participant_count": 5,
+      "participants": [
+        "EV_002",
+        "EV_003",
+        "EV_004",
+        "EV_007",
+        "EV_008"
+      ]
+    },
+    "updated": "2026-03-05T13:05:51Z",
+    "repo_url": "https://github.com/CGutt-hub/EmotiView",
+    "readme": null,
+    "pipeline_trace": null
+  }
+];
 
 // Load pdf-lib for PDF/A-3 generation with attachments
 const pdfLibScript = document.createElement('script');
@@ -585,8 +606,43 @@ function renderPlots() {
         try {
             const plotData = plotItem.plot_data;
             
+            // Handle participant archive (continuous analysis datasets)
+            if (plotData.type === 'participant_archive') {
+                if (plotData.viewer_url) {
+                    plotContainer.innerHTML = `
+                        <div style="padding: 20px; text-align: center;">
+                            <p style="font-size: 1.1rem; margin-bottom: 20px; color: var(--text-primary);">
+                                <strong>📊 Interactive Analysis Archive</strong>
+                            </p>
+                            <p style="margin-bottom: 20px; color: var(--text-secondary);">
+                                This repository contains ${plotData.participant_count} participant datasets with real-time analysis results.
+                                Click below to explore the interactive viewer with filtering, export, and procedural workflow visualization.
+                            </p>
+                            <a href="${plotData.viewer_url}" target="_blank" 
+                               style="display: inline-block; padding: 12px 24px; background: var(--accent-primary); 
+                                      color: white; text-decoration: none; border-radius: 6px; font-weight: 600;
+                                      transition: all 0.2s;">
+                                🔬 Open Interactive Viewer
+                            </a>
+                            <details style="margin-top: 30px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+                                <summary style="cursor: pointer; font-weight: 600; margin-bottom: 10px;">📁 Participant Datasets</summary>
+                                <ul style="line-height: 1.8; color: var(--text-secondary);">
+                                    ${plotData.participants.map(p => '<li>' + p + '</li>').join('')}
+                                </ul>
+                            </details>
+                        </div>
+                    `;
+                } else {
+                    plotContainer.innerHTML = `
+                        <div style="padding: 20px; color: var(--text-secondary);">
+                            <p>📊 This repository contains ${plotData.participant_count} participant datasets.</p>
+                            <p style="margin-top: 10px;">HTML viewer not yet deployed. Run <code>zola build</code> to deploy.</p>
+                        </div>
+                    `;
+                }
+            }
             // Handle different JSON formats from Analysis Toolbox
-            if (plotData.data && plotData.layout) {
+            else if (plotData.data && plotData.layout) {
                 // Plotly JSON format (preferred)
                 Plotly.newPlot(`plot-container-${index}`, plotData.data, plotData.layout, {responsive: true});
             } else if (Array.isArray(plotData)) {
