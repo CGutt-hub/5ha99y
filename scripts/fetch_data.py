@@ -636,33 +636,96 @@ All research is conducted with a commitment to **open and transparent science**.
 
 
 def generate_analysis_page(plot_data: list[PlotData], lang: str = 'en') -> str:
-    """Generate real-time analysis visualization page with Analysis Toolbox-style layout"""
+    """Generate analysis data page with simple list format like projects/publications"""
     if lang == 'de':
-        content = """+++
-title = "Offene Daten"
-template = "analysis.html"
-+++
-
-const plotsData = """
+        title = "Offene Daten"
+        intro = "*Echtzeit-Analyseergebnisse aus laufenden Forschungsprojekten. Daten werden direkt aus den Quell-Repositories geladen.*"
+        no_data_msg = "Noch keine Experimente bereitgestellt"
+        no_data_desc = "Ergebnisse erscheinen hier, sobald Experimente für die öffentliche Bereitstellung bereit sind."
+        participants_label = "Teilnehmer"
+        view_label = "🔬 Interaktiven Viewer öffnen"
     else:
-        content = """+++
-title = "Open Data"
-template = "analysis.html"
+        title = "Open Data"
+        intro = "*Real-time analysis results from ongoing research projects. Data is loaded directly from source repositories.*"
+        no_data_msg = "No deployed experiments yet"
+        no_data_desc = "Results will appear here once experiments are ready for public deployment."
+        participants_label = "participants"
+        view_label = "🔬 View Interactive Results"
+    
+    content = f"""+++
+title = "{title}"
 +++
 
-const plotsData = """
-    
-    # Embed plot data as JSON
-    content += json.dumps(plot_data, indent=2)
-    
-    content += """;
+{intro}
 
-// Load pdf-lib for PDF/A-3 generation with attachments
-const pdfLibScript = document.createElement('script');
-pdfLibScript.src = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-document.head.appendChild(pdfLibScript);
+---
 
-// Download functions for open data sharing
+"""
+    
+    if not plot_data:
+        content += f"""
+### {no_data_msg}
+
+{no_data_desc}
+
+**Deployment Workflow:**
+
+1. **Analysis Structure** — Pipeline is developed and matured in backoffice
+2. **Pilot Testing** — Protocol is validated with pilot participants  
+3. **Proposal Approval** — Research proposal is submitted and approved
+4. **Public Deployment** — Experiment moves to public-facing repository
+5. **Real-Time Updates** — Analysis results sync automatically as data is collected
+
+**Analysis Toolbox** generates structured outputs at each processing step, enabling transparent observation of data collection and analysis as it happens.
+"""
+        return content
+    
+    for plot in plot_data:
+        repo_name = plot['repo_name']
+        repo_url = plot['repo_url']
+        updated = plot['updated']
+        plot_info = plot['plot_data']
+        
+        # Format update date
+        from datetime import datetime
+        update_date = datetime.fromisoformat(updated.replace('Z', '+00:00')).strftime('%Y-%m-%d')
+        
+        content += f"### [{repo_name}]({repo_url})\n\n"
+        
+        # Handle participant archives (continuous analysis datasets)
+        if plot_info.get('type') == 'participant_archive':
+            participant_count = plot_info.get('participant_count', 0)
+            viewer_url = plot_info.get('viewer_url')
+            
+            content += f"**Status:** {participant_count} {participants_label}  \n"
+            content += f"**Last updated:** {update_date}\n\n"
+            
+            if viewer_url:
+                content += f"[{view_label}]({viewer_url}){{target=\"_blank\"}}\n\n"
+                
+                # Show participant list if available
+                participants = plot_info.get('participants', [])
+                if participants:
+                    content += "<details>\n"
+                    content += f"<summary>📁 {participants_label.capitalize()}</summary>\n\n"
+                    for p in participants:
+                        content += f"- {p}\n"
+                    content += "\n</details>\n\n"
+            else:
+                content += f"*Viewer deployment pending*\n\n"
+        
+        # Handle regular plot JSONs (future)
+        else:
+            file_path = plot['file_path']
+            content += f"**File:** {file_path}  \n"
+            content += f"**Last updated:** {update_date}\n\n"
+        
+        content += "---\n\n"
+    
+    return content
+
+
+def save_data_file(data: object, filename: str) -> None:
 function downloadJSON(data, filename) {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
