@@ -265,11 +265,11 @@ def parse_nextflow_trace(trace_content: str) -> dict[str, Any]:
 
 
 def search_repo_for_participants(repo_name: str, repo_url: str, updated: str) -> list[PlotData]:
-    """Search for participant-based parquet datasets (e.g., EV_001, EV_002)"""
+    """Search for participant-based parquet datasets and list individual parquet files"""
     plot_files: list[PlotData] = []
     
     try:
-        # Check for EV_results directory with HTML viewer
+        # Check for EV_results directory
         results_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/EV_results"
         response = requests.get(results_url, headers=GITHUB_HEADERS)
         
@@ -286,45 +286,44 @@ def search_repo_for_participants(repo_name: str, repo_url: str, updated: str) ->
                 ]
                 
                 if participant_folders:
-                    print(f"  Found {len(participant_folders)} participant folders (parquet datasets)")
+                    print(f"  Found {len(participant_folders)} participant folders, scanning for parquet files...")
                     
-                    # Check for HTML viewer
-                    viewer_url = None
-                    for filename in ['EV_results.html', 'EV_procedure_results.html']:
-                        check_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/EV_results/{filename}"
-                        check_resp = requests.get(check_url, headers=GITHUB_HEADERS)
-                        if check_resp.status_code == 200:
-                            viewer_url = f"https://{GITHUB_USERNAME}.github.io/{repo_name}/EV_results/{filename}"
-                            break
-                    
-                    # Fetch README from EV_results
-                    readme_content = None
-                    try:
-                        readme_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/EV_results/README.md"
-                        readme_resp = requests.get(readme_url, headers=GITHUB_HEADERS)
-                        if readme_resp.status_code == 200:
-                            readme_data = readme_resp.json()
-                            if 'content' in readme_data:
-                                import base64
-                                readme_content = base64.b64decode(readme_data['content']).decode('utf-8')
-                    except:
-                        pass
-                    
-                    # Create a single plot entry for the interactive viewer
-                    plot_files.append({
-                        'repo_name': repo_name,
-                        'file_path': f"EV_results (Interactive Viewer - {len(participant_folders)} participants)",
-                        'plot_data': {
-                            'type': 'participant_archive',
-                            'viewer_url': viewer_url,
-                            'participant_count': len(participant_folders),
-                            'participants': [p['name'] for p in participant_folders]
-                        },
-                        'updated': updated,
-                        'repo_url': repo_url,
-                        'readme': readme_content,
-                        'pipeline_trace': None
-                    })
+                    # Scan each participant folder for parquet files
+                    for participant in participant_folders[:5]:  # Limit to first 5 to avoid rate limits
+                        participant_name = participant['name']
+                        folder_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/EV_results/{participant_name}"
+                        
+                        try:
+                            folder_resp = requests.get(folder_url, headers=GITHUB_HEADERS)
+                            if folder_resp.status_code == 200:
+                                folder_contents = folder_resp.json()
+                                
+                                # Find parquet files
+                                parquet_files = [
+                                    file for file in folder_contents 
+                                    if file.get('name', '').endswith('.parquet')
+                                ]
+                                
+                                for pfile in parquet_files:
+                                    file_path = f"EV_results/{participant_name}/{pfile['name']}"
+                                    plot_files.append({
+                                        'repo_name': repo_name,
+                                        'file_path': file_path,
+                                        'plot_data': {
+                                            'type': 'parquet',
+                                            'participant': participant_name,
+                                            'size': pfile.get('size', 0)
+                                        },
+                                        'updated': updated,
+                                        'repo_url': repo_url,
+                                        'readme': None,
+                                        'pipeline_trace': None
+                                    })
+                                
+                                print(f"    {participant_name}: {len(parquet_files)} parquet files")
+                        except Exception as e:
+                            print(f"    Error scanning {participant_name}: {e}")
+                            continue
     except Exception as e:
         print(f"  Error checking for participant data: {e}")
     
@@ -724,8 +723,10 @@ title = "{title}"
     
     return content
 
-
+"""
+OLD BROKEN CODE - COMMENTED OUT
 def save_data_file(data: object, filename: str) -> None:
+    pass
 function downloadJSON(data, filename) {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1373,11 +1374,8 @@ function renderPlots() {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', renderPlots);
 } else {
-    renderPlots();
 }
 """
-    
-    return content
 
 def save_data_file(data: object, filename: str) -> None:
     """Save data as JSON for use in templates"""
