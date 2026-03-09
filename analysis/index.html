@@ -446,7 +446,28 @@
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
 <script>
 // Analysis data embedded from research repositories
-<p>const plotsData = [];</p>
+<p>const plotsData = [
+{
+"repo_name": "EmotiView",
+"file_path": "EV_results (Interactive Viewer - 5 participants)",
+"plot_data": {
+"type": "participant_archive",
+"viewer_url": "https://CGutt-hub.github.io/EmotiView/EV_results/EV_results.html",
+"participant_count": 5,
+"participants": [
+"EV_002",
+"EV_003",
+"EV_004",
+"EV_007",
+"EV_008"
+]
+},
+"updated": "2026-03-05T13:05:51Z",
+"repo_url": "https://github.com/CGutt-hub/EmotiView",
+"readme": null,
+"pipeline_trace": null
+}
+];</p>
 <p>// Load pdf-lib for PDF/A-3 generation with attachments
 const pdfLibScript = document.createElement('script');
 pdfLibScript.src = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
@@ -1012,8 +1033,43 @@ const downloadSection = document.getElementById('download-all-section');</p>
 <span class="giallo-l"><span>    try {</span></span>
 <span class="giallo-l"><span>        const plotData = plotItem.plot_data;</span></span>
 <span class="giallo-l"><span>        </span></span>
+<span class="giallo-l"><span>        // Handle participant archive (continuous analysis datasets)</span></span>
+<span class="giallo-l"><span>        if (plotData.type === &#39;participant_archive&#39;) {</span></span>
+<span class="giallo-l"><span>            if (plotData.viewer_url) {</span></span>
+<span class="giallo-l"><span>                plotContainer.innerHTML = `</span></span>
+<span class="giallo-l"><span>                    &lt;div style=&quot;padding: 20px; text-align: center;&quot;&gt;</span></span>
+<span class="giallo-l"><span>                        &lt;p style=&quot;font-size: 1.1rem; margin-bottom: 20px; color: var(--text-primary);&quot;&gt;</span></span>
+<span class="giallo-l"><span>                            &lt;strong&gt;📊 Interactive Analysis Archive&lt;/strong&gt;</span></span>
+<span class="giallo-l"><span>                        &lt;/p&gt;</span></span>
+<span class="giallo-l"><span>                        &lt;p style=&quot;margin-bottom: 20px; color: var(--text-secondary);&quot;&gt;</span></span>
+<span class="giallo-l"><span>                            This repository contains ${plotData.participant_count} participant datasets with real-time analysis results.</span></span>
+<span class="giallo-l"><span>                            Click below to explore the interactive viewer with filtering, export, and procedural workflow visualization.</span></span>
+<span class="giallo-l"><span>                        &lt;/p&gt;</span></span>
+<span class="giallo-l"><span>                        &lt;a href=&quot;${plotData.viewer_url}&quot; target=&quot;_blank&quot; </span></span>
+<span class="giallo-l"><span>                           style=&quot;display: inline-block; padding: 12px 24px; background: var(--accent-primary); </span></span>
+<span class="giallo-l"><span>                                  color: white; text-decoration: none; border-radius: 6px; font-weight: 600;</span></span>
+<span class="giallo-l"><span>                                  transition: all 0.2s;&quot;&gt;</span></span>
+<span class="giallo-l"><span>                            🔬 Open Interactive Viewer</span></span>
+<span class="giallo-l"><span>                        &lt;/a&gt;</span></span>
+<span class="giallo-l"><span>                        &lt;details style=&quot;margin-top: 30px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;&quot;&gt;</span></span>
+<span class="giallo-l"><span>                            &lt;summary style=&quot;cursor: pointer; font-weight: 600; margin-bottom: 10px;&quot;&gt;📁 Participant Datasets&lt;/summary&gt;</span></span>
+<span class="giallo-l"><span>                            &lt;ul style=&quot;line-height: 1.8; color: var(--text-secondary);&quot;&gt;</span></span>
+<span class="giallo-l"><span>                                ${plotData.participants.map(p =&gt; &#39;&lt;li&gt;&#39; + p + &#39;&lt;/li&gt;&#39;).join(&#39;&#39;)}</span></span>
+<span class="giallo-l"><span>                            &lt;/ul&gt;</span></span>
+<span class="giallo-l"><span>                        &lt;/details&gt;</span></span>
+<span class="giallo-l"><span>                    &lt;/div&gt;</span></span>
+<span class="giallo-l"><span>                `;</span></span>
+<span class="giallo-l"><span>            } else {</span></span>
+<span class="giallo-l"><span>                plotContainer.innerHTML = `</span></span>
+<span class="giallo-l"><span>                    &lt;div style=&quot;padding: 20px; color: var(--text-secondary);&quot;&gt;</span></span>
+<span class="giallo-l"><span>                        &lt;p&gt;📊 This repository contains ${plotData.participant_count} participant datasets.&lt;/p&gt;</span></span>
+<span class="giallo-l"><span>                        &lt;p style=&quot;margin-top: 10px;&quot;&gt;HTML viewer not yet deployed. Run &lt;code&gt;zola build&lt;/code&gt; to deploy.&lt;/p&gt;</span></span>
+<span class="giallo-l"><span>                    &lt;/div&gt;</span></span>
+<span class="giallo-l"><span>                `;</span></span>
+<span class="giallo-l"><span>            }</span></span>
+<span class="giallo-l"><span>        }</span></span>
 <span class="giallo-l"><span>        // Handle different JSON formats from Analysis Toolbox</span></span>
-<span class="giallo-l"><span>        if (plotData.data &amp;&amp; plotData.layout) {</span></span>
+<span class="giallo-l"><span>        else if (plotData.data &amp;&amp; plotData.layout) {</span></span>
 <span class="giallo-l"><span>            // Plotly JSON format (preferred)</span></span>
 <span class="giallo-l"><span>            Plotly.newPlot(`plot-container-${index}`, plotData.data, plotData.layout, {responsive: true});</span></span>
 <span class="giallo-l"><span>        } else if (Array.isArray(plotData)) {</span></span>
