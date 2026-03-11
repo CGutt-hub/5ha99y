@@ -30,6 +30,8 @@ function downloadPlotData(plotItem) {
 //   fetchParquetData(repoName, filePath) - legacy format
 //   fetchParquetData(url, fileSize) - when url is provided directly with optional file size
 async function fetchParquetData(repoNameOrUrl, filePathOrSize = null) {
+    console.log('[Analysis] fetchParquetData called:', { repoNameOrUrl, filePathOrSize });
+    
     try {
         // Construct raw GitHub URL
         const url = typeof filePathOrSize === 'string'
@@ -37,6 +39,9 @@ async function fetchParquetData(repoNameOrUrl, filePathOrSize = null) {
             : repoNameOrUrl;
         
         const fileSize = typeof filePathOrSize === 'number' ? filePathOrSize : 0;
+        
+        console.log('[Analysis] Will fetch from URL:', url);
+        console.log('[Analysis] File size estimate:', fileSize, 'bytes');
         
         // Check available memory (if supported)
         if (performance && performance.memory) {
@@ -1437,8 +1442,15 @@ function filterFileTree(query) {
 
 // Load and display a plot file when clicked
 async function loadPlotFile(url, displayName, participant) {
+    console.log('[Analysis] loadPlotFile called:', { url, displayName, participant });
+    
     const emptyState = document.getElementById('empty-state');
     const plotDisplays = document.getElementById('plot-displays');
+    
+    if (!emptyState || !plotDisplays) {
+        console.error('[Analysis] Required DOM elements not found');
+        return;
+    }
     
     // Remove previous active states
     document.querySelectorAll('.tree-item.active').forEach(item => {
@@ -1446,7 +1458,9 @@ async function loadPlotFile(url, displayName, participant) {
     });
     
     // Mark clicked item as active
-    event.target.closest('.tree-item').classList.add('active');
+    if (event && event.target) {
+        event.target.closest('.tree-item').classList.add('active');
+    }
     
     // Find file size from analysisData
     let fileSize = 0;
@@ -1454,7 +1468,12 @@ async function loadPlotFile(url, displayName, participant) {
         const file = window.analysisData.allFiles.find(f => f.url === url);
         if (file) {
             fileSize = file.size;
+            console.log('[Analysis] Found file size:', fileSize, 'bytes');
+        } else {
+            console.warn('[Analysis] File not found in analysisData:', url);
         }
+    } else {
+        console.warn('[Analysis] analysisData not available');
     }
     
     const fileSizeMB = (fileSize / (1024 * 1024)).toFixed(2);
@@ -1514,8 +1533,12 @@ async function loadPlotFile(url, displayName, participant) {
         </div>
     `;
     
+    console.log('[Analysis] Plot display created, starting data fetch...');
+    
     try {
         const startTime = Date.now();
+        
+        console.log('[Analysis] Entering try block, calling fetchParquetData...');
         
         // Update progress: downloading
         const progressEl = document.getElementById('load-progress');
