@@ -1174,8 +1174,10 @@ async function fetchPipelineTrace(repoPath, resultsDir) {
         const text = await response.text();
         const pipeline = parsePipelineTrace(text);
         
-        if (pipeline && pipeline.length > 0) {
-            displayPipelineTree(pipeline);
+        if (pipeline && pipeline.processes.length > 0) {
+            // Store globally so it can be used when displaying plots
+            window.pipelineData = pipeline;
+            console.log('[Pipeline] Loaded pipeline with', pipeline.processes.length, 'modules');
         }
     } catch (error) {
         console.warn('[Pipeline] Could not load pipeline trace:', error);
@@ -1269,73 +1271,104 @@ function parsePipelineTrace(traceText) {
     return { processes: uniqueProcesses, dependencies: dependencies };
 }
 
-// Display 2D pipeline tree visualization
-function displayPipelineTree(pipelineData) {
+// Generate pipeline tree HTML for a specific file
+function generatePipelineTreeHTML(filename, pipelineData) {
+    if (!pipelineData || !pipelineData.processes) {
+        return ''; // No pipeline data available
+    }
+    
     const { processes, dependencies } = pipelineData;
+    
+    // Infer relevant modules from filename
+    const relevantModules = new Set();
+    const lowerFilename = filename.toLowerCase();
+    
+    // Check for specific patterns in filename
+    if (lowerFilename.includes('_concat')) relevantModules.add('concatenating');
+    if (lowerFilename.includes('xdf')) relevantModules.add('reader');
+    if (lowerFilename.includes('_txt_tree_')) relevantModules.add('tree');
+    if (lowerFilename.includes('_filt')) relevantModules.add('filt');
+    if (lowerFilename.includes('_rej')) relevantModules.add('rej');
+    if (lowerFilename.includes('_ica')) relevantModules.add('ica');
+    if (lowerFilename.includes('_epochs')) relevantModules.add('epochs');
+    if (lowerFilename.includes('_psd')) relevantModules.add('psd');
+    if (lowerFilename.includes('_ols')) relevantModules.add('ols');
+    if (lowerFilename.includes('_windowed')) relevantModules.add('windowed');
+    if (lowerFilename.includes('_hrv')) relevantModules.add('hrv');
+    if (lowerFilename.includes('_eda')) relevantModules.add('eda');
+    if (lowerFilename.includes('_hbc')) relevantModules.add('hbc');
+    
+    // Extract analysis type from filename (be7, ea11, sam, etc.)
+    const analysisMatch = lowerFilename.match(/_(be7|ea11|sam|panas|bisbas|condprof)/);
+    if (analysisMatch) {
+        relevantModules.add(analysisMatch[1]);
+    }
     
     // Group processes by stage
     const stages = {
         readers: processes.filter(p => p.name.includes('_reader')),
-        processors: processes.filter(p => p.name.includes('tree_processor')),
+        processors: processes.filter(p => p.name.includes('tree_processor') || p.name.includes('_filt') || p.name.includes('_processor')),
         analyzers: processes.filter(p => p.name.includes('_analyzer')),
         finders: processes.filter(p => p.name.includes('_file_finder')),
         concatenators: processes.filter(p => p.name.includes('_concatenating'))
     };
     
+    // Helper to check if a process is relevant
+    const isRelevant = (processName) => {
+        const lower = processName.toLowerCase();
+        for (const keyword of relevantModules) {
+            if (lower.includes(keyword)) return true;
+        }
+        return false;
+    };
+    
+    // Helper to format process with highlighting
+    const formatProcess = (p) => {
+        const relevant = isRelevant(p.name);
+        const style = relevant 
+            ? 'background: #fff3cd; padding: 2px 6px; border-radius: 3px; font-weight: 600; color: #856404;'
+            : '';
+        return `<span style="${style}">${p.displayName}</span>`;
+    };
+    
     // Build HTML for pipeline visualization
     let html = `
-        <div style="margin-bottom: 20px; padding: 15px; background: var(--bg-tertiary, #f5f5f5); border-radius: 6px; border: 1px solid var(--border-primary, #ddd);">
-            <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="togglePipeline()">
-                <h3 style="margin: 0; font-size: 0.9rem; color: var(--text-primary, #333); font-weight: 600;">
-                    <span id="pipeline-toggle-icon" style="display: inline-block; transition: transform 0.2s; margin-right: 5px;">▶</span>
-                    Processing Pipeline
-                </h3>
-                <span style="font-size: 0.75rem; color: var(--text-muted, #999);">${processes.length} modules</span>
+        <div style="margin-bottom: 15px; padding: 12px; background: var(--bg-tertiary, #f5f5f5); border-radius: 6px; border: 1px solid var(--border-primary, #ddd); font-size: 0.8rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                <h4 style="margin: 0; font-size: 0.85rem; color: var(--text-primary, #333); font-weight: 600;">
+                    📊 Processing Pipeline
+                </h4>
+                <span style="font-size: 0.7rem; color: var(--text-muted, #999);">${processes.length} modules</span>
             </div>
-            <div id="pipeline-content" style="display: none; margin-top: 15px; font-size: 0.8rem; line-height: 1.8;">
+            <div style="font-size: 0.75rem; line-height: 1.6;">
     `;
     
     // Display stages
     if (stages.readers.length > 0) {
-        html += `<div style="margin-bottom: 10px;"><strong>📥 Input:</strong> ${stages.readers.map(p => p.displayName).join(', ')}</div>`;
+        html += `<div style="margin-bottom: 6px;"><strong>📥 Input:</strong> ${stages.readers.map(formatProcess).join(', ')}</div>`;
     }
     if (stages.processors.length > 0) {
-        html += `<div style="margin-bottom: 10px;"><strong>🔄 Processing:</strong> ${stages.processors.map(p => p.displayName).join(', ')}</div>`;
+        html += `<div style="margin-bottom: 6px;"><strong>🔄 Processing:</strong> ${stages.processors.map(formatProcess).join(', ')}</div>`;
     }
     if (stages.analyzers.length > 0) {
-        html += `<div style="margin-bottom: 10px;"><strong>📊 Analyzers:</strong> ${stages.analyzers.map(p => p.displayName).join(', ')}</div>`;
+        html += `<div style="margin-bottom: 6px;"><strong>📊 Analysis:</strong> ${stages.analyzers.map(formatProcess).join(', ')}</div>`;
     }
     if (stages.finders.length > 0) {
-        html += `<div style="margin-bottom: 10px;"><strong>🔍 Extraction:</strong> ${stages.finders.map(p => p.displayName).join(', ')}</div>`;
+        html += `<div style="margin-bottom: 6px;"><strong>🔍 Extraction:</strong> ${stages.finders.map(formatProcess).join(', ')}</div>`;
     }
     if (stages.concatenators.length > 0) {
-        html += `<div style="margin-bottom: 10px;"><strong>🔗 Concatenation:</strong> ${stages.concatenators.map(p => p.displayName).join(', ')}</div>`;
+        html += `<div style="margin-bottom: 6px;"><strong>🔗 Concatenation:</strong> ${stages.concatenators.map(formatProcess).join(', ')}</div>`;
     }
     
     html += `
+                <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border-primary, #ddd); font-size: 0.7rem; color: var(--text-muted, #999);">
+                    <em>Highlighted modules were likely used to create this file</em>
+                </div>
             </div>
         </div>
     `;
     
-    // Insert pipeline visualization before file tree
-    const fileTree = document.getElementById('file-tree');
-    if (fileTree) {
-        fileTree.insertAdjacentHTML('beforebegin', html);
-    }
-}
-
-// Toggle pipeline visibility
-function togglePipeline() {
-    const content = document.getElementById('pipeline-content');
-    const icon = document.getElementById('pipeline-toggle-icon');
-    
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        icon.style.transform = 'rotate(90deg)';
-    } else {
-        content.style.display = 'none';
-        icon.style.transform = 'rotate(0deg)';
-    }
+    return html;
 }
 
 // Toggle folder expand/collapse
@@ -1458,9 +1491,15 @@ async function loadPlotFile(url, displayName, participant) {
         `;
     }
     
+    // Generate pipeline tree HTML if available
+    const pipelineHTML = window.pipelineData 
+        ? generatePipelineTreeHTML(displayName, window.pipelineData)
+        : '';
+    
     // Create plot display
     plotDisplays.innerHTML = `
         <div class="plot-display active" id="current-plot">
+            ${pipelineHTML}
             <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--border-primary, #ddd);">
                 ${sizeWarning}
                 <div class="export-bar">
@@ -1626,7 +1665,6 @@ if (document.readyState === 'loading') {
 // Expose functions to global scope for inline onclick handlers
 window.loadPlotFile = loadPlotFile;
 window.toggleFolder = toggleFolder;
-window.togglePipeline = togglePipeline;
 window.exportPlotAsPNG = exportPlotAsPNG;
 window.exportPlotAsSVG = exportPlotAsSVG;
 window.exportPlotAsPDF = exportPlotAsPDF;
