@@ -696,6 +696,7 @@ def generate_analysis_page(plot_data: list[PlotData], lang: str = 'en') -> str:
     
     content = f"""+++
 title = "{title}"
+template = "analysis.html"
 +++
 
 {intro}

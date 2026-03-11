@@ -1,22 +1,7 @@
 +++
 title = "Open Data"
+template = "analysis.html"
 +++
-
-*Real-time analysis results from ongoing research projects. Data is loaded directly from source repositories.*
-
----
-
-### [EmotiView](https://github.com/CGutt-hub/EmotiView)
-
-**File:** EV_results/EV_002/plots/EV_002_be7_concat.parquet  
-**Last updated:** 2026-03-11
-
----
-
-### [EmotiView](https://github.com/CGutt-hub/EmotiView)
-
-**File:** EV_results/EV_002/plots/EV_002_condprof.parquet  
-**Last updated:** 2026-03-11
 
 ---
 
