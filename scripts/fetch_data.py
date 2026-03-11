@@ -293,53 +293,9 @@ def search_repo_for_participants(repo_name: str, repo_url: str, updated: str) ->
         
         print(f"  Found {len(results_folders)} *_results folder(s): {', '.join(results_folders)}")
         
-        # Check each results folder for AnalysisToolbox viewer or parquet files
+        # Scan each results folder for participant/group folders with parquet files
         for results_dir in results_folders:
-            # Extract project prefix (e.g., "EV" from "EV_results")
-            project_prefix = results_dir.replace('_results', '')
-            
-            # First, try to find AnalysisToolbox HTML viewer in .bin/
-            results_patterns = [
-                (results_dir, f"{project_prefix}_results"),
-                (results_dir, f"{results_dir}"),
-            ]
-            
-            for _, viewer_base in results_patterns:
-                bin_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/{results_dir}/.bin"
-                bin_response = requests.get(bin_url, headers=GITHUB_HEADERS)
-                
-                if bin_response.status_code == 200:
-                    bin_contents = bin_response.json()
-                    if isinstance(bin_contents, list):
-                        # Look for HTML viewer
-                        viewer_file = f"{viewer_base}.html"
-                        html_viewer = next((item for item in bin_contents 
-                                           if item.get('name') == viewer_file), None)
-                        
-                        if html_viewer:
-                            # Found AnalysisToolbox viewer! 
-                            viewer_url = f"https://{GITHUB_USERNAME.lower()}.github.io/{repo_name}/{results_dir}/.bin/{viewer_file}"
-                            raw_viewer_url = f"https://raw.githubusercontent.com/{GITHUB_USERNAME}/{repo_name}/main/{results_dir}/.bin/{viewer_file}"
-                            print(f"  ✓ Found AnalysisToolbox viewer: {results_dir}/.bin/{viewer_file}")
-                            
-                            plot_files.append({
-                                'repo_name': repo_name,
-                                'file_path': f"{results_dir}/.bin/{viewer_file}",
-                                'plot_data': {
-                                    'type': 'html_viewer',
-                                    'viewer_url': viewer_url,
-                                    'raw_viewer_url': raw_viewer_url,
-                                    'results_dir': results_dir
-                                },
-                                'updated': updated,
-                                'repo_url': repo_url,
-                                'readme': None,
-                                'pipeline_trace': None
-                            })
-                            
-                            return plot_files  # Return immediately - viewer found!
-            
-            # If no viewer found, scan for participant/group folders with parquet files
+            # Scan for participant/group folders with parquet files
             results_url = f"https://api.github.com/repos/{GITHUB_USERNAME}/{repo_name}/contents/{results_dir}"
             response = requests.get(results_url, headers=GITHUB_HEADERS)
             
