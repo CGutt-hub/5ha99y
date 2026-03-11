@@ -682,6 +682,98 @@ function renderPlots() {
             // Handle AnalysisToolbox HTML viewers
             if (plotData.type === 'html_viewer') {
                 const repoPath = plotItem.repo_name.includes('/') ? plotItem.repo_name : 'CGutt-hub/' + plotItem.repo_name;
+                const repoName = plotItem.repo_name;
+                const resultsDir = plotData.results_dir;
+                
+                // Generate launcher scripts
+                const windowsLauncher = `# ${repoName} Viewer Launcher for Windows
+# Save as: launch_${repoName}_viewer.ps1
+# Run: powershell -ExecutionPolicy Bypass -File launch_${repoName}_viewer.ps1
+
+$repoPath = "${repoName}"
+$repoUrl = "https://github.com/${repoPath}.git"
+
+# Check if repository exists
+if (-Not (Test-Path $repoPath)) {
+    Write-Host "Cloning repository..." -ForegroundColor Yellow
+    git clone $repoUrl
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Error: Git clone failed. Install Git from https://git-scm.com/" -ForegroundColor Red
+        Read-Host "Press Enter to exit"
+        exit 1
+    }
+}
+
+# Navigate to results directory
+Set-Location "$repoPath/${resultsDir}"
+
+# Check for serve script
+if (Test-Path ".bin\\${resultsDir}_serve.py") {
+    Write-Host "Starting viewer server..." -ForegroundColor Green
+    $process = Start-Process python -ArgumentList ".bin\\${resultsDir}_serve.py" -PassThru -WindowStyle Hidden
+    Start-Sleep -Seconds 2
+    Write-Host "Opening viewer in browser..." -ForegroundColor Green
+    Start-Process "http://localhost:8080/.bin/${resultsDir}.html"
+    Write-Host ""
+    Write-Host "Viewer is running! Close this window to stop the server." -ForegroundColor Cyan
+    Write-Host "Press Ctrl+C to stop the server..."
+    Wait-Process -Id $process.Id
+} else {
+    Write-Host "Serve script not found. Running simple HTTP server..." -ForegroundColor Yellow
+    $process = Start-Process python -ArgumentList "-m http.server 8080" -PassThru -WindowStyle Hidden
+    Start-Sleep -Seconds 2
+    Write-Host "Opening viewer..." -ForegroundColor Green
+    Start-Process "http://localhost:8080/.bin/${resultsDir}.html"
+    Write-Host ""
+    Write-Host "Viewer is running! Close this window to stop the server." -ForegroundColor Cyan
+    Write-Host "Press Ctrl+C to stop the server..."
+    Wait-Process -Id $process.Id
+}`;
+
+                const unixLauncher = `#!/bin/bash
+# ${repoName} Viewer Launcher for Unix/Mac
+# Save as: launch_${repoName}_viewer.sh
+# Make executable: chmod +x launch_${repoName}_viewer.sh
+# Run: ./launch_${repoName}_viewer.sh
+
+REPO_PATH="${repoName}"
+REPO_URL="https://github.com/${repoPath}.git"
+
+# Check if repository exists
+if [ ! -d "$REPO_PATH" ]; then
+    echo "Cloning repository..."
+    git clone "$REPO_URL"
+    if [ $? -ne 0 ]; then
+        echo "Error: Git clone failed. Install Git first."
+        exit 1
+    fi
+fi
+
+# Navigate to results directory
+cd "$REPO_PATH/${resultsDir}"
+
+# Run the serve script
+if [ -f "${resultsDir}.sh" ]; then
+    echo "Starting viewer with serve script..."
+    bash ${resultsDir}.sh
+else
+    echo "Serve script not found. Running simple HTTP server..."
+    python3 -m http.server 8080 > /dev/null 2>&1 &
+    SERVER_PID=$!
+    sleep 2
+    echo "Opening viewer at http://localhost:8080/.bin/${resultsDir}.html"
+    
+    # Open browser
+    if command -v xdg-open &>/dev/null; then
+        xdg-open "http://localhost:8080/
+.bin/${resultsDir}.html"
+    elif command -v open &>/dev/null; then
+        open "http://localhost:8080/.bin/${resultsDir}.html"
+    fi
+    
+    echo "Press Ctrl+C to stop the server..."
+    wait $SERVER_PID
+fi`;
                 
                 plotContainer.innerHTML = `
                     <div style="padding: 40px; text-align: center;">
@@ -690,46 +782,53 @@ function renderPlots() {
                                 📊 Interactive Analysis Viewer
                             </h3>
                             <p style="color: var(--text-secondary); margin-bottom: 25px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">
-                                This project uses the <strong>AnalysisToolbox</strong> framework with an 
-                                interactive HTML viewer for exploring analysis results. The viewer includes 
-                                built-in export functionality for PNG, SVG, and PDF formats.
+                                This project uses the <strong>AnalysisToolbox</strong> framework. The viewer 
+                                requires a local server to access parquet data files with full functionality.
                             </p>
                         </div>
                         
-                        <div style="background: var(--bg-secondary, #f8f9fa); border: 2px solid var(--accent-primary); border-radius: 8px; padding: 30px; max-width: 600px; margin: 0 auto 30px auto;">
+                        <div style="background: var(--bg-secondary, #f8f9fa); border: 2px solid var(--accent-primary); border-radius: 8px; padding: 30px; max-width: 700px; margin: 0 auto 30px auto;">
                             <h4 style="margin: 0 0 20px 0; color: var(--text-primary); font-size: 1.2em;">
-                                🚀 Open Viewer
+                                🚀 Launch Viewer with Server
                             </h4>
                             
-                            <a href="${plotData.viewer_url}" 
-                               target="_blank" 
-                               rel="noopener noreferrer"
-                               style="display: inline-block; padding: 14px 32px; background: var(--accent-primary); color: white; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 1.05em; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                🌐 Launch Interactive Viewer
-                            </a>
-                            
-                            <p style="font-size: 0.9em; color: var(--text-muted); margin-top: 15px; line-height: 1.5;">
-                                Opens in new tab • Full functionality with GitHub Pages
+                            <p style="font-size: 0.95em; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6;">
+                                Download a launcher script that automatically clones the repository, 
+                                starts the data server, and opens the viewer in your browser.
                             </p>
+                            
+                            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+                                <button onclick='downloadScript("${repoName}_viewer_windows.ps1", \`${windowsLauncher.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)' 
+                                        style="padding: 12px 24px; background: #0078D4; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 1em; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    🪟 Windows Launcher
+                                </button>
+                                <button onclick='downloadScript("${repoName}_viewer_unix.sh", \`${unixLauncher.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`)' 
+                                        style="padding: 12px 24px; background: #2D9140; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 1em; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    🐧 Linux/Mac Launcher
+                                </button>
+                            </div>
                             
                             <details style="margin-top: 20px; text-align: left;">
                                 <summary style="cursor: pointer; font-weight: 600; color: var(--text-secondary); padding: 8px; background: var(--bg-primary); border-radius: 4px;">
-                                    📝 Local Access Instructions
+                                    📝 Manual Setup Instructions
                                 </summary>
                                 <div style="margin-top: 15px; padding: 15px; background: var(--bg-primary); border-radius: 4px; font-size: 0.9em; line-height: 1.7; color: var(--text-secondary);">
-                                    <p style="margin: 0 0 10px 0;">If GitHub Pages is not enabled:</p>
+                                    <p style="margin: 0 0 10px 0; font-weight: 600;">If you prefer manual setup:</p>
                                     <ol style="margin: 0; padding-left: 20px;">
-                                        <li>Get the repository from <a href="${plotItem.repo_url}" target="_blank" style="color: var(--accent-primary);">Projects section</a></li>
-                                        <li>Navigate to <code style="background: var(--code-bg, #e9ecef); padding: 2px 6px; border-radius: 3px;">${plotData.results_dir}/</code></li>
-                                        <li>Run: <code style="background: var(--code-bg, #e9ecef); padding: 2px 6px; border-radius: 3px;">./${plotData.results_dir}.sh</code></li>
-                                        <li>Viewer opens at <code style="background: var(--code-bg, #e9ecef); padding: 2px 6px; border-radius: 3px;">http://localhost:8080</code></li>
+                                        <li>Clone: <code style="background: var(--code-bg, #e9ecef); padding: 2px 6px; border-radius: 3px;">git clone https://github.com/${repoPath}.git</code></li>
+                                        <li>Navigate: <code style="background: var(--code-bg, #e9ecef); padding: 2px 6px; border-radius: 3px;">cd ${repoName}/${resultsDir}</code></li>
+                                        <li>Run: <code style="background: var(--code-bg, #e9ecef); padding: 2px 6px; border-radius: 3px;">bash ${resultsDir}.sh</code> (Unix) or <code style="background: var(--code-bg, #e9ecef); padding: 2px 6px; border-radius: 3px;">python -m http.server 8080</code></li>
+                                        <li>Open: <code style="background: var(--code-bg, #e9ecef); padding: 2px 6px; border-radius: 3px;">http://localhost:8080/.bin/${resultsDir}.html</code></li>
                                     </ol>
+                                    <p style="margin: 10px 0 0 0; font-size: 0.9em; color: var(--text-muted);">
+                                        💡 Requires: Git and Python 3
+                                    </p>
                                 </div>
                             </details>
                         </div>
                         
                         <div style="max-width: 700px; margin: 0 auto; padding: 25px; background: var(--bg-tertiary, #f0f0f0); border-radius: 8px;">
-                            <h4 style="margin: 0 0 15px 0; color: var(--text-primary);">Built-in Viewer Features</h4>
+                            <h4 style="margin: 0 0 15px 0; color: var(--text-primary);">Viewer Features</h4>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; font-size: 0.9em; color: var(--text-secondary); text-align: left;">
                                 <div>✓ Interactive Plotly plots</div>
                                 <div>✓ Export PNG/SVG/PDF</div>
@@ -743,6 +842,21 @@ function renderPlots() {
                         </div>
                     </div>
                 `;
+                
+                // Add download script function if not already present
+                if (!window.downloadScript) {
+                    window.downloadScript = function(filename, content) {
+                        const blob = new Blob([content], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    };
+                }
             }
             // Handle parquet files - fetch and render directly
             else if (plotData.type === 'parquet') {
