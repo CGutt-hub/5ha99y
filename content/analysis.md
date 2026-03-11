@@ -1,5 +1,6 @@
 +++
 title = "Open Data"
+template = "analysis.html"
 +++
 
 *Real-time analysis results from ongoing research projects. Data is loaded directly from source repositories.*
