@@ -1994,7 +1994,8 @@ async function initAnalysisPage() {
     
     try {
         // Fetch GitHub username from our own data
-        const githubDataResponse = await fetch('/data/github.json');
+        const baseUrl = (window.SITE_BASE_URL || '').replace(/\/$/, '') + '/';
+        const githubDataResponse = await fetch(baseUrl + 'data/github.json');
         if (!githubDataResponse.ok) {
             throw new Error('Could not load GitHub data');
         }
