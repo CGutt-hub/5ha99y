@@ -1675,26 +1675,40 @@ function getL2ProcessNames() {
     }
 
     const l2Files = allFiles.filter(f => f.level === 'l2');
-    if (l2Files.length === 0 || !window.pipelineData?.processes) return l2Names;
 
-    // Map l2 files to their producer processes via suffix matching
-    const suffixChecks = [
-        ['_concat', 'concatenating'], ['_psd', 'psd'], ['_ols', 'ols'],
-        ['_windowed', 'window'], ['_epochs', 'epoch'], ['_ica', 'ica'],
-        ['_filt', 'filt'], ['_fai', 'fai'], ['_hbc', 'hbc'],
-        ['_hrv', 'hrv'], ['_eda', 'eda'], ['_reref', 'reref']
-    ];
-    for (const file of l2Files) {
-        const fn = (file.name || file.filename || '').toLowerCase();
-        for (const proc of window.pipelineData.processes) {
-            const pl = proc.name.toLowerCase();
-            for (const [fileSuffix, procMatch] of suffixChecks) {
-                if (fn.includes(fileSuffix) && pl.includes(procMatch)) {
-                    l2Names.add(proc.name);
+    if (l2Files.length > 0 && window.pipelineData?.processes) {
+        // Map l2 files to their producer processes via suffix matching
+        const suffixChecks = [
+            ['_concat', 'concatenating'], ['_psd', 'psd'], ['_ols', 'ols'],
+            ['_windowed', 'window'], ['_epochs', 'epoch'], ['_ica', 'ica'],
+            ['_filt', 'filt'], ['_fai', 'fai'], ['_hbc', 'hbc'],
+            ['_hrv', 'hrv'], ['_eda', 'eda'], ['_reref', 'reref']
+        ];
+        for (const file of l2Files) {
+            const fn = (file.name || file.filename || '').toLowerCase();
+            for (const proc of window.pipelineData.processes) {
+                const pl = proc.name.toLowerCase();
+                for (const [fileSuffix, procMatch] of suffixChecks) {
+                    if (fn.includes(fileSuffix) && pl.includes(procMatch)) {
+                        l2Names.add(proc.name);
+                    }
                 }
+                const am = fn.match(/_(be7|ea11|sam|panas|bisbas|condprof)/);
+                if (am && pl.includes(am[1])) l2Names.add(proc.name);
             }
-            const am = fn.match(/_(be7|ea11|sam|panas|bisbas|condprof)/);
-            if (am && pl.includes(am[1])) l2Names.add(proc.name);
+        }
+    }
+
+    // Fallback: if no folder-based L2 detected, use pattern heuristics
+    if (l2Names.size === 0 && window.pipelineData?.processes) {
+        const groupPatterns = [
+            /concatenating/, /ols_processor/, /bootstrap/,
+            /group_analyzer/, /interval_analyzer/, /asym_concatenating/,
+        ];
+        for (const proc of window.pipelineData.processes) {
+            for (const pat of groupPatterns) {
+                if (pat.test(proc.name)) { l2Names.add(proc.name); break; }
+            }
         }
     }
 
