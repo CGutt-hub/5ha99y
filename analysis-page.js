@@ -2089,4 +2089,3 @@ window.toggleFolder = toggleFolder;
 window.exportPlotAsPNG = exportPlotAsPNG;
 window.exportPlotAsSVG = exportPlotAsSVG;
 window.exportPlotAsPDF = exportPlotAsPDF;
-}
