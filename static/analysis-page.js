@@ -2114,10 +2114,67 @@ function renderFileTree(structure, append = false) {
     console.log('[Analysis] File tree rendered successfully');
 }
 
+// Render repos from discovery data (used by both fresh fetch and cache)
+function loadReposFromData(analysisRepos, emptyState) {
+    let loadedCount = 0;
+    for (const repoConfig of analysisRepos) {
+        const structure = {
+            repoName: repoConfig.name,
+            repoOwner: repoConfig.owner,
+            resultsDir: repoConfig.resultsDir,
+            participants: repoConfig.participants
+        };
+        
+        const hasFiles = Object.values(structure.participants).some(files => files.length > 0);
+        if (!hasFiles) continue;
+        
+        renderFileTree(structure, loadedCount > 0);
+        
+        if (loadedCount === 0) {
+            emptyState.style.display = 'none';
+        }
+        
+        // Pipeline trace uses raw.githubusercontent.com (not API, no rate limit)
+        fetchPipelineTrace(`${structure.repoOwner}/${structure.repoName}`, structure.resultsDir);
+        
+        loadedCount++;
+    }
+    
+    if (loadedCount === 0) {
+        emptyState.innerHTML = `
+            <h2>No Plot Data Found</h2>
+            <p>Found ${analysisRepos.length} result folder(s) but none contain <code>.parquet</code> files in <code>plots/</code> subfolders.</p>
+        `;
+    } else {
+        const searchInput = document.getElementById('search-box');
+        if (searchInput && !searchInput.hasAttribute('data-initialized')) {
+            searchInput.setAttribute('data-initialized', 'true');
+            searchInput.addEventListener('input', (e) => {
+                filterFileTree(e.target.value);
+            });
+        }
+    }
+}
+
 async function initAnalysisPage() {
     console.log('[Analysis] Initializing page - discovering repos...');
     
     const emptyState = document.getElementById('empty-state');
+    const CACHE_KEY = 'analysis_repos_cache';
+    const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+    
+    // Try sessionStorage cache first to avoid unnecessary API calls
+    try {
+        const cached = sessionStorage.getItem(CACHE_KEY);
+        if (cached) {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_TTL && data.length > 0) {
+                console.log('[Analysis] Using cached discovery data (' + data.length + ' repos)');
+                loadReposFromData(data, emptyState);
+                return;
+            }
+        }
+    } catch (e) { /* cache miss, proceed with API */ }
     
     // Show loading state
     emptyState.innerHTML = `
@@ -2170,48 +2227,12 @@ async function initAnalysisPage() {
         
         console.log('[Analysis] Found', analysisRepos.length, 'analysis repos');
         
-        // Render tree for each discovered repo (data already extracted from Trees API)
-        let loadedCount = 0;
-        for (const repoConfig of analysisRepos) {
-            const structure = {
-                repoName: repoConfig.name,
-                repoOwner: repoConfig.owner,
-                resultsDir: repoConfig.resultsDir,
-                participants: repoConfig.participants
-            };
-            
-            const hasFiles = Object.values(structure.participants).some(files => files.length > 0);
-            if (!hasFiles) continue;
-            
-            // Render tree in sidebar (append for multiple repos)
-            renderFileTree(structure, loadedCount > 0);
-            
-            // Hide empty state after first successful load
-            if (loadedCount === 0) {
-                emptyState.style.display = 'none';
-            }
-            
-            // Fetch pipeline trace (uses raw.githubusercontent.com, not API)
-            fetchPipelineTrace(`${structure.repoOwner}/${structure.repoName}`, structure.resultsDir);
-            
-            loadedCount++;
-        }
+        // Cache successful discovery in sessionStorage
+        try {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data: analysisRepos, timestamp: Date.now() }));
+        } catch (e) { /* storage full or unavailable */ }
         
-        if (loadedCount === 0) {
-            emptyState.innerHTML = `
-                <h2>No Plot Data Found</h2>
-                <p>Found ${analysisRepos.length} result folder(s) but none contain <code>.parquet</code> files in <code>plots/</code> subfolders.</p>
-            `;
-        } else {
-            // Initialize search after all repos loaded
-            const searchInput = document.getElementById('search-box');
-            if (searchInput && !searchInput.hasAttribute('data-initialized')) {
-                searchInput.setAttribute('data-initialized', 'true');
-                searchInput.addEventListener('input', (e) => {
-                    filterFileTree(e.target.value);
-                });
-            }
-        }
+        loadReposFromData(analysisRepos, emptyState);
         
     } catch (error) {
         console.error('[Analysis] Error initializing page:', error);
