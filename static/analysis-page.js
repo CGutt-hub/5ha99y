@@ -1949,14 +1949,16 @@ function generatePipelineTreeHTML(filename, pipelineData) {
         }
     }
 
-    // Determine L1 processes (exclude L2 group-level processes)
+    // Determine L1 vs L2 processes
     const l2Names = getL2ProcessNames();
     const l1Processes = l2Names.size > 0 ? processes.filter(p => !l2Names.has(p.name)) : processes;
-    const displayProcesses = l1Processes.length > 0 ? l1Processes : processes;
+    const displayL1 = l1Processes.length > 0 ? l1Processes : processes;
+    const l2Processes = l2Names.size > 0 ? processes.filter(p => l2Names.has(p.name)) : [];
 
-    const result = buildPipelineSVG(displayProcesses, edges, producerModule, 'pipeline-dag-svg');
+    // --- L1 Pipeline ---
+    const resultL1 = buildPipelineSVG(displayL1, edges, producerModule, 'pipeline-dag-svg');
     let html = '<div style="margin-bottom: 15px;">'
-        + '<div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #e8e8e8); margin-bottom: 8px;">Processing Pipeline</div>'
+        + '<div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #e8e8e8); margin-bottom: 8px;">Processing Pipeline' + (l2Processes.length > 0 ? ' (Participant Level)' : '') + '</div>'
         + '<div class="export-bar">'
         + '<button class="export-btn png" onclick="downloadPipelinePNG()">&#8659; PNG</button>'
         + '<button class="export-btn svg" onclick="downloadPipelineSVG()">&#8659; SVG</button>'
@@ -1964,10 +1966,10 @@ function generatePipelineTreeHTML(filename, pipelineData) {
         + '<button class="export-btn" onclick="pipelineZoom(1)" style="margin-left: 12px;" title="Zoom in">&#43;</button>'
         + '<button class="export-btn" onclick="pipelineZoom(-1)" title="Zoom out">&#8722;</button>'
         + '<button class="export-btn" onclick="pipelineZoom(0)" title="Reset zoom">&#8634;</button>'
-        + '<span style="font-size: 0.75rem; color: var(--text-muted, #999); margin-left: auto;">' + result.processCount + ' modules, ' + result.edgeCount + ' connections</span>'
+        + '<span style="font-size: 0.75rem; color: var(--text-muted, #999); margin-left: auto;">' + resultL1.processCount + ' modules, ' + resultL1.edgeCount + ' connections</span>'
         + '</div>'
-        + '<div id="pipeline-zoom-container" style="padding: 15px; background: var(--bg-tertiary, #f5f5f5); border-radius: 8px; border: 1px solid var(--border-primary, #ddd); overflow: auto; max-height: 700px; cursor: grab; position: relative;">'
-        + '<div id="pipeline-zoom-inner" style="transform-origin: 0 0; transition: transform 0.15s ease;">' + result.svg + '</div>';
+        + '<div id="pipeline-zoom-container" style="padding: 15px; background: var(--bg-tertiary, #f5f5f5); border-radius: 8px; border: 1px solid var(--border-primary, #ddd); overflow: hidden; max-height: 700px; cursor: grab; position: relative;">'
+        + '<div id="pipeline-zoom-inner" style="transform-origin: 0 0; transition: transform 0.1s ease; user-select: none;">' + resultL1.svg + '</div>';
     if (producerModule && !l2Names.has(producerModule)) {
         html += '<div style="margin-top: 8px; font-size: 0.7rem; color: var(--text-muted, #999);">'
             + '<span style="display: inline-block; width: 14px; height: 10px; background: var(--bg-secondary, #161616); border: 1.8px solid var(--accent-primary, #c9a227); border-radius: 2px; vertical-align: middle; margin-right: 4px;"></span>'
@@ -1975,6 +1977,32 @@ function generatePipelineTreeHTML(filename, pipelineData) {
             + '</div>';
     }
     html += '</div></div>';
+
+    // --- L2 Pipeline (only if L2 processes exist) ---
+    if (l2Processes.length > 0) {
+        const resultL2 = buildPipelineSVG(l2Processes, edges, producerModule, 'pipeline-dag-svg-l2');
+        html += '<hr style="border: none; border-top: 1px solid var(--border-primary, #2a2a2a); margin: 20px 0;">';
+        html += '<div style="margin-bottom: 15px;">'
+            + '<div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #e8e8e8); margin-bottom: 8px;">Processing Pipeline (Group Level)</div>'
+            + '<div class="export-bar">'
+            + '<button class="export-btn png" onclick="downloadPipelinePNG(\'l2\')">&#8659; PNG</button>'
+            + '<button class="export-btn svg" onclick="downloadPipelineSVG(\'l2\')">&#8659; SVG</button>'
+            + '<button class="export-btn pdf" onclick="downloadPipelinePDF(\'l2\')">&#8659; PDF</button>'
+            + '<button class="export-btn" onclick="pipelineZoom(1,\'l2\')" style="margin-left: 12px;" title="Zoom in">&#43;</button>'
+            + '<button class="export-btn" onclick="pipelineZoom(-1,\'l2\')" title="Zoom out">&#8722;</button>'
+            + '<button class="export-btn" onclick="pipelineZoom(0,\'l2\')" title="Reset zoom">&#8634;</button>'
+            + '<span style="font-size: 0.75rem; color: var(--text-muted, #999); margin-left: auto;">' + resultL2.processCount + ' modules, ' + resultL2.edgeCount + ' connections</span>'
+            + '</div>'
+            + '<div id="pipeline-zoom-container-l2" style="padding: 15px; background: var(--bg-tertiary, #f5f5f5); border-radius: 8px; border: 1px solid var(--border-primary, #ddd); overflow: hidden; max-height: 700px; cursor: grab; position: relative;">'
+            + '<div id="pipeline-zoom-inner-l2" style="transform-origin: 0 0; transition: transform 0.1s ease; user-select: none;">' + resultL2.svg + '</div>';
+        if (producerModule && l2Names.has(producerModule)) {
+            html += '<div style="margin-top: 8px; font-size: 0.7rem; color: var(--text-muted, #999);">'
+                + '<span style="display: inline-block; width: 14px; height: 10px; background: var(--bg-secondary, #161616); border: 1.8px solid var(--accent-primary, #c9a227); border-radius: 2px; vertical-align: middle; margin-right: 4px;"></span>'
+                + 'Highlighted: module that produced this file'
+                + '</div>';
+        }
+        html += '</div></div>';
+    }
 
     return html;
 }
@@ -2707,22 +2735,77 @@ if (document.readyState === 'loading') {
 }
 
 // Pipeline zoom/pan state and controls
-let _pipelineScale = 1;
-function pipelineZoom(dir) {
-    const inner = document.getElementById('pipeline-zoom-inner');
-    if (!inner) return;
-    if (dir === 0) { _pipelineScale = 1; }
-    else { _pipelineScale = Math.min(5, Math.max(0.3, _pipelineScale + dir * 0.25)); }
-    inner.style.transform = 'scale(' + _pipelineScale + ')';
+var _pipelineState = { scale: 1, panX: 0, panY: 0 };
+var _pipelineStateL2 = { scale: 1, panX: 0, panY: 0 };
+
+function _getPipelineEls(level) {
+    var suffix = level === 'l2' ? '-l2' : '';
+    return {
+        inner: document.getElementById('pipeline-zoom-inner' + suffix),
+        container: document.getElementById('pipeline-zoom-container' + suffix),
+        state: level === 'l2' ? _pipelineStateL2 : _pipelineState
+    };
 }
 
-// Mouse-wheel zoom on pipeline container
+function _applyPipelineTransform(inner, state) {
+    inner.style.transform = 'translate(' + state.panX + 'px,' + state.panY + 'px) scale(' + state.scale + ')';
+}
+
+function pipelineZoom(dir, level) {
+    var els = _getPipelineEls(level);
+    if (!els.inner) return;
+    var s = els.state;
+    if (dir === 0) { s.scale = 1; s.panX = 0; s.panY = 0; }
+    else { s.scale = Math.min(5, Math.max(0.3, s.scale + dir * 0.25)); }
+    _applyPipelineTransform(els.inner, s);
+}
+
+// Mouse-wheel zoom on pipeline containers
 document.addEventListener('wheel', function(e) {
-    const container = document.getElementById('pipeline-zoom-container');
-    if (!container || !container.contains(e.target)) return;
+    var container = document.getElementById('pipeline-zoom-container');
+    var containerL2 = document.getElementById('pipeline-zoom-container-l2');
+    var level = null;
+    if (container && container.contains(e.target)) level = 'l1';
+    else if (containerL2 && containerL2.contains(e.target)) level = 'l2';
+    if (!level) return;
     e.preventDefault();
-    pipelineZoom(e.deltaY < 0 ? 1 : -1);
+    pipelineZoom(e.deltaY < 0 ? 1 : -1, level === 'l2' ? 'l2' : undefined);
 }, { passive: false });
+
+// Drag-to-pan on pipeline containers
+(function() {
+    var dragging = false, dragLevel = null, startX = 0, startY = 0, startPanX = 0, startPanY = 0;
+
+    document.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;
+        var container = document.getElementById('pipeline-zoom-container');
+        var containerL2 = document.getElementById('pipeline-zoom-container-l2');
+        var level = null;
+        if (container && container.contains(e.target)) level = 'l1';
+        else if (containerL2 && containerL2.contains(e.target)) level = 'l2';
+        if (!level) return;
+        dragging = true;
+        dragLevel = level === 'l2' ? 'l2' : undefined;
+        var s = _getPipelineEls(dragLevel).state;
+        startX = e.clientX; startY = e.clientY;
+        startPanX = s.panX; startPanY = s.panY;
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!dragging) return;
+        var els = _getPipelineEls(dragLevel);
+        if (!els.inner) return;
+        var s = els.state;
+        s.panX = startPanX + (e.clientX - startX);
+        s.panY = startPanY + (e.clientY - startY);
+        _applyPipelineTransform(els.inner, s);
+    });
+
+    document.addEventListener('mouseup', function() {
+        dragging = false;
+    });
+})();
 
 // Expose functions to global scope for inline onclick handlers
 window.loadPlotFile = loadPlotFile;
