@@ -35,7 +35,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/repo_snapshots.json
+          git add -f data/repo_snapshots.json
           git diff --cached --quiet || git commit -m "Update repo snapshots [skip ci]"
           git push
 
