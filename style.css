@@ -8,7 +8,7 @@
     box-sizing: border-box;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling — Chromium */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -22,11 +22,6 @@
 }
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted, #6a6a6a);
-}
-/* Firefox */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-primary, #2a2a2a) var(--bg-secondary, #161616);
 }
 
 :root {
@@ -110,6 +105,9 @@ html[data-theme='light'] .content code {
 html {
     font-size: 16px;
     scroll-behavior: smooth;
+    /* Firefox scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-primary) var(--bg-secondary);
 }
 
 body {
