@@ -142,6 +142,7 @@
 .file-explorer {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 15px 20px;
 }
 
@@ -262,6 +263,9 @@
     align-items: center;
     gap: 6px;
     transition: background 0.15s, color 0.15s;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
 }
 
 .tree-folder:hover {
@@ -293,6 +297,8 @@
     margin: 1px 0;
     font-size: 0.85rem;
     transition: background 0.15s, color 0.15s;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .tree-item:hover {
@@ -581,7 +587,7 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 // Provide base URL to JS for asset resolution
 window.SITE_BASE_URL = "https://cgutt-hub.github.io/5ha99y";
 </script>
-<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1773664286"></script>
+<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1773665231"></script>
 
     </main>
     
