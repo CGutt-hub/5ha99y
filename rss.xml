@@ -7,7 +7,41 @@
       <generator>Zola</generator>
       <language>en</language>
       <atom:link href="https://cgutt-hub.github.io/5ha99y/rss.xml" rel="self" type="application/rss+xml"/>
-      <lastBuildDate>Mon, 09 Mar 2026 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Mon, 16 Mar 2026 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Project Update: EmotiView</title>
+          <pubDate>Mon, 16 Mar 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/</link>
+          <guid>https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/</guid>
+          <description xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;EmotiView&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;9321b84&lt;&#x2F;code&gt; Deploy: Sync public files from private repository CGutt-hub&#x2F;EmotiViewPrivate@9f6&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>Website Update</title>
+          <pubDate>Mon, 16 Mar 2026 00:00:00 +0000</pubDate>
+          <author>Unknown</author>
+          <link>https://cgutt-hub.github.io/5ha99y/blog/website-update/</link>
+          <guid>https://cgutt-hub.github.io/5ha99y/blog/website-update/</guid>
+          <description xml:base="https://cgutt-hub.github.io/5ha99y/blog/website-update/">&lt;p&gt;This website has been updated with the following changes:&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;recent-changes&quot;&gt;Recent Changes&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;c35fc8e&lt;&#x2F;code&gt; Show file size in KB for small files, MB for large&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;b81e244&lt;&#x2F;code&gt; Add drag-to-pan, remove scrollbars from pipeline, support L2 zoom&#x2F;pan&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;2389833&lt;&#x2F;code&gt; Remove L2 pipeline, fix file size, add zoom&#x2F;pan, theme-reactive plots, better la&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;139ce36&lt;&#x2F;code&gt; Restore L1&#x2F;L2 split: fallback to pattern heuristics when no l1&#x2F;l2 folders&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;b300c05&lt;&#x2F;code&gt; Add dividers, plot title, L2 export buttons matching L1 design&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The site continues to sync automatically with GitHub (projects) and ORCID (publications).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;5ha99y&quot;&gt;View source on GitHub →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</description>
+      </item>
       <item>
           <title>Project Update: AnalysisToolbox</title>
           <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
@@ -28,21 +62,6 @@
 </description>
       </item>
       <item>
-          <title>Project Update: EmotiView</title>
-          <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
-          <author>Unknown</author>
-          <link>https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/</link>
-          <guid>https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/</guid>
-          <description xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;EmotiView&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;7cd4a06&lt;&#x2F;code&gt; Deploy: Sync public files from private repository CGutt-hub&#x2F;EmotiViewPrivate@2b2&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
-</description>
-      </item>
-      <item>
           <title>Project Update: surveyWorkbench</title>
           <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
           <author>Unknown</author>
@@ -59,25 +78,6 @@
 &lt;&#x2F;ul&gt;
 &lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
-</description>
-      </item>
-      <item>
-          <title>Website Update</title>
-          <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
-          <author>Unknown</author>
-          <link>https://cgutt-hub.github.io/5ha99y/blog/website-update/</link>
-          <guid>https://cgutt-hub.github.io/5ha99y/blog/website-update/</guid>
-          <description xml:base="https://cgutt-hub.github.io/5ha99y/blog/website-update/">&lt;p&gt;This website has been updated with the following changes:&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;recent-changes&quot;&gt;Recent Changes&lt;&#x2F;h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;63e5f9b&lt;&#x2F;code&gt; Add scheduled daily updates to GitHub Action (6 AM UTC)&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;4a4dc8e&lt;&#x2F;code&gt; Enhance file item display: add download buttons for JSON and PDF&#x2F;A, and implemen&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;718f06a&lt;&#x2F;code&gt; Improve Open Data page design: hide download buttons until file selected, match&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;9ead605&lt;&#x2F;code&gt; Update pipeline visualization to show only final states (COMPLETED&#x2F;FAILED&#x2F;CACHED&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;2b5cabe&lt;&#x2F;code&gt; Move download buttons to sidebar and add pipeline tree visualization&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;The site continues to sync automatically with GitHub (projects) and ORCID (publications).&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;5ha99y&quot;&gt;View source on GitHub →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 </description>
       </item>
       <item>

@@ -5,12 +5,12 @@
     <link rel="self" type="application/atom+xml" href="https://cgutt-hub.github.io/5ha99y/tags/website/atom.xml"/>
     <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-03-09T00:00:00+00:00</updated>
+    <updated>2026-03-16T00:00:00+00:00</updated>
     <id>https://cgutt-hub.github.io/5ha99y/tags/website/atom.xml</id>
     <entry xml:lang="en">
         <title>Website Update</title>
-        <published>2026-03-09T00:00:00+00:00</published>
-        <updated>2026-03-09T00:00:00+00:00</updated>
+        <published>2026-03-16T00:00:00+00:00</published>
+        <updated>2026-03-16T00:00:00+00:00</updated>
         
         <author>
           <name>
@@ -26,11 +26,11 @@
         <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/website-update/">&lt;p&gt;This website has been updated with the following changes:&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;recent-changes&quot;&gt;Recent Changes&lt;&#x2F;h2&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;code&gt;63e5f9b&lt;&#x2F;code&gt; Add scheduled daily updates to GitHub Action (6 AM UTC)&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;4a4dc8e&lt;&#x2F;code&gt; Enhance file item display: add download buttons for JSON and PDF&#x2F;A, and implemen&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;718f06a&lt;&#x2F;code&gt; Improve Open Data page design: hide download buttons until file selected, match&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;9ead605&lt;&#x2F;code&gt; Update pipeline visualization to show only final states (COMPLETED&#x2F;FAILED&#x2F;CACHED&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;2b5cabe&lt;&#x2F;code&gt; Move download buttons to sidebar and add pipeline tree visualization&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;c35fc8e&lt;&#x2F;code&gt; Show file size in KB for small files, MB for large&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;b81e244&lt;&#x2F;code&gt; Add drag-to-pan, remove scrollbars from pipeline, support L2 zoom&#x2F;pan&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;2389833&lt;&#x2F;code&gt; Remove L2 pipeline, fix file size, add zoom&#x2F;pan, theme-reactive plots, better la&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;139ce36&lt;&#x2F;code&gt; Restore L1&#x2F;L2 split: fallback to pattern heuristics when no l1&#x2F;l2 folders&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;b300c05&lt;&#x2F;code&gt; Add dividers, plot title, L2 export buttons matching L1 design&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;The site continues to sync automatically with GitHub (projects) and ORCID (publications).&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;5ha99y&quot;&gt;View source on GitHub →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
