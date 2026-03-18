@@ -2518,8 +2518,11 @@ function renderFileTree(structure, append = false) {
     const { repoName, repoOwner, description, participants } = structure;
     
     const participantKeys = Object.keys(participants).sort();
-    const infoId = 'repo-info-' + repoName.replace(/[^a-zA-Z0-9]/g, '_');
     
+    // Store description for lookup by showRepoInfo
+    window._repoDescriptions = window._repoDescriptions || {};
+    window._repoDescriptions[repoOwner + '/' + repoName] = description || '';
+
     // Build tree HTML: Project > Info + Participants > Files
     let html = `
         <div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false">
@@ -2527,13 +2530,7 @@ function renderFileTree(structure, append = false) {
             <span>${repoName}</span>
         </div>
         <div class="tree-folder-content" style="margin-left: 10px;">
-            <div class="tree-item" onclick="toggleRepoInfo('${infoId}', '${repoOwner}', '${repoName}')" style="font-style: italic; color: var(--accent-primary, #c9a227); font-size: 0.82rem; cursor: pointer;">
-                ℹ Project Info
-            </div>
-            <div id="${infoId}" style="display: none; padding: 8px 12px; font-size: 0.8rem; color: var(--text-secondary, #aaa); border-left: 2px solid var(--accent-primary, #c9a227); margin: 4px 0 8px 0; max-height: 300px; overflow-y: auto;">
-                ${description ? '<p style="margin-bottom: 6px;">' + description + '</p>' : ''}
-                <div id="${infoId}-readme" style="color: var(--text-muted, #999); font-size: 0.78rem;">Loading README...</div>
-            </div>
+            <div class="tree-item" onclick="showRepoInfo('${repoOwner}', '${repoName}')" style="font-style: italic; color: var(--accent-primary, #c9a227); font-size: 0.82rem; cursor: pointer;">
     `;
     
     participantKeys.forEach(participant => {
@@ -2822,41 +2819,60 @@ document.addEventListener('wheel', function(e) {
 })();
 
 // Toggle project info panel and lazy-load README
-function toggleRepoInfo(infoId, owner, repoName) {
-    var panel = document.getElementById(infoId);
-    if (!panel) return;
-    var visible = panel.style.display !== 'none';
-    panel.style.display = visible ? 'none' : 'block';
-    if (!visible && !panel.dataset.loaded) {
-        panel.dataset.loaded = '1';
-        var readmeEl = document.getElementById(infoId + '-readme');
-        fetch('https://raw.githubusercontent.com/' + owner + '/' + repoName + '/main/README.md')
-            .then(function(r) { return r.ok ? r.text() : null; })
-            .then(function(text) {
-                if (!text) { readmeEl.textContent = 'No README available.'; return; }
-                // Simple markdown to HTML: headings, bold, italic, links, lists, code blocks
-                var html = text
-                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                    .replace(/^### (.+)$/gm, '<strong style="font-size:0.85rem;">$1</strong>')
-                    .replace(/^## (.+)$/gm, '<strong style="font-size:0.9rem;">$1</strong>')
-                    .replace(/^# (.+)$/gm, '<strong style="font-size:0.95rem;">$1</strong>')
-                    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                    .replace(/`([^`]+)`/g, '<code style="background:var(--bg-tertiary,#1c1c1c);padding:1px 4px;border-radius:3px;font-size:0.78rem;">$1</code>')
-                    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--accent-primary,#c9a227);">$1</a>')
-                    .replace(/^\- (.+)$/gm, '• $1')
-                    .replace(/\n\n/g, '<br><br>')
-                    .replace(/\n/g, '<br>');
-                readmeEl.innerHTML = html;
-            })
-            .catch(function() { readmeEl.textContent = 'Could not load README.'; });
-    }
+function showRepoInfo(owner, repoName) {
+    var description = (window._repoDescriptions || {})[owner + '/' + repoName] || '';
+    var plotDisplays = document.getElementById('plot-displays');
+    var emptyState = document.getElementById('empty-state');
+    if (emptyState) emptyState.style.display = 'none';
+
+    // Generate pipeline tree HTML if available
+    var pipelineHTML = window.pipelineData
+        ? generatePipelineTreeHTML(repoName, window.pipelineData)
+        : '';
+    var divider = '<hr style="border: none; border-top: 1px solid var(--border-primary, #2a2a2a); margin: 25px 0;">';
+
+    plotDisplays.innerHTML = `
+        <div class="plot-display active" id="current-plot">
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary, #e8e8e8); margin-bottom: 4px;">${repoName}</div>
+                ${description ? '<div style="font-size: 0.9rem; color: var(--text-secondary, #aaa); margin-bottom: 16px;">' + description.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' : ''}
+            </div>
+            <div id="repo-readme" style="padding: 20px; background: var(--bg-secondary, #161616); border: 1px solid var(--border-primary, #2a2a2a); border-radius: 8px; min-height: 200px; line-height: 1.6; font-size: 0.9rem; color: var(--text-primary, #e8e8e8);">
+                <div style="display: flex; align-items: center; justify-content: center; height: 120px; flex-direction: column; gap: 10px;">
+                    <div class="spinner" style="width: 30px; height: 30px; border: 3px solid var(--bg-tertiary, #ddd); border-top: 3px solid var(--accent-primary, #c9a227); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="color: var(--text-muted, #999); font-size: 0.85rem;">Loading README...</p>
+                </div>
+            </div>
+            ${pipelineHTML ? divider + pipelineHTML : ''}
+        </div>
+    `;
+
+    var readmeEl = document.getElementById('repo-readme');
+    fetch('https://raw.githubusercontent.com/' + owner + '/' + repoName + '/main/README.md')
+        .then(function(r) { return r.ok ? r.text() : null; })
+        .then(function(text) {
+            if (!text) { readmeEl.innerHTML = '<p style="color: var(--text-muted, #999);">No README available.</p>'; return; }
+            var html = text
+                .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/^### (.+)$/gm, '<h3 style="font-size: 1rem; margin: 16px 0 8px 0; color: var(--text-primary, #e8e8e8);">$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2 style="font-size: 1.1rem; margin: 20px 0 10px 0; color: var(--text-primary, #e8e8e8);">$1</h2>')
+                .replace(/^# (.+)$/gm, '<h1 style="font-size: 1.25rem; margin: 24px 0 12px 0; color: var(--text-primary, #e8e8e8);">$1</h1>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/`([^`]+)`/g, '<code style="background: var(--bg-tertiary, #1c1c1c); padding: 2px 6px; border-radius: 3px; font-size: 0.85rem;">$1</code>')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color: var(--accent-primary, #c9a227);">$1</a>')
+                .replace(/^\- (.+)$/gm, '<li style="margin-left: 16px;">$1</li>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>');
+            readmeEl.innerHTML = html;
+        })
+        .catch(function() { readmeEl.innerHTML = '<p style="color: var(--text-muted, #999);">Could not load README.</p>'; });
 }
 
 // Expose functions to global scope for inline onclick handlers
 window.loadPlotFile = loadPlotFile;
 window.toggleFolder = toggleFolder;
-window.toggleRepoInfo = toggleRepoInfo;
+window.showRepoInfo = showRepoInfo;
 window.exportPlotAsPNG = exportPlotAsPNG;
 window.exportPlotAsSVG = exportPlotAsSVG;
 window.exportPlotAsPDF = exportPlotAsPDF;
