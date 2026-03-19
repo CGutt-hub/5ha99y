@@ -2024,10 +2024,6 @@ function toggleFolder(element) {
         icon.style.transform = 'rotate(90deg)';
         content.classList.add('expanded');
         element.dataset.expanded = 'true';
-        // Auto-show README when expanding a repo-level folder
-        if (element.dataset.repoOwner && element.dataset.repoName) {
-            showRepoInfo(element.dataset.repoOwner, element.dataset.repoName);
-        }
     }
 }
 
@@ -2547,17 +2543,12 @@ function countTreeFiles(node) {
 
 // Render a single file item in the sidebar tree
 function renderFileItem(file) {
+    if (!file.name.endsWith('.parquet')) return '';
     const sizeKB = (file.size / 1024).toFixed(1);
     const displayName = file.name.replace(/_/g, '_<wbr>').replace(/\./g, '<wbr>.');
     const folderLabel = (file.folderPath || '').replace(/'/g, "\\'");
-    if (file.name.endsWith('.parquet')) {
-        return `
-            <div class="tree-item" onclick="loadPlotFile('${file.url}', '${file.name}', '${folderLabel}')" data-filename="${file.name.toLowerCase()}">
-                📊 ${displayName}
-                <span style="color: var(--text-muted, #999); font-size: 0.8em; margin-left: 5px;">(${sizeKB}KB)</span>
-            </div>
-        `;
-    } else if (/\.(log|txt)$/i.test(file.name)) {
+    const isLog = /\.log\.parquet$/i.test(file.name);
+    if (isLog) {
         return `
             <div class="tree-item" onclick="loadLogFile('${file.url}', '${file.name}', '${folderLabel}')" data-filename="${file.name.toLowerCase()}">
                 📄 ${displayName}
@@ -2565,7 +2556,12 @@ function renderFileItem(file) {
             </div>
         `;
     }
-    return '';
+    return `
+        <div class="tree-item" onclick="loadPlotFile('${file.url}', '${file.name}', '${folderLabel}')" data-filename="${file.name.toLowerCase()}">
+            📊 ${displayName}
+            <span style="color: var(--text-muted, #999); font-size: 0.8em; margin-left: 5px;">(${sizeKB}KB)</span>
+        </div>
+    `;
 }
 
 // Recursively render a tree node into sidebar HTML
@@ -2965,13 +2961,25 @@ async function loadLogFile(url, displayName, participant) {
     `;
 
     try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Failed to fetch');
-        const text = await response.text();
+        await waitForHyparquet();
+        const file = await window.hyparquetAsyncBufferFromUrl({ url, byteLength: undefined });
+        const rows = await window.hyparquetReadObjects({ file });
+        // Extract text: join all string values from all rows
+        let text = '';
+        if (rows.length > 0) {
+            const cols = Object.keys(rows[0]);
+            // Find the column most likely containing log text
+            const textCol = cols.find(c => /log|text|message|content|output/i.test(c)) || cols[0];
+            text = rows.map(r => {
+                const val = r[textCol];
+                return val != null ? String(val) : '';
+            }).join('\n');
+        }
         window._logLines = text.split('\n');
         window._logFilter = 'all';
         renderLogLines('all');
     } catch (e) {
+        console.error('[Analysis] Error loading log parquet:', e);
         document.getElementById('log-content').innerHTML = '<span style="color: var(--text-muted, #999);">Could not load log file.</span>';
     }
 }
