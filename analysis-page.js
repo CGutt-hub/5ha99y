@@ -1373,9 +1373,12 @@ async function fetchPipelineTrace(repoPath, resultsDir) {
         const pipeline = parsePipelineTrace(text);
         
         if (pipeline && pipeline.processes.length > 0) {
-            // Store globally so it can be used when displaying plots
+            // Store per-repo so each project gets its own pipeline
+            if (!window.pipelineDataMap) window.pipelineDataMap = {};
+            window.pipelineDataMap[repoPath] = pipeline;
+            // Keep legacy global for backward compat (last loaded)
             window.pipelineData = pipeline;
-            console.log('[Pipeline] Loaded pipeline with', pipeline.processes.length, 'modules');
+            console.log('[Pipeline] Loaded pipeline for', repoPath, 'with', pipeline.processes.length, 'modules');
         }
     } catch (error) {
         console.warn('[Pipeline] Could not load pipeline trace:', error);
@@ -2133,9 +2136,11 @@ async function loadPlotFile(url, displayName, participant) {
         `;
     }
     
-    // Generate pipeline tree HTML if available
-    const pipelineHTML = window.pipelineData 
-        ? generatePipelineTreeHTML(displayName, window.pipelineData)
+    // Generate pipeline tree HTML if available — resolve correct repo
+    const repoPath = url.replace('https://raw.githubusercontent.com/', '').split('/').slice(0, 2).join('/');
+    const pipelineForRepo = (window.pipelineDataMap && window.pipelineDataMap[repoPath]) || window.pipelineData;
+    const pipelineHTML = pipelineForRepo 
+        ? generatePipelineTreeHTML(displayName, pipelineForRepo)
         : '';
     
     // Create plot display — plot first (specific), then pipeline tree (global overview) below
@@ -2482,6 +2487,8 @@ async function discoverAnalysisRepos(username) {
                         // Get relative path within results dir
                         const relPath = item.path.replace(prefix, '');
                         const parts = relPath.split('/');
+                        // Skip dotfiles and files inside dot-directories (e.g. .bin/)
+                        if (parts.some(p => p.startsWith('.'))) continue;
                         const fileName = parts.pop();
                         const folderPath = parts.join('/');
                         if (!folders[folderPath]) folders[folderPath] = [];
@@ -2542,7 +2549,7 @@ function countTreeFiles(node) {
 function renderFileItem(file) {
     const sizeKB = (file.size / 1024).toFixed(1);
     const displayName = file.name.replace(/_/g, '_<wbr>').replace(/\./g, '<wbr>.');
-    const folderLabel = file.folderPath || '';
+    const folderLabel = (file.folderPath || '').replace(/'/g, "\\'");
     if (file.name.endsWith('.parquet')) {
         return `
             <div class="tree-item" onclick="loadPlotFile('${file.url}', '${file.name}', '${folderLabel}')" data-filename="${file.name.toLowerCase()}">
@@ -2694,7 +2701,7 @@ async function initAnalysisPage() {
     console.log('[Analysis] Initializing page - discovering repos...');
     
     const emptyState = document.getElementById('empty-state');
-    const CACHE_KEY = 'analysis_repos_cache';
+    const CACHE_KEY = 'analysis_repos_cache_v2';
     const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
     
     // Try sessionStorage cache first to avoid unnecessary API calls
@@ -2877,9 +2884,11 @@ function showRepoInfo(owner, repoName) {
     var emptyState = document.getElementById('empty-state');
     if (emptyState) emptyState.style.display = 'none';
 
-    // Generate pipeline tree HTML if available
-    var pipelineHTML = window.pipelineData
-        ? generatePipelineTreeHTML(repoName, window.pipelineData)
+    // Generate pipeline tree HTML if available — resolve correct repo
+    var repoPath = owner + '/' + repoName;
+    var pipelineForRepo = (window.pipelineDataMap && window.pipelineDataMap[repoPath]) || window.pipelineData;
+    var pipelineHTML = pipelineForRepo
+        ? generatePipelineTreeHTML(repoName, pipelineForRepo)
         : '';
     var divider = '<hr style="border: none; border-top: 1px solid var(--border-primary, #2a2a2a); margin: 25px 0;">';
 
