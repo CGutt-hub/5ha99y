@@ -58,18 +58,18 @@ async function fetchParquetData(repoNameOrUrl, filePathOrSize = null) {
         
         console.log('[Analysis] Fetching:', url);
         
-        // Use hyparquet's asyncBufferFromUrl for efficient HTTP range requests
-        const file = await window.hyparquetAsyncBufferFromUrl({ url, byteLength: fileSize || undefined });
+        // Fetch full file (raw.githubusercontent.com doesn't support HTTP range requests)
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status} fetching ${url}`);
+        const arrayBuffer = await response.arrayBuffer();
         
         console.log('[Analysis] Parsing parquet file with hyparquet...');
         const parseStart = Date.now();
-        const rows = await window.hyparquetReadObjects({ file });
+        const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
         const parseTime = ((Date.now() - parseStart) / 1000).toFixed(1);
         console.log(`[Analysis] Parsed ${rows.length} rows in ${parseTime}s`);
         
-        // Also fetch the full buffer for download capability
-        const arrayBuffer = await file.slice(0, file.byteLength);
-        const sizeMB = (file.byteLength / 1024 / 1024).toFixed(2);
+        const sizeMB = (arrayBuffer.byteLength / 1024 / 1024).toFixed(2);
         console.log(`[Analysis] File size: ${sizeMB} MB`);
         
         return { rows, arrayBuffer };
@@ -2894,7 +2894,7 @@ function showRepoInfo(owner, repoName) {
                 <div style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary, #e8e8e8); margin-bottom: 4px;">${repoName}</div>
                 ${description ? '<div style="font-size: 0.9rem; color: var(--text-secondary, #aaa); margin-bottom: 16px;">' + description.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' : ''}
             </div>
-            <div id="repo-readme" style="padding: 20px; background: var(--bg-secondary, #161616); border: 1px solid var(--border-primary, #2a2a2a); border-radius: 8px; min-height: 200px; line-height: 1.6; font-size: 0.9rem; color: var(--text-primary, #e8e8e8);">
+            <div id="repo-readme" style="padding: 20px; background: var(--bg-secondary, #161616); border: 1px solid var(--border-primary, #2a2a2a); border-radius: 8px; min-height: 200px; max-height: calc(100vh - 280px); overflow-y: auto; line-height: 1.6; font-size: 0.9rem; color: var(--text-primary, #e8e8e8);">
                 <div style="display: flex; align-items: center; justify-content: center; height: 120px; flex-direction: column; gap: 10px;">
                     <div class="spinner" style="width: 30px; height: 30px; border: 3px solid var(--bg-tertiary, #ddd); border-top: 3px solid var(--accent-primary, #c9a227); border-radius: 50%; animation: spin 1s linear infinite;"></div>
                     <p style="color: var(--text-muted, #999); font-size: 0.85rem;">Loading README...</p>
@@ -2962,8 +2962,10 @@ async function loadLogFile(url, displayName, participant) {
 
     try {
         await waitForHyparquet();
-        const file = await window.hyparquetAsyncBufferFromUrl({ url, byteLength: undefined });
-        const rows = await window.hyparquetReadObjects({ file });
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status} fetching log ${url}`);
+        const arrayBuffer = await response.arrayBuffer();
+        const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
         // Extract text: join all string values from all rows
         let text = '';
         if (rows.length > 0) {
