@@ -63,6 +63,16 @@ async function fetchParquetData(repoNameOrUrl, filePathOrSize = null) {
         if (!response.ok) throw new Error(`HTTP ${response.status} fetching ${url}`);
         const arrayBuffer = await response.arrayBuffer();
         
+        // Detect Git LFS pointer (starts with "version https://git-lfs")
+        const header = new Uint8Array(arrayBuffer, 0, Math.min(40, arrayBuffer.byteLength));
+        const headerStr = new TextDecoder().decode(header);
+        if (headerStr.startsWith('version https://git-lfs')) {
+            // Parse real size from LFS pointer
+            const sizeMatch = new TextDecoder().decode(new Uint8Array(arrayBuffer)).match(/^size\s+(\d+)/m);
+            const realSize = sizeMatch ? sizeMatch[1] : 'unknown';
+            throw new Error(`GIT_LFS:This file is stored in Git LFS (actual size: ${realSize} bytes). The data has not been pushed to LFS storage on GitHub yet.`);
+        }
+        
         console.log('[Analysis] Parsing parquet file with hyparquet...');
         const parseStart = Date.now();
         const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
@@ -899,18 +909,8 @@ function renderPlots() {
             readmeContent.className = 'readme-content';
             readmeContent.style.marginTop = '10px';
             readmeContent.style.lineHeight = '1.6';
-            // Simple markdown-to-HTML (basic support for common patterns)
-            let htmlContent = plotItem.readme
-                .replace(/^### (.+)$/gm, '<h4>$1</h4>')
-                .replace(/^## (.+)$/gm, '<h3>$1</h3>')
-                .replace(/^# (.+)$/gm, '<h2>$1</h2>')
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                .replace(/`(.+?)`/g, '<code>$1</code>')
-                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
-                .replace(/\n\n/g, '</p><p>')
-                .replace(/^(.+)$/gm, '<p>$1</p>');
-            readmeContent.innerHTML = htmlContent;
+            readmeContent.className = 'readme-content rendered-markdown';
+            readmeContent.innerHTML = typeof marked !== 'undefined' ? marked.parse(plotItem.readme) : plotItem.readme;
             
             readmeSection.appendChild(summary);
             readmeSection.appendChild(readmeContent);
@@ -2218,7 +2218,10 @@ async function loadPlotFile(url, displayName, participant) {
         let errorDetails = error.message;
         let recommendations = '';
         
-        if (error.message.includes('Parquet library failed')) {
+        if (error.message.startsWith('GIT_LFS:')) {
+            errorDetails = 'File stored in Git LFS';
+            recommendations = 'This parquet file uses Git Large File Storage. The actual data has not been pushed to GitHub LFS yet, so only the pointer file is available. Please push the LFS objects with <code>git lfs push --all origin</code> from the source repository.';
+        } else if (error.message.includes('Parquet library failed')) {
             errorDetails = 'Parquet library could not load';
             recommendations = 'Please check your internet connection and try refreshing the page.';
         } else if (error.message.includes('HTTP 404')) {
@@ -2909,19 +2912,7 @@ function showRepoInfo(owner, repoName) {
         .then(function(r) { return r.ok ? r.text() : null; })
         .then(function(text) {
             if (!text) { readmeEl.innerHTML = '<p style="color: var(--text-muted, #999);">No README available.</p>'; return; }
-            var html = text
-                .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(/^### (.+)$/gm, '<h3 style="font-size: 1rem; margin: 16px 0 8px 0; color: var(--text-primary, #e8e8e8);">$1</h3>')
-                .replace(/^## (.+)$/gm, '<h2 style="font-size: 1.1rem; margin: 20px 0 10px 0; color: var(--text-primary, #e8e8e8);">$1</h2>')
-                .replace(/^# (.+)$/gm, '<h1 style="font-size: 1.25rem; margin: 24px 0 12px 0; color: var(--text-primary, #e8e8e8);">$1</h1>')
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.+?)\*/g, '<em>$1</em>')
-                .replace(/`([^`]+)`/g, '<code style="background: var(--bg-tertiary, #1c1c1c); padding: 2px 6px; border-radius: 3px; font-size: 0.85rem;">$1</code>')
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color: var(--accent-primary, #c9a227);">$1</a>')
-                .replace(/^\- (.+)$/gm, '<li style="margin-left: 16px;">$1</li>')
-                .replace(/\n\n/g, '<br><br>')
-                .replace(/\n/g, '<br>');
-            readmeEl.innerHTML = html;
+            readmeEl.innerHTML = '<div class="rendered-markdown">' + marked.parse(text) + '</div>';
         })
         .catch(function() { readmeEl.innerHTML = '<p style="color: var(--text-muted, #999);">Could not load README.</p>'; });
 }
@@ -2965,6 +2956,13 @@ async function loadLogFile(url, displayName, participant) {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status} fetching log ${url}`);
         const arrayBuffer = await response.arrayBuffer();
+        
+        // Detect Git LFS pointer
+        const hdr = new TextDecoder().decode(new Uint8Array(arrayBuffer, 0, Math.min(40, arrayBuffer.byteLength)));
+        if (hdr.startsWith('version https://git-lfs')) {
+            throw new Error('This log file is stored in Git LFS and the data has not been pushed to LFS storage yet.');
+        }
+        
         const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
         // Extract text: join all string values from all rows
         let text = '';
@@ -3032,6 +3030,7 @@ function renderLogLines(level) {
         return escaped;
     }).join('\n');
     el.innerHTML = html;
+    el.scrollTop = 0;
 }
 
 // Expose functions to global scope for inline onclick handlers
