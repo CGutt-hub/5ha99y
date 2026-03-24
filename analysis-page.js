@@ -63,6 +63,14 @@ async function fetchParquetData(repoNameOrUrl, filePathOrSize = null) {
         if (!response.ok) throw new Error(`HTTP ${response.status} fetching ${url}`);
         const arrayBuffer = await response.arrayBuffer();
         
+        // Detect Git LFS pointer stubs (small text files starting with "version https://git-lfs")
+        if (arrayBuffer.byteLength < 200) {
+            const preview = new TextDecoder().decode(arrayBuffer.slice(0, 40));
+            if (preview.startsWith('version https://git-lfs')) {
+                throw new Error('LFS_POINTER: This file is a Git LFS pointer, not actual data. The source repository needs to be redeployed with LFS disabled for the public copy.');
+            }
+        }
+        
         console.log('[Analysis] Parsing parquet file with hyparquet...');
         const parseStart = Date.now();
         const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
@@ -2208,7 +2216,10 @@ async function loadPlotFile(url, displayName, participant) {
         let errorDetails = error.message;
         let recommendations = '';
         
-        if (error.message.includes('Parquet library failed')) {
+        if (error.message.includes('LFS_POINTER')) {
+            errorDetails = 'Data not yet available';
+            recommendations = 'The source repository contains placeholder files instead of actual data. This is resolved automatically when the research pipeline redeploys. Please check back shortly.';
+        } else if (error.message.includes('Parquet library failed')) {
             errorDetails = 'Parquet library could not load';
             recommendations = 'Please check your internet connection and try refreshing the page.';
         } else if (error.message.includes('HTTP 404')) {
