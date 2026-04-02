@@ -43,41 +43,12 @@ async function parseParquetBuffer(arrayBuffer) {
     return rows;
 }
 
-// Resolve a raw.githubusercontent.com URL, handling Git LFS pointers transparently.
-// If the response is an LFS pointer stub, fetches the real content from
-// media.githubusercontent.com (GitHub's LFS CDN for public repos).
-async function fetchWithLfsResolve(url) {
+
+// Simple fetch for raw.githubusercontent.com URLs (no LFS pointer handling needed)
+async function fetchRawArrayBuffer(url) {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP ${response.status} fetching ${url}`);
-    let arrayBuffer = await response.arrayBuffer();
-
-    // Detect LFS pointer: small file starting with "version https://git-lfs"
-    if (arrayBuffer.byteLength < 250) {
-        const text = new TextDecoder().decode(new Uint8Array(arrayBuffer).slice(0, 50));
-        if (text.startsWith('version https://git-lfs')) {
-            console.log('[LFS] Detected LFS pointer for:', url);
-            // Resolve via media.githubusercontent.com (GitHub LFS CDN)
-            const mediaUrl = url.replace(
-                'raw.githubusercontent.com',
-                'media.githubusercontent.com/media'
-            );
-            console.log('[LFS] Resolving via:', mediaUrl);
-            const lfsResponse = await fetch(mediaUrl);
-            if (!lfsResponse.ok) {
-                // Parse pointer for diagnostics
-                const fullText = new TextDecoder().decode(arrayBuffer);
-                const sizeMatch = fullText.match(/size (\d+)/);
-                const declaredSize = sizeMatch ? sizeMatch[1] : 'unknown';
-                throw new Error(
-                    `LFS_RESOLVE_FAILED: Could not resolve LFS object (declared size: ${declaredSize} bytes). ` +
-                    `The LFS data may not be available on the public repository yet.`
-                );
-            }
-            arrayBuffer = await lfsResponse.arrayBuffer();
-            console.log('[LFS] Resolved successfully, size:', arrayBuffer.byteLength);
-        }
-    }
-    return arrayBuffer;
+    return await response.arrayBuffer();
 }
 
 // Fetch and parse parquet file from GitHub repo using hyparquet
@@ -95,8 +66,8 @@ async function fetchParquetData(repoNameOrUrl, filePathOrSize = null) {
         
         console.log('[Analysis] Fetching:', url);
         
-        // Fetch file, resolving LFS pointers transparently
-        const arrayBuffer = await fetchWithLfsResolve(url);
+        // Fetch file (no LFS pointer handling needed)
+        const arrayBuffer = await fetchRawArrayBuffer(url);
         
         console.log('[Analysis] Parsing parquet file with hyparquet...');
         const parseStart = Date.now();
@@ -112,8 +83,13 @@ async function fetchParquetData(repoNameOrUrl, filePathOrSize = null) {
         if (error.name === 'AbortError') {
             throw new Error('Download timeout - file is too large or connection too slow.');
         }
+        // Handle unsupported compression codecs and similar issues
+        let msg = String(error && error.message || error);
+        if (/unsupported compression codec|unsupported codec|ZSTD|Snappy|Brotli|LZ4|compression/i.test(msg)) {
+            msg = 'This parquet file uses a compression codec (e.g. ZSTD, Snappy, Brotli, LZ4) that is not supported in browser-based readers. Please re-export the file with uncompressed or GZIP compression.';
+        }
         console.error('Error fetching/parsing parquet:', error);
-        throw error;
+        throw new Error(msg);
     }
 }
 
@@ -865,7 +841,7 @@ function renderPlots() {
         };
         
         // Build hierarchical file tree (EmotiView style)
-        buildAnalysisFileTree();
+            buildFileTree();
         console.log('[Analysis] File tree built');
         
         // Fetch pipeline structure (rendered only when a plot file is accessed)
@@ -2243,9 +2219,9 @@ async function loadPlotFile(url, displayName, participant) {
         let errorDetails = error.message;
         let recommendations = '';
         
-        if (error.message.includes('LFS_RESOLVE_FAILED')) {
-            errorDetails = 'Data not yet available';
-            recommendations = 'This file uses Git LFS but the data has not been synced to the public repository yet. It will be available after the next pipeline deployment.';
+        if (/unsupported compression codec|unsupported codec|ZSTD|Snappy|Brotli|LZ4|compression/i.test(error.message)) {
+            errorDetails = 'Unsupported parquet compression codec';
+            recommendations = 'This file uses a compression codec (e.g. ZSTD, Snappy, Brotli, LZ4) that is not supported in browser-based readers. Please re-export the file with uncompressed or GZIP compression.';
         } else if (error.message.includes('Parquet library failed')) {
             errorDetails = 'Parquet library could not load';
             recommendations = 'Please check your internet connection and try refreshing the page.';
