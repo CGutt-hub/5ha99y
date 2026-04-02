@@ -1,0 +1,90 @@
+# Add this file to EmotiViewPrivate at: .github/workflows/publish.yml
+#
+# Publishes analysis results to the public EmotiView repo.
+# Converts LFS pointers back to real file content before pushing,
+# so raw.githubusercontent.com serves actual parquet data (not 129-byte stubs).
+#
+# Why de-LFS? The plot parquets are only 1.5–31 KB each (well below GitHub's
+# 100 MB push limit). LFS tracking was inherited from `.gitattributes` in the
+# private repo, but the public repo doesn't need it — and GitHub's free LFS
+# bandwidth budget causes 403 errors when the webpage tries to resolve pointers.
+
+name: Publish to EmotiView (public)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'EV_results/**'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private repo (with LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: true          # Pull actual LFS objects, not just pointers
+          fetch-depth: 1
+
+      # Verify LFS objects were actually pulled
+      - name: Verify LFS pull
+        run: |
+          echo "=== LFS status ==="
+          git lfs ls-files | head -20
+          echo "..."
+          echo "Total LFS files: $(git lfs ls-files | wc -l)"
+          # Spot-check: a plot parquet should be a real parquet, not a 129-byte pointer
+          SAMPLE=$(find EV_results -name '*.parquet' -path '*/plots/*' | head -1)
+          if [ -n "$SAMPLE" ]; then
+            SIZE=$(stat -c%s "$SAMPLE")
+            echo "Sample: $SAMPLE ($SIZE bytes)"
+            if [ "$SIZE" -lt 200 ]; then
+              echo "ERROR: LFS pull failed — file is still a pointer stub"
+              exit 1
+            fi
+          fi
+
+      - name: Prepare public content (de-LFS)
+        run: |
+          # Create a clean directory with only the results
+          mkdir -p /tmp/public-repo
+          
+          # Copy EV_results (the public-facing data)
+          cp -r EV_results /tmp/public-repo/
+          
+          # Copy README if it exists
+          [ -f README.md ] && cp README.md /tmp/public-repo/
+          
+          # Remove any .gitattributes LFS tracking from the public copy
+          rm -f /tmp/public-repo/.gitattributes
+          
+          # Verify: no LFS pointers in the copy
+          POINTERS=$(find /tmp/public-repo -name '*.parquet' -exec sh -c 'head -c 30 "$1" | grep -l "git-lfs" 2>/dev/null' _ {} \; | wc -l)
+          echo "LFS pointers remaining: $POINTERS"
+          if [ "$POINTERS" -gt 0 ]; then
+            echo "ERROR: Some files are still LFS pointers after copy"
+            find /tmp/public-repo -name '*.parquet' -exec sh -c 'head -c 30 "$1" | grep -q "git-lfs" && echo "  POINTER: $1"' _ {} \;
+            exit 1
+          fi
+          
+          # Stats
+          TOTAL=$(find /tmp/public-repo -name '*.parquet' | wc -l)
+          echo "Total parquet files to publish: $TOTAL"
+
+      - name: Push to public EmotiView repo
+        env:
+          DEPLOY_TOKEN: ${{ secrets.EMOTIVIEW_PUBLIC_TOKEN }}
+        run: |
+          cd /tmp/public-repo
+          git init
+          git config user.name "EmotiView Pipeline"
+          git config user.email "emotiview-pipeline@automated.local"
+          
+          # Do NOT install git-lfs here — we want regular blobs
+          git add -A
+          git commit -m "Update analysis results $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          
+          git remote add origin https://x-access-token:${DEPLOY_TOKEN}@github.com/CGutt-hub/EmotiView.git
+          git push --force origin HEAD:main
