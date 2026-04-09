@@ -3082,8 +3082,8 @@ async function loadLogFile(url, displayName, participant) {
 
     try {
         await waitForHyparquet();
-        // Fetch file, resolving LFS pointers transparently
-        const arrayBuffer = await fetchWithLfsResolve(url);
+        // Fetch raw parquet file from GitHub
+        const arrayBuffer = await fetchRawArrayBuffer(url);
         
         const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
         // Extract text: join all string values from all rows
