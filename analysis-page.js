@@ -175,11 +175,11 @@ function plotSpecToPlotly(rows, title, COLORS) {
     // Determine if y_data is nested (array of series arrays) or flat
     let seriesData;
     if (yDataNested.length > 0 && Array.isArray(yDataNested[0]) && Array.isArray(yDataNested[0][0])) {
-        // Double nested: y_data = [[series1_vals], [series2_vals], [series3_vals]]
+        // Double nested: y_data = [[[s1_vals], [s2_vals]]] — unwrap one layer
         seriesData = yDataNested[0];
     } else if (yDataNested.length > 0 && Array.isArray(yDataNested[0])) {
-        // Single series
-        seriesData = [yDataNested[0]];
+        // Each element is a series: [[s1_vals], [s2_vals], ...]
+        seriesData = yDataNested;
     } else {
         seriesData = [yDataNested];
     }
@@ -189,7 +189,7 @@ function plotSpecToPlotly(rows, title, COLORS) {
         if (yVarNested.length > 0 && Array.isArray(yVarNested[0]) && Array.isArray(yVarNested[0][0])) {
             varData = yVarNested[0];
         } else if (yVarNested.length > 0 && Array.isArray(yVarNested[0])) {
-            varData = [yVarNested[0]];
+            varData = yVarNested;
         }
     }
 
@@ -841,7 +841,7 @@ function renderPlots() {
         };
         
         // Build hierarchical file tree (EmotiView style)
-            buildFileTree();
+            buildAnalysisFileTree();
         console.log('[Analysis] File tree built');
         
         // Fetch pipeline structure (rendered only when a plot file is accessed)
@@ -2932,32 +2932,107 @@ function showRepoInfo(owner, repoName) {
             if (!tree[lvlKey][participant]) tree[lvlKey][participant] = [];
             tree[lvlKey][participant].push(f.filename || f.path);
         });
-        // Render as collapsible HTML
+        // Render as interactive collapsible tree
         function renderTree(obj, depth = 0) {
             const container = document.createElement('div');
             for (const key in obj) {
                 const value = obj[key];
-                const node = document.createElement('div');
-                node.style.marginLeft = (depth * 18) + 'px';
-                node.style.cursor = 'pointer';
-                node.style.fontWeight = depth === 0 ? 'bold' : 'normal';
                 if (Array.isArray(value)) {
-                    node.textContent = key + '/';
-                    const filesList = document.createElement('ul');
-                    filesList.style.margin = '4px 0 8px ' + ((depth + 1) * 18) + 'px';
+                    // Folder with file leaves
+                    const folder = document.createElement('div');
+                    folder.style.marginLeft = (depth * 18) + 'px';
+                    folder.style.padding = '4px 8px';
+                    folder.style.cursor = 'pointer';
+                    folder.style.fontWeight = 'bold';
+                    folder.style.userSelect = 'none';
+                    folder.style.display = 'flex';
+                    folder.style.alignItems = 'center';
+                    folder.style.gap = '6px';
+                    folder.style.borderRadius = '4px';
+                    folder.dataset.expanded = 'false';
+                    const icon = document.createElement('span');
+                    icon.textContent = '\u25B6';
+                    icon.style.display = 'inline-block';
+                    icon.style.width = '14px';
+                    icon.style.fontSize = '10px';
+                    icon.style.transition = 'transform 0.2s';
+                    folder.appendChild(icon);
+                    const label = document.createElement('span');
+                    label.textContent = key + '/';
+                    folder.appendChild(label);
+                    const count = document.createElement('span');
+                    count.textContent = '(' + value.length + ')';
+                    count.style.color = 'var(--text-muted, #999)';
+                    count.style.fontSize = '0.85em';
+                    count.style.marginLeft = '4px';
+                    folder.appendChild(count);
+                    const filesList = document.createElement('div');
+                    filesList.style.display = 'none';
+                    filesList.style.marginLeft = ((depth + 1) * 18) + 'px';
                     value.forEach(f => {
-                        const li = document.createElement('li');
-                        li.textContent = f;
-                        filesList.appendChild(li);
+                        const item = document.createElement('div');
+                        item.textContent = f;
+                        item.style.padding = '2px 8px';
+                        item.style.fontSize = '0.85em';
+                        item.style.color = 'var(--text-secondary, #aaa)';
+                        filesList.appendChild(item);
                     });
-                    node.appendChild(filesList);
+                    folder.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const expanded = folder.dataset.expanded === 'true';
+                        folder.dataset.expanded = expanded ? 'false' : 'true';
+                        icon.style.transform = expanded ? 'rotate(0deg)' : 'rotate(90deg)';
+                        filesList.style.display = expanded ? 'none' : 'block';
+                    });
+                    folder.addEventListener('mouseenter', function() { folder.style.background = 'var(--bg-tertiary, #333)'; });
+                    folder.addEventListener('mouseleave', function() { folder.style.background = ''; });
+                    container.appendChild(folder);
+                    container.appendChild(filesList);
                 } else if (typeof value === 'object') {
-                    node.textContent = key + '/';
-                    node.style.fontWeight = 'bold';
-                    node.style.marginTop = '6px';
-                    node.appendChild(renderTree(value, depth + 1));
+                    // Nested folder
+                    const folder = document.createElement('div');
+                    folder.style.marginLeft = (depth * 18) + 'px';
+                    folder.style.padding = '4px 8px';
+                    folder.style.cursor = 'pointer';
+                    folder.style.fontWeight = 'bold';
+                    folder.style.userSelect = 'none';
+                    folder.style.display = 'flex';
+                    folder.style.alignItems = 'center';
+                    folder.style.gap = '6px';
+                    folder.style.borderRadius = '4px';
+                    folder.style.marginTop = '4px';
+                    folder.dataset.expanded = 'false';
+                    const icon = document.createElement('span');
+                    icon.textContent = '\u25B6';
+                    icon.style.display = 'inline-block';
+                    icon.style.width = '14px';
+                    icon.style.fontSize = '10px';
+                    icon.style.transition = 'transform 0.2s';
+                    folder.appendChild(icon);
+                    const label = document.createElement('span');
+                    label.textContent = key + '/';
+                    folder.appendChild(label);
+                    const childCount = Object.keys(value).length;
+                    const count = document.createElement('span');
+                    count.textContent = '(' + childCount + ')';
+                    count.style.color = 'var(--text-muted, #999)';
+                    count.style.fontSize = '0.85em';
+                    count.style.marginLeft = '4px';
+                    folder.appendChild(count);
+                    const childContainer = renderTree(value, depth + 1);
+                    childContainer.style.display = 'none';
+                    folder.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const expanded = folder.dataset.expanded === 'true';
+                        folder.dataset.expanded = expanded ? 'false' : 'true';
+                        icon.style.transform = expanded ? 'rotate(0deg)' : 'rotate(90deg)';
+                        childContainer.style.display = expanded ? 'none' : 'block';
+                    });
+                    folder.addEventListener('mouseenter', function() { folder.style.background = 'var(--bg-tertiary, #333)'; });
+                    folder.addEventListener('mouseleave', function() { folder.style.background = ''; });
+                    container.appendChild(folder);
+                    container.appendChild(childContainer);
                 }
-                container.appendChild(node);
             }
             return container;
         }
