@@ -8,7 +8,7 @@
     <updated>2026-04-15T00:00:00+00:00</updated>
     <id>https://cgutt-hub.github.io/5ha99y/tags/github/atom.xml</id>
     <entry xml:lang="en">
-        <title>New Project: gitref</title>
+        <title>New Project: GitRef</title>
         <published>2026-04-15T00:00:00+00:00</published>
         <updated>2026-04-15T00:00:00+00:00</updated>
         
@@ -24,11 +24,11 @@
         <id>https://cgutt-hub.github.io/5ha99y/blog/new-project-gitref/</id>
         
         <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/new-project-gitref/">&lt;p&gt;A new project is now available in my &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&quot;&gt;GitHub backoffice&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;gitref&quot;&gt;gitref&lt;&#x2F;h2&gt;
-&lt;p&gt;reference management system within the git environment. Also creates a BibTeX file for LaTeX writing.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;strong&gt;Language:&lt;&#x2F;strong&gt; Multiple languages&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;gitref&quot;&gt;GitRef&lt;&#x2F;h2&gt;
+&lt;p&gt;No description&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Language:&lt;&#x2F;strong&gt; Python&lt;&#x2F;p&gt;
 &lt;p&gt;This project contains analysis pipelines, data, and documentation following my commitment to open and transparent science.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;gitref&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;GitRef&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 </content>
         
     </entry>

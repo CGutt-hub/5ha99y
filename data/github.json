@@ -1,15 +1,15 @@
 {
   "repos": [
     {
-      "name": "gitref",
-      "description": "reference management system within the git environment. Also creates a BibTeX file for LaTeX writing.",
-      "readme": "# gitref\nreference management system within the git environment. Also creates a BibTeX file for LaTeX writing.",
-      "url": "https://github.com/CGutt-hub/gitref",
-      "language": null,
+      "name": "GitRef",
+      "description": "No description",
+      "readme": "# GitRef\n\nA git-based reference manager — like Zotero, but your library is a plain git repo.\n\n## Install\n\n### pip (recommended)\n\n```bash\npip install gitref\n```\n\n### Standalone binary\n\nDownload from the [**Releases page**](https://github.com/CGutt-hub/gitref/releases/latest):\n\n| Platform | Asset | Install |\n|----------|-------|---------|\n| **Windows** | `gitref.exe` | Move to a folder on your PATH, or run: `irm https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.ps1 \\| iex` |\n| **Linux** | `GitRef-x86_64.AppImage` or `gitref` | `chmod +x` and move to `/usr/local/bin/`, or run: `curl -fsSL https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.sh \\| bash` |\n\n### From source\n\n```bash\npip install git+https://github.com/CGutt-hub/gitref.git\n```\n\n## Features\n\n- **DOI / arXiv / ISBN lookup** – paste an identifier, metadata is fetched automatically\n- **PDF download** – auto-downloads from arXiv or DOI resolvers\n- **BibTeX store** – all references in `.resources.bib` (human-readable, diffable, standard)\n- **Zip archive** – PDFs stored compactly in `.resources.zip` for git efficiency\n- **File watcher** – `gitref watch` extracts all PDFs, auto-adds dropped files, auto-repacks on close\n- **Clickable links** – `resources.md` has direct PDF links when watcher is running\n- **Git sync** – auto-commit + pull + push to keep your library in sync across machines\n- **Terminal UI** – interactive browser with search, detail view, tagging\n- **Browser extension** – one-click save from any paper page (like Zotero Connector)\n\n## Quick start\n\n```bash\n# Initialise a new library\ngitref init\n\n# Add a paper by DOI\ngitref add \"10.1038/s41586-024-07487-w\"\n\n# Add by arXiv ID\ngitref add \"2401.12345\"\n\n# Start watcher (extracts PDFs, watches for new/modified files)\ngitref watch\n\n# Open interactive TUI\ngitref browse\n\n# Sync with remote\ngitref sync\n```\n\n## Workflow\n\n**DAU-friendly PDF access** — no need to use `gitref open` / `gitref close`:\n\n1. Run `gitref watch` — this extracts all PDFs from the archive\n2. Open `resources/resources.md` and click any 📎 link to read a paper\n3. Drop a PDF into `resources/` and it's auto-added to the library\n4. Close your PDF viewer (or just hit Ctrl+C on the watcher) — files are repacked\n\n## Browser extension\n\nGitRef includes a Chrome/Edge extension (Manifest V3) that works like the Zotero Connector — click the toolbar icon on any paper page to save it to your library.\n\n### Setup\n\n1. Start the local server:\n   ```bash\n   gitref serve\n   ```\n2. Load the extension:\n   - Open `chrome://extensions` (or `edge://extensions`)\n   - Enable **Developer mode**\n   - Click **Load unpacked** and select the `extension/` folder from this repo\n3. Navigate to any paper page and click the GitRef icon — the reference (and PDF if available) is saved automatically.\n\nThe extension auto-detects DOIs, arXiv IDs, and citation metadata from the page, just like Zotero Connector.\n\n## Library structure\n\n```\n~/GitRef/\n├── .git/\n├── .github/workflows/      # auto-regenerates resources.md on push\n├── README.md\n└── resources/\n    ├── .resources.bib       # BibTeX metadata (source of truth)\n    ├── .resources.zip       # all PDFs, compressed\n    └── resources.md         # browsable table with clickable PDF links\n```\n\n## Commands\n\nRun `gitref --help` for full usage. Key commands:\n\n| Command | Description |\n|---------|-------------|\n| `gitref init` | Create a new library (git repo + bib) |\n| `gitref add <id>` | Add by DOI, arXiv ID, ISBN, or URL |\n| `gitref search <q>` | Search title, authors, tags |\n| `gitref list` | Print all entries |\n| `gitref browse` | Interactive TUI |\n| `gitref watch` | Extract all PDFs, auto-add/repack on changes |\n| `gitref open <key>` | Extract a single PDF for reading |\n| `gitref close <key>` | Repack a PDF into archive |\n| `gitref compact` | Pack all loose PDFs into archive |\n| `gitref sync` | Git add + commit + pull + push |\n| `gitref serve` | Start server for browser extension (port 7342) |\n| `gitref export` | Export library as RIS |\n\nUse `-l <path>` to specify a custom library location (default: `~/GitRef`).",
+      "url": "https://github.com/CGutt-hub/GitRef",
+      "language": "Python",
       "stars": 0,
-      "updated": "2026-04-15T13:10:33Z",
-      "pushed_at": "2026-04-15T13:10:29Z",
-      "commits_url": "https://api.github.com/repos/CGutt-hub/gitref/commits"
+      "updated": "2026-04-15T14:51:37Z",
+      "pushed_at": "2026-04-15T14:51:33Z",
+      "commits_url": "https://api.github.com/repos/CGutt-hub/GitRef/commits"
     },
     {
       "name": "EmotiView",
@@ -41,7 +41,7 @@
       "language": "JavaScript",
       "stars": 0,
       "updated": "2026-04-13T10:41:40Z",
-      "pushed_at": "2026-04-15T13:35:48Z",
+      "pushed_at": "2026-04-15T14:16:43Z",
       "commits_url": "https://api.github.com/repos/CGutt-hub/5ha99y/commits"
     },
     {
