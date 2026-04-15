@@ -66,6 +66,102 @@
     <div class="content">
         <p><em>Active development projects tracked via <a rel="external" href="https://github.com/CGutt-hub">GitHub</a>. My open backoffice for collaborative science.</em></p>
 <hr />
+<h3 id="gitref">GitRef</h3>
+<p><strong>Language:</strong> Python<br />
+<strong>Last updated:</strong> 2026-04-15</p>
+<details>
+<summary>View README</summary>
+<h1 id="gitref-1">GitRef</h1>
+<p>A git-based reference manager — like Zotero, but your library is a plain git repo.</p>
+<h2 id="install">Install</h2>
+<h3 id="pip-recommended">pip (recommended)</h3>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install gitref</span></span></code></pre><h3 id="standalone-binary">Standalone binary</h3>
+<p>Download from the <a rel="external" href="https://github.com/CGutt-hub/gitref/releases/latest"><strong>Releases page</strong></a>:</p>
+<table><thead><tr><th>Platform</th><th>Asset</th><th>Install</th></tr></thead><tbody>
+<tr><td><strong>Windows</strong></td><td><code>gitref.exe</code></td><td>Move to a folder on your PATH, or run: <code>irm https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.ps1 | iex</code></td></tr>
+<tr><td><strong>Linux</strong></td><td><code>GitRef-x86_64.AppImage</code> or <code>gitref</code></td><td><code>chmod +x</code> and move to <code>/usr/local/bin/</code>, or run: <code>curl -fsSL https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.sh | bash</code></td></tr>
+</tbody></table>
+<h3 id="from-source">From source</h3>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install git+https://github.com/CGutt-hub/gitref.git</span></span></code></pre><h2 id="features">Features</h2>
+<ul>
+<li><strong>DOI / arXiv / ISBN lookup</strong> – paste an identifier, metadata is fetched automatically</li>
+<li><strong>PDF download</strong> – auto-downloads from arXiv or DOI resolvers</li>
+<li><strong>BibTeX store</strong> – all references in <code>.resources.bib</code> (human-readable, diffable, standard)</li>
+<li><strong>Zip archive</strong> – PDFs stored compactly in <code>.resources.zip</code> for git efficiency</li>
+<li><strong>File watcher</strong> – <code>gitref watch</code> extracts all PDFs, auto-adds dropped files, auto-repacks on close</li>
+<li><strong>Clickable links</strong> – <code>resources.md</code> has direct PDF links when watcher is running</li>
+<li><strong>Git sync</strong> – auto-commit + pull + push to keep your library in sync across machines</li>
+<li><strong>Terminal UI</strong> – interactive browser with search, detail view, tagging</li>
+<li><strong>Browser extension</strong> – one-click save from any paper page (like Zotero Connector)</li>
+</ul>
+<h2 id="quick-start">Quick start</h2>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Initialise a new library</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> init</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Add a paper by DOI</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> add &quot;10.1038/s41586-024-07487-w&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Add by arXiv ID</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> add &quot;2401.12345&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Start watcher (extracts PDFs, watches for new/modified files)</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> watch</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Open interactive TUI</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> browse</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Sync with remote</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> sync</span></span></code></pre><h2 id="workflow">Workflow</h2>
+<p><strong>DAU-friendly PDF access</strong> — no need to use <code>gitref open</code> / <code>gitref close</code>:</p>
+<ol>
+<li>Run <code>gitref watch</code> — this extracts all PDFs from the archive</li>
+<li>Open <code>resources/resources.md</code> and click any 📎 link to read a paper</li>
+<li>Drop a PDF into <code>resources/</code> and it's auto-added to the library</li>
+<li>Close your PDF viewer (or just hit Ctrl+C on the watcher) — files are repacked</li>
+</ol>
+<h2 id="browser-extension">Browser extension</h2>
+<p>GitRef includes a Chrome/Edge extension (Manifest V3) that works like the Zotero Connector — click the toolbar icon on any paper page to save it to your library.</p>
+<h3 id="setup">Setup</h3>
+<ol>
+<li>Start the local server:<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> serve</span></span></code></pre></li>
+<li>Load the extension:
+<ul>
+<li>Open <code>chrome://extensions</code> (or <code>edge://extensions</code>)</li>
+<li>Enable <strong>Developer mode</strong></li>
+<li>Click <strong>Load unpacked</strong> and select the <code>extension/</code> folder from this repo</li>
+</ul>
+</li>
+<li>Navigate to any paper page and click the GitRef icon — the reference (and PDF if available) is saved automatically.</li>
+</ol>
+<p>The extension auto-detects DOIs, arXiv IDs, and citation metadata from the page, just like Zotero Connector.</p>
+<h2 id="library-structure">Library structure</h2>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>~/GitRef/</span></span>
+<span class="giallo-l"><span>├── .git/</span></span>
+<span class="giallo-l"><span>├── .github/workflows/      # auto-regenerates resources.md on push</span></span>
+<span class="giallo-l"><span>├── README.md</span></span>
+<span class="giallo-l"><span>└── resources/</span></span>
+<span class="giallo-l"><span>    ├── .resources.bib       # BibTeX metadata (source of truth)</span></span>
+<span class="giallo-l"><span>    ├── .resources.zip       # all PDFs, compressed</span></span>
+<span class="giallo-l"><span>    └── resources.md         # browsable table with clickable PDF links</span></span></code></pre><h2 id="commands">Commands</h2>
+<p>Run <code>gitref --help</code> for full usage. Key commands:</p>
+<table><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>gitref init</code></td><td>Create a new library (git repo + bib)</td></tr>
+<tr><td><code>gitref add &lt;id&gt;</code></td><td>Add by DOI, arXiv ID, ISBN, or URL</td></tr>
+<tr><td><code>gitref search &lt;q&gt;</code></td><td>Search title, authors, tags</td></tr>
+<tr><td><code>gitref list</code></td><td>Print all entries</td></tr>
+<tr><td><code>gitref browse</code></td><td>Interactive TUI</td></tr>
+<tr><td><code>gitref watch</code></td><td>Extract all PDFs, auto-add/repack on changes</td></tr>
+<tr><td><code>gitref open &lt;key&gt;</code></td><td>Extract a single PDF for reading</td></tr>
+<tr><td><code>gitref close &lt;key&gt;</code></td><td>Repack a PDF into archive</td></tr>
+<tr><td><code>gitref compact</code></td><td>Pack all loose PDFs into archive</td></tr>
+<tr><td><code>gitref sync</code></td><td>Git add + commit + pull + push</td></tr>
+<tr><td><code>gitref serve</code></td><td>Start server for browser extension (port 7342)</td></tr>
+<tr><td><code>gitref export</code></td><td>Export library as RIS</td></tr>
+</tbody></table>
+<p>Use <code>-l &lt;path&gt;</code> to specify a custom library location (default: <code>~/GitRef</code>).</p>
+</details>
+<p><a rel="external" href="https://github.com/CGutt-hub/GitRef">View on GitHub →</a></p>
+<hr />
 <h3 id="5ha99y">5ha99y</h3>
 <p><strong>Language:</strong> JavaScript<br />
 <strong>Last updated:</strong> 2026-04-15</p>
@@ -204,102 +300,6 @@
 </ul>
 </details>
 <p><a rel="external" href="https://github.com/CGutt-hub/5ha99y">View on GitHub →</a></p>
-<hr />
-<h3 id="gitref">GitRef</h3>
-<p><strong>Language:</strong> Python<br />
-<strong>Last updated:</strong> 2026-04-15</p>
-<details>
-<summary>View README</summary>
-<h1 id="gitref-1">GitRef</h1>
-<p>A git-based reference manager — like Zotero, but your library is a plain git repo.</p>
-<h2 id="install">Install</h2>
-<h3 id="pip-recommended">pip (recommended)</h3>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install gitref</span></span></code></pre><h3 id="standalone-binary">Standalone binary</h3>
-<p>Download from the <a rel="external" href="https://github.com/CGutt-hub/gitref/releases/latest"><strong>Releases page</strong></a>:</p>
-<table><thead><tr><th>Platform</th><th>Asset</th><th>Install</th></tr></thead><tbody>
-<tr><td><strong>Windows</strong></td><td><code>gitref.exe</code></td><td>Move to a folder on your PATH, or run: <code>irm https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.ps1 | iex</code></td></tr>
-<tr><td><strong>Linux</strong></td><td><code>GitRef-x86_64.AppImage</code> or <code>gitref</code></td><td><code>chmod +x</code> and move to <code>/usr/local/bin/</code>, or run: <code>curl -fsSL https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.sh | bash</code></td></tr>
-</tbody></table>
-<h3 id="from-source">From source</h3>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install git+https://github.com/CGutt-hub/gitref.git</span></span></code></pre><h2 id="features">Features</h2>
-<ul>
-<li><strong>DOI / arXiv / ISBN lookup</strong> – paste an identifier, metadata is fetched automatically</li>
-<li><strong>PDF download</strong> – auto-downloads from arXiv or DOI resolvers</li>
-<li><strong>BibTeX store</strong> – all references in <code>.resources.bib</code> (human-readable, diffable, standard)</li>
-<li><strong>Zip archive</strong> – PDFs stored compactly in <code>.resources.zip</code> for git efficiency</li>
-<li><strong>File watcher</strong> – <code>gitref watch</code> extracts all PDFs, auto-adds dropped files, auto-repacks on close</li>
-<li><strong>Clickable links</strong> – <code>resources.md</code> has direct PDF links when watcher is running</li>
-<li><strong>Git sync</strong> – auto-commit + pull + push to keep your library in sync across machines</li>
-<li><strong>Terminal UI</strong> – interactive browser with search, detail view, tagging</li>
-<li><strong>Browser extension</strong> – one-click save from any paper page (like Zotero Connector)</li>
-</ul>
-<h2 id="quick-start">Quick start</h2>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Initialise a new library</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> init</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Add a paper by DOI</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> add &quot;10.1038/s41586-024-07487-w&quot;</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Add by arXiv ID</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> add &quot;2401.12345&quot;</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Start watcher (extracts PDFs, watches for new/modified files)</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> watch</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Open interactive TUI</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> browse</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Sync with remote</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> sync</span></span></code></pre><h2 id="workflow">Workflow</h2>
-<p><strong>DAU-friendly PDF access</strong> — no need to use <code>gitref open</code> / <code>gitref close</code>:</p>
-<ol>
-<li>Run <code>gitref watch</code> — this extracts all PDFs from the archive</li>
-<li>Open <code>resources/resources.md</code> and click any 📎 link to read a paper</li>
-<li>Drop a PDF into <code>resources/</code> and it's auto-added to the library</li>
-<li>Close your PDF viewer (or just hit Ctrl+C on the watcher) — files are repacked</li>
-</ol>
-<h2 id="browser-extension">Browser extension</h2>
-<p>GitRef includes a Chrome/Edge extension (Manifest V3) that works like the Zotero Connector — click the toolbar icon on any paper page to save it to your library.</p>
-<h3 id="setup">Setup</h3>
-<ol>
-<li>Start the local server:<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> serve</span></span></code></pre></li>
-<li>Load the extension:
-<ul>
-<li>Open <code>chrome://extensions</code> (or <code>edge://extensions</code>)</li>
-<li>Enable <strong>Developer mode</strong></li>
-<li>Click <strong>Load unpacked</strong> and select the <code>extension/</code> folder from this repo</li>
-</ul>
-</li>
-<li>Navigate to any paper page and click the GitRef icon — the reference (and PDF if available) is saved automatically.</li>
-</ol>
-<p>The extension auto-detects DOIs, arXiv IDs, and citation metadata from the page, just like Zotero Connector.</p>
-<h2 id="library-structure">Library structure</h2>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>~/GitRef/</span></span>
-<span class="giallo-l"><span>├── .git/</span></span>
-<span class="giallo-l"><span>├── .github/workflows/      # auto-regenerates resources.md on push</span></span>
-<span class="giallo-l"><span>├── README.md</span></span>
-<span class="giallo-l"><span>└── resources/</span></span>
-<span class="giallo-l"><span>    ├── .resources.bib       # BibTeX metadata (source of truth)</span></span>
-<span class="giallo-l"><span>    ├── .resources.zip       # all PDFs, compressed</span></span>
-<span class="giallo-l"><span>    └── resources.md         # browsable table with clickable PDF links</span></span></code></pre><h2 id="commands">Commands</h2>
-<p>Run <code>gitref --help</code> for full usage. Key commands:</p>
-<table><thead><tr><th>Command</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>gitref init</code></td><td>Create a new library (git repo + bib)</td></tr>
-<tr><td><code>gitref add &lt;id&gt;</code></td><td>Add by DOI, arXiv ID, ISBN, or URL</td></tr>
-<tr><td><code>gitref search &lt;q&gt;</code></td><td>Search title, authors, tags</td></tr>
-<tr><td><code>gitref list</code></td><td>Print all entries</td></tr>
-<tr><td><code>gitref browse</code></td><td>Interactive TUI</td></tr>
-<tr><td><code>gitref watch</code></td><td>Extract all PDFs, auto-add/repack on changes</td></tr>
-<tr><td><code>gitref open &lt;key&gt;</code></td><td>Extract a single PDF for reading</td></tr>
-<tr><td><code>gitref close &lt;key&gt;</code></td><td>Repack a PDF into archive</td></tr>
-<tr><td><code>gitref compact</code></td><td>Pack all loose PDFs into archive</td></tr>
-<tr><td><code>gitref sync</code></td><td>Git add + commit + pull + push</td></tr>
-<tr><td><code>gitref serve</code></td><td>Start server for browser extension (port 7342)</td></tr>
-<tr><td><code>gitref export</code></td><td>Export library as RIS</td></tr>
-</tbody></table>
-<p>Use <code>-l &lt;path&gt;</code> to specify a custom library location (default: <code>~/GitRef</code>).</p>
-</details>
-<p><a rel="external" href="https://github.com/CGutt-hub/GitRef">View on GitHub →</a></p>
 <hr />
 <h3 id="emotiview">EmotiView</h3>
 <p><strong>Language:</strong> Nextflow<br />
