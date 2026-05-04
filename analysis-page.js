@@ -201,6 +201,9 @@ function plotSpecToPlotly(rows, title, COLORS) {
             varData = yVarNested[0];
         } else if (yVarNested.length > 0 && Array.isArray(yVarNested[0])) {
             varData = yVarNested;
+        } else if (yVarNested.length > 0 && typeof yVarNested[0] === 'number') {
+            // Flat array (single-series): wrap into nested form to match seriesData structure
+            varData = [yVarNested];
         }
     }
 
