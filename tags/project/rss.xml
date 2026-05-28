@@ -45,11 +45,11 @@
           <description xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-analysistoolbox/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;AnalysisToolbox&quot;&gt;AnalysisToolbox&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
 &lt;ul&gt;
+&lt;li&gt;&lt;code&gt;de8de2e&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;c5a3da7&lt;&#x2F;code&gt; fix: escape dollar signs in temporary file creation for HTML archive registratio&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;e72adbe&lt;&#x2F;code&gt; Enhance archive registration to include all published parquet files, adding supp&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;bf6bc5b&lt;&#x2F;code&gt; Refactor and enhance various modules&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;dc80023&lt;&#x2F;code&gt; psd_analyzer: write _psd_all.parquet combined flat file in region mode&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;550ea98&lt;&#x2F;code&gt; fix: guard psd_analyzer y_lim against &#x27;None&#x27; string&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;AnalysisToolbox&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
@@ -64,7 +64,7 @@
           <description xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;EmotiView&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;code&gt;fb7d4dc&lt;&#x2F;code&gt; Deploy: Sync public files from private repository CGutt-hub&#x2F;EmotiViewPrivate@660&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;0a32f34&lt;&#x2F;code&gt; Deploy: Sync public files from private repository CGutt-hub&#x2F;EmotiViewPrivate@922&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
