@@ -154,6 +154,11 @@ async function parquetToPlotly(rowsOrBuffer, title = null) {
         return conditionRowsToPlotly(rows, title, COLORS);
     }
 
+    // Flat table: no plot_type, no x_data/y_data — render as a data table, not a plot
+    if (!columns.includes('x_data') && !columns.includes('y_data')) {
+        return flatTableToPlotly(rows, title);
+    }
+
     // Fallback: generic columnar data — plot all numeric columns
     return genericToPlotly(rows, title, COLORS);
 }
@@ -453,6 +458,24 @@ function conditionRowsToPlotly(rows, title, COLORS) {
 }
 
 // Fallback: generic columnar data — plot all numeric columns vs first column
+function flatTableToPlotly(rows, title) {
+    const columns = Object.keys(rows[0]);
+    const cs = typeof getComputedStyle !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+    const headerBg = cs ? (cs.getPropertyValue('--bg-elevated').trim() || '#242424') : '#242424';
+    const cellBg   = cs ? (cs.getPropertyValue('--bg-tertiary').trim() || '#1c1c1c') : '#1c1c1c';
+    const textColor = cs ? (cs.getPropertyValue('--text-primary').trim() || '#e8e8e8') : '#e8e8e8';
+    const borderColor = cs ? (cs.getPropertyValue('--border-primary').trim() || '#2a2a2a') : '#2a2a2a';
+    return {
+        data: [{
+            type: 'table',
+            header: { values: columns, align: 'left', fill: { color: headerBg }, font: { color: textColor, size: 12 }, line: { color: borderColor, width: 1 } },
+            cells:  { values: columns.map(c => rows.map(r => r[c])), align: 'left', fill: { color: cellBg }, font: { color: textColor, size: 11 }, line: { color: borderColor, width: 1 } },
+        }],
+        layout: { title: { text: title || 'Table', font: { color: textColor, size: 16 } }, paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', margin: { t: 50, l: 10, r: 10, b: 10 } },
+        title: title || 'Table',
+    };
+}
+
 function genericToPlotly(rows, title, COLORS) {
     const columns = Object.keys(rows[0]);
     const xCol = columns[0];
@@ -1010,6 +1033,30 @@ function renderPlots() {
             </div>
         `;
         plotDisplay.appendChild(header);
+
+        // Download bar — parquet (raw data) + JSON + PDF
+        const dlBar = document.createElement('div');
+        dlBar.className = 'plot-download-bar';
+        dlBar.innerHTML = `<span class="plot-download-label">Download raw data:</span>`;
+        const dlParquet = document.createElement('button');
+        dlParquet.className = 'download-btn';
+        dlParquet.textContent = '⬇ .parquet';
+        dlParquet.title = 'Download the parquet file backing this plot';
+        dlParquet.onclick = () => downloadParquetFile(plotItem);
+        const dlJson = document.createElement('button');
+        dlJson.className = 'download-btn';
+        dlJson.textContent = '⬇ JSON';
+        dlJson.title = 'Download plot data as JSON';
+        dlJson.onclick = () => downloadPlotData(plotItem);
+        const dlPdf = document.createElement('button');
+        dlPdf.className = 'download-btn';
+        dlPdf.textContent = '⬇ PDF/A';
+        dlPdf.title = 'Download archival PDF with embedded parquet';
+        dlPdf.onclick = () => downloadPlotPDFA(plotItem, index);
+        dlBar.appendChild(dlParquet);
+        dlBar.appendChild(dlJson);
+        dlBar.appendChild(dlPdf);
+        plotDisplay.appendChild(dlBar);
         
         // Add README section if available
         if (plotItem.readme) {
@@ -1140,22 +1187,17 @@ function renderPlots() {
         plotContainer.id = `plot-container-${index}`;
         plotDisplay.appendChild(plotContainer);
 
-        // --- Always show pipeline tree under the plot ---
-        // Try to get pipeline data for this repo/resultsDir
-        let repoPath = plotItem.repo_name && plotItem.repo_name.includes('/') ? plotItem.repo_name : (plotItem.repo_owner ? plotItem.repo_owner + '/' + plotItem.repo_name : null);
-        if (!repoPath && window.analysisData && window.analysisData.repoPath) repoPath = window.analysisData.repoPath;
-        let pipelineData = (window.pipelineDataMap && window.pipelineDataMap[repoPath]) || window.pipelineData;
-        if (pipelineData && pipelineData.processes && pipelineData.processes.length > 0) {
-            const divider = document.createElement('hr');
-            divider.style.border = 'none';
-            divider.style.borderTop = '1px solid var(--border-primary, #2a2a2a)';
-            divider.style.margin = '25px 0';
-            plotDisplay.appendChild(divider);
-            const pipelineHTML = generatePipelineTreeHTML(plotItem.file_path, pipelineData);
-            const pipelineDiv = document.createElement('div');
-            pipelineDiv.innerHTML = pipelineHTML;
-            plotDisplay.appendChild(pipelineDiv);
-        }
+        // --- Pipeline tree placeholder (filled once fetchPipelineTrace resolves) ---
+        const repoPath = plotItem.repo_name && plotItem.repo_name.includes('/')
+            ? plotItem.repo_name
+            : (plotItem.repo_owner ? plotItem.repo_owner + '/' + plotItem.repo_name : null);
+        const pipelinePlaceholder = document.createElement('div');
+        pipelinePlaceholder.className = 'pipeline-tree-placeholder';
+        pipelinePlaceholder.dataset.repoPath = repoPath || '';
+        pipelinePlaceholder.dataset.filePath = plotItem.file_path || '';
+        plotDisplay.appendChild(pipelinePlaceholder);
+        // Fill immediately if trace already loaded (e.g. second plot opened same repo)
+        fillPipelinePlaceholder(pipelinePlaceholder);
         
         plotDisplays.appendChild(plotDisplay);
         
@@ -1496,6 +1538,22 @@ function buildAnalysisFileTree() {
     console.log('[Analysis] File tree HTML set successfully');
 }
 
+// Fill a single pipeline-tree placeholder div if its repo's trace is already loaded.
+function fillPipelinePlaceholder(placeholder) {
+    const repoPath = placeholder.dataset.repoPath;
+    const filePath = placeholder.dataset.filePath;
+    const pipelineData = (window.pipelineDataMap && window.pipelineDataMap[repoPath]) || window.pipelineData;
+    if (!pipelineData || !pipelineData.processes || pipelineData.processes.length === 0) return;
+    if (placeholder.dataset.filled) return; // already done
+    placeholder.dataset.filled = '1';
+    const divider = document.createElement('hr');
+    divider.style.cssText = 'border:none; border-top:1px solid var(--border-primary,#2a2a2a); margin:25px 0;';
+    placeholder.appendChild(divider);
+    const pipelineDiv = document.createElement('div');
+    pipelineDiv.innerHTML = generatePipelineTreeHTML(filePath, pipelineData);
+    placeholder.appendChild(pipelineDiv);
+}
+
 // Fetch and parse pipeline trace file
 async function fetchPipelineTrace(repoPath, resultsDir) {
     try {
@@ -1518,6 +1576,10 @@ async function fetchPipelineTrace(repoPath, resultsDir) {
             // Keep legacy global for backward compat (last loaded)
             window.pipelineData = pipeline;
             console.log('[Pipeline] Loaded pipeline for', repoPath, 'with', pipeline.processes.length, 'modules');
+            // Back-fill any plot displays that were rendered before this trace arrived
+            document.querySelectorAll('.pipeline-tree-placeholder').forEach(ph => {
+                if (ph.dataset.repoPath === repoPath) fillPipelinePlaceholder(ph);
+            });
         }
     } catch (error) {
         console.warn('[Pipeline] Could not load pipeline trace:', error);
