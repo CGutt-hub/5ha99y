@@ -8,6 +8,22 @@
     box-sizing: border-box;
 }
 
+/* Scrollbar styling — Chromium */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary, #161616);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-primary, #2a2a2a);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted, #6a6a6a);
+}
+
 :root {
     /* Dark theme - refined, professional palette */
     --bg-primary: #0f0f0f;
@@ -89,6 +105,9 @@ html[data-theme='light'] .content code {
 html {
     font-size: 16px;
     scroll-behavior: smooth;
+    /* Firefox scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-primary) var(--bg-secondary);
 }
 
 body {
@@ -548,7 +567,7 @@ footer .footer-content {
    ============================================ */
 
 .contact-form {
-    max-width: 600px;
+    width: 100%;
 }
 
 .form-group {
@@ -593,7 +612,7 @@ footer .footer-content {
     color: var(--text-muted);
 }
 
-button[type="submit"] {
+button {
     background: var(--accent-primary);
     color: var(--bg-primary);
     padding: 0.875rem 2rem;
@@ -607,10 +626,15 @@ button[type="submit"] {
     text-transform: lowercase;
 }
 
-button[type="submit"]:hover {
+button:hover:not(:disabled) {
     background: var(--accent-hover);
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* ============================================

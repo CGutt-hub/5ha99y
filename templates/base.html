@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+    <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
+    <link rel="canonical" href="{% block canonical %}{{ current_url | default(value=config.base_url) }}{% endblock canonical %}">
+    <meta property="og:title" content="{% block og_title %}{{ config.title }}{% endblock og_title %}">
+    <meta property="og:description" content="{% block og_description %}{{ config.description }}{% endblock og_description %}">
+    <meta property="og:url" content="{% block og_url %}{{ current_url | default(value=config.base_url) }}{% endblock og_url %}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ config.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{% block tw_title %}{{ config.title }}{% endblock tw_title %}">
+    <meta name="twitter:description" content="{% block tw_description %}{{ config.description }}{% endblock tw_description %}">
     <link rel="stylesheet" href="{{ get_url(path='style.css') }}">
     <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="{{ get_url(path='blog/atom.xml') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,10 +32,14 @@
                     <a href="{{ get_url(path='cv/', lang='de') }}">lebenslauf</a>
                     <a href="{{ get_url(path='publications/', lang='de') }}">publikationen</a>
                     <a href="{{ get_url(path='projects/', lang='de') }}">projekte</a>
+                    <a href="{{ get_url(path='analysis/', lang='de') }}">offene daten</a>
                     <div class="nav-dropdown">
                         <a href="#" class="dropdown-trigger">werkzeuge ▾</a>
                         <div class="dropdown-menu">
-                            <a href="https://cgutt-hub.github.io/paper-finder/web/">File Finder</a>
+                            <a href="{{ get_url(path='paper-finder/') }}">Paper Finder</a>
+                            <a href="{{ get_url(path='analysis-toolbox/') }}">GitAtbx</a>
+                            <a href="{{ get_url(path='survey-workbench/') }}">Survey Workbench</a>
+                            <a href="{{ get_url(path='gitref/') }}">GitRef</a>
                         </div>
                     </div>
                     <a href="{{ get_url(path='blog/', lang='de') }}">blog</a>
@@ -35,10 +49,14 @@
                     <a href="{{ get_url(path='cv/') }}">cv</a>
                     <a href="{{ get_url(path='publications/') }}">publications</a>
                     <a href="{{ get_url(path='projects/') }}">projects</a>
+                    <a href="{{ get_url(path='analysis/') }}">open data</a>
                     <div class="nav-dropdown">
                         <a href="#" class="dropdown-trigger">tools ▾</a>
                         <div class="dropdown-menu">
-                            <a href="https://cgutt-hub.github.io/paper-finder/web/">File Finder</a>
+                            <a href="{{ get_url(path='paper-finder/') }}">Paper Finder</a>
+                            <a href="{{ get_url(path='analysis-toolbox/') }}">GitAtbx</a>
+                            <a href="{{ get_url(path='survey-workbench/') }}">Survey Workbench</a>
+                            <a href="{{ get_url(path='gitref/') }}">GitRef</a>
                         </div>
                     </div>
                     <a href="{{ get_url(path='blog/') }}">blog</a>

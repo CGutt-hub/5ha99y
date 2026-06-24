@@ -16,11 +16,11 @@ Research Assistant @ IfADo - Leibniz-Institut für Arbeitsforschung an der TU Do
 
 ## Research Philosophy
 
-My research is driven by a fascination with **consciousness**—both biological and artificial—and a firm commitment to **open and transparent science**. I believe the most profound advancements in AI, Brain-Computer Interfaces (BCI), and Human-Machine Interaction (HMI) will emerge from a collaborative approach that deeply integrates principles from **embodied cognition**.
+My research is driven by a firm commitment to **open and transparent science**. I believe the most profound advancements emerge from collaborative approaches that integrate insights across multiple scales and disciplines, from molecular mechanisms to complex systems behavior.
 
-My academic journey from **Molecular Biology** to **Cognitive Science** has given me a multi-scale perspective to tackle these challenges. I use **physiological computing** (EEG, fNIRS, etc.) and open-source Python toolboxes as my primary methods to explore the dynamics of conscious experience.
+My academic journey from **Molecular Biology** to **Cognitive Science** has given me a multi-scale perspective to tackle complex questions. I use quantitative methods and open-source tools as my primary approaches to explore biological and computational systems.
 
-For me, developing responsible technology is not just a technical challenge, but an **ethical imperative**. An embodied, physiological perspective is crucial for creating systems that are not only effective but also transparent, fair, and respectful of human autonomy.
+For me, developing knowledge and technology is not just a scientific challenge, but an **ethical imperative**. Transparent, reproducible research is crucial for creating solutions that are not only effective but also fair, accessible, and respectful of human autonomy and societal needs.
 
 ## Research Focus
 
@@ -28,14 +28,15 @@ For me, developing responsible technology is not just a technical challenge, but
 **Brain-Computer Interfaces** — Neural signal processing and interaction  
 **Human-Machine Interaction** — Intuitive, adaptive interfaces  
 **Physiological Computing** — Biological signals for adaptive systems  
-**Embodied Cognition** — Body-environment integration
+**Embodied Cognition** — Body-environment integration  
+**Neurodivergence** — Neurotransmitter dynamics and system-level differences
 
 ---
 
 ## Community & Engagement
 
-### Volt Europa
-Active member working toward progressive, evidence-based policy and European cooperation. I focus on **data analytics** and **digital policy**, advocating for open and transparent governance, evidence-based decision-making, and the responsible use of technology in public institutions.
+### [Volt Europa](https://www.volteuropa.org/)
+Active member working toward progressive, evidence-based policy and European cooperation. I focus on **policy roadmap development** and **data analysis** within the Economy and Innovation sector, advocating for open and transparent governance, evidence-based decision-making, and the responsible use of technology in public institutions.
 
-### Chaos Computer Club (CCC)
-Participant in Europe's largest hacker association, advocating for digital rights, privacy, and technological transparency. The CCC's commitment to open knowledge and ethical technology aligns deeply with my scientific and political values.
+### [Chaos Computer Club (CCC)](https://www.ccc.de/en/)
+Supporting member of Europe's largest hacker association, advocating for digital rights, privacy, and technological transparency. The CCC's commitment to open knowledge and ethical technology aligns deeply with my scientific and political values, which I advance through policy work and occasional use of CCC infrastructure for open-source projects.
