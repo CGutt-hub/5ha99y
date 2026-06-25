@@ -1510,7 +1510,7 @@ function showRepoInfo(owner, repoName) {
 
 // Load and display a plot file in the main content area
 async function loadPlotFile(url, displayName, participant) {
-    console.log('[Analysis] loadPlotFile called:', { url, displayName, participant });
+    console.log('[Analysis] loadPlotFile called with:', { url, displayName, participant });
     
     const emptyState = document.getElementById('empty-state');
     const plotDisplays = document.getElementById('plot-displays');
@@ -1528,171 +1528,75 @@ async function loadPlotFile(url, displayName, participant) {
     // Mark clicked item as active
     if (event && event.target) {
         const item = event.target.closest('.tree-item');
-        if (item) item.classList.add('active');
-    }
-    
-    emptyState.style.display = 'none';
-    
-    // Create plot display with size warning
-    let sizeWarning = '';
-    const fileSize = 0;
-    if (window.analysisData && window.analysisData.allFiles) {
-        const file = window.analysisData.allFiles.find(f => f.url === url);
-        if (file) {
-            fileSize = file.size;
-            console.log('[Analysis] Found file size:', fileSize, 'bytes');
-        } else {
-            console.warn('[Analysis] File not found in analysisData:', url);
+        if (item) {
+            item.classList.add('active');
+            console.log('[Analysis] Marked log tree item as active');
         }
-    } else {
-        console.warn('[Analysis] analysisData not available');
     }
     
-    const fileSizeStr = fileSize >= 1024 * 1024
-        ? (fileSize / (1024 * 1024)).toFixed(1) + ' MB'
-        : fileSize > 0 ? (fileSize / 1024).toFixed(1) + ' KB' : '';
-    const isLargeFile = fileSize > 10 * 1024 * 1024; // > 10MB
-    const isVeryLargeFile = fileSize > 50 * 1024 * 1024; // > 50MB
-    
-    // Hide empty state
     emptyState.style.display = 'none';
+    console.log('[Analysis] Hid empty state');
     
-    // Create plot display with size warning
-    if (isVeryLargeFile) {
-        sizeWarning = `
-            <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px; padding: 10px; margin-bottom: 15px; font-size: 0.85rem;">
-                <strong>Large File Warning:</strong> This file is ${fileSizeStr}. Loading may take 1-2 minutes and requires significant memory.
-                <br><span style="font-size: 0.8rem; color: #856404;">Data files are highly compressed but may still be large. Please be patient.</span>
-            </div>
-        `;
-    } else if (isLargeFile) {
-        sizeWarning = `
-            <div style="background: #d1ecf1; border: 1px solid #17a2b8; border-radius: 5px; padding: 8px; margin-bottom: 12px; font-size: 0.8rem;">
-                <strong>Info:</strong> This file is ${fileSizeStr} and may take 10-30 seconds to load.
-            </div>
-        `;
-    }
-    
-    // Generate pipeline tree HTML if available
-    const repoPath = url.replace('https://raw.githubusercontent.com/', '').split('/').slice(0, 2).join('/');
-    const pipelineForRepo = (window.pipelineDataMap && window.pipelineDataMap[repoPath]) || window.pipelineData;
-    const pipelineHTML = pipelineForRepo 
-        ? generatePipelineTreeHTML(displayName, pipelineForRepo)
-        : '';
-    
-    // Create plot display
-    const divider = '<hr style="border: none; border-top: 1px solid var(--border-primary, #2a2a2a); margin: 25px 0;">';
+    // Scroll the main area to top so the log header is visible
+    const mainArea = document.querySelector('.analysis-main');
+    if (mainArea) mainArea.scrollTop = 0;
+
     plotDisplays.innerHTML = `
-        <div class="plot-display active" id="current-plot">
-            <div class="plot-header">
-                <h2>${displayName}</h2>
-                <div class="plot-meta">
-                    <p><strong>Participant:</strong> ${participant}</p>
-                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
-                </div>
-                <div style="margin-bottom: 20px;">
-                    ${sizeWarning}
-                    <div class="export-bar">
-                        <button class="export-btn png" onclick="exportPlotAsPNG('current-plot-chart')">
-                            &#8659; PNG
-                        </button>
-                        <button class="export-btn pdf" onclick="exportPlotAsPDF('current-plot-chart', '${participant}', '${displayName}')">
-                            &#8659; PDF
-                        </button>
-                        <button class="export-btn parquet" onclick="downloadParquetFile({repo_name: window.analysisData.repoName, file_path: '${url.replace(`https://raw.githubusercontent.com/CGutt-hub/${window.analysisData.repoName}/main/`, '')}'})">
-                            &#8659; Parquet
-                        </button>
-                        <button class="export-btn csv" onclick="exportPlotAsCSV('${url}', '${displayName}')">
-                            &#8659; CSV
-                        </button>
-                        <span id="load-status" style="color: var(--text-muted, #999); font-size: 0.85rem; margin-left: auto;">
-                            Preparing...${fileSizeStr ? ' (' + fileSizeStr + ')' : ''}
-                        </span>
-                    </div>
+        <div class="plot-display active" id="current-plot" style="display: flex; flex-direction: column; height: calc(100vh - 220px);">
+            <div style="margin-bottom: 12px; flex-shrink: 0;">
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #e8e8e8); margin-bottom: 4px;">Log: ${displayName}</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary, #aaa); margin-bottom: 12px;">Participant: ${participant} <span id="log-line-count" style="margin-left: 16px; color: var(--text-muted, #666);"></span></div>
+                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <button id="log-filter-all" onclick="filterLog('all')" style="padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border-primary, #2a2a2a); background: var(--accent-primary, #c9a227); color: var(--bg-primary, #0f0f0f); font-size: 0.8rem; cursor: pointer; font-weight: 600;">All</button>
+                    <button id="log-filter-warn" onclick="filterLog('warn')" style="padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border-primary, #2a2a2a); background: var(--bg-secondary, #161616); color: var(--text-primary, #e8e8e8); font-size: 0.8rem; cursor: pointer;">⚠ Warnings</button>
+                    <button id="log-filter-error" onclick="filterLog('error')" style="padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border-primary, #2a2a2a); background: var(--bg-secondary, #161616); color: var(--text-primary, #e8e8e8); font-size: 0.8rem; cursor: pointer;">✖ Errors</button>
                 </div>
             </div>
-            <div id="current-plot-chart" style="width: 100%; height: 650px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-primary); padding: 15px;">
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 15px;">
-                    <div class="spinner" style="width: 50px; height: 50px; border: 5px solid var(--bg-tertiary, #ddd); border-top: 5px solid var(--accent-primary, #c9a227); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                    <p id="load-progress" style="color: var(--text-secondary, #666); font-size: 0.95rem;">Fetching${fileSizeStr ? ' ' + fileSizeStr : ''} file from GitHub...</p>
-                    <p style="color: var(--text-muted, #999); font-size: 0.8rem;">Large files may take a moment to load</p>
+            <div id="log-content" style="padding: 16px; background: var(--bg-secondary, #161616); border: 1px solid var(--border-primary, #2a2a2a); border-radius: 8px; flex: 1; min-height: 0; overflow-y: auto; font-family: monospace; font-size: 0.8rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; color: var(--text-primary, #e8e8e8);">
+                <div style="display: flex; align-items: center; justify-content: center; height: 120px; flex-direction: column; gap: 10px;">
+                    <div class="spinner" style="width: 30px; height: 30px; border: 3px solid var(--bg-tertiary, #ddd); border-top: 3px solid var(--accent-primary, #c9a227); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="color: var(--text-muted, #999); font-size: 0.85rem;">Loading log file...</p>
                 </div>
             </div>
-            ${pipelineHTML ? divider + pipelineHTML : ''}
         </div>
     `;
 
-    console.log('[Analysis] Plot display created, starting data fetch...');
+    console.log('[Analysis] Log display HTML set, starting data fetch...');
 
     try {
-        const startTime = Date.now();
+        await waitForHyparquet();
+        console.log('[Analysis] Hyparquet loaded, fetching log file from:', url);
+        // Fetch raw parquet file from GitHub
+        const arrayBuffer = await fetchRawArrayBuffer(url);
         
-        // Update progress: downloading
-        const progressEl = document.getElementById('load-progress');
-        if (progressEl) progressEl.textContent = `Downloading${fileSizeStr ? ' ' + fileSizeStr : ''}...`;
+        console.log('[Analysis] Fetched log file arrayBuffer');
+        const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
+        console.log('[Analysis] Parsed log rows:', rows.length);
         
-        const { rows } = await fetchParquetData(url, fileSize);
-        
-        // Update progress: parsing
-        const downloadTime = ((Date.now() - startTime) / 1000).toFixed(1);
-        if (progressEl) progressEl.textContent = `Downloaded in ${downloadTime}s. Parsing parquet data...`;
-        
-        const plotlyData = await parquetToPlotly(rows, displayName);
-        
-        // Update progress: rendering
-        if (progressEl) progressEl.textContent = `Rendering ${plotlyData.data.length} trace(s)...`;
-        
-        const chartDiv = document.getElementById('current-plot-chart');
-        await Plotly.newPlot(chartDiv, plotlyData.data, plotlyData.layout, {responsive: true});
-        
-        // Update status
-        const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
-        const statusSpan = document.getElementById('load-status');
-        if (statusSpan) {
-            statusSpan.textContent = `Loaded in ${totalTime}s${fileSizeStr ? ' (' + fileSizeStr + ')' : ''}`;
-            statusSpan.style.color = 'var(--accent-primary, #28a745)';
+        // Extract text: join all string values from all rows
+        let text = '';
+        if (rows.length > 0) {
+            const cols = Object.keys(rows[0]);
+            console.log('[Log] Columns:', cols);
+            // Find the column most likely containing log text
+            const textCol = cols.find(c => /log|text|message|content|output/i.test(c)) || cols[0];
+            console.log('[Log] Using column:', textCol);
+            // Each row's value may itself contain newlines (e.g. entire log in one cell)
+            const parts = [];
+            for (const r of rows) {
+                const val = r[textCol];
+                if (val != null) parts.push(String(val));
+            }
+            text = parts.join('\n');
+            console.log('[Log] Total text length:', text.length, 'chars');
         }
-    } catch (error) {
-        console.error('[Analysis] Error loading plot:', error);
-        const chartDiv = document.getElementById('current-plot-chart');
-        const statusSpan = document.getElementById('load-status');
-        if (statusSpan) {
-            statusSpan.textContent = 'Failed to load';
-            statusSpan.style.color = '#dc3545';
-        }
-        
-        // Provide more specific error messages
-        let errorDetails = error.message;
-        let recommendations = '';
-        
-        if (/unsupported compression codec|unsupported codec|ZSTD|Snappy|Brotli|LZ4|compression/i.test(error.message)) {
-            errorDetails = 'Unsupported parquet compression codec';
-            recommendations = 'This file uses a compression codec (e.g. ZSTD, Snappy, Brotli, LZ4) that is not supported in browser-based readers. Please re-export the file with uncompressed or GZIP compression.';
-        } else if (error.message.includes('Parquet library failed')) {
-            errorDetails = 'Parquet library could not load';
-            recommendations = 'Please check your internet connection and try refreshing the page.';
-        } else if (error.message.includes('HTTP 404')) {
-            errorDetails = 'File not found on GitHub';
-            recommendations = 'The parquet file may have been moved or deleted.';
-        } else if (error.message.includes('out of memory') || error.message.includes('allocation')) {
-            errorDetails = 'Browser ran out of memory';
-            recommendations = 'This data file is too large for browser processing. Try closing other tabs or using a smaller time window.';
-        } else if (fileSize > 100 * 1024 * 1024) {
-            recommendations = 'Files over 100MB may be too large for browser-based visualization. Consider pre-processing the data into smaller segments.';
-        } else {
-            recommendations = 'This file might be corrupted or in an unsupported format.';
-        }
-        
-        chartDiv.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; padding: 40px; text-align: center;">
-                <p style="color: var(--text-secondary, #666); font-size: 1.1rem; margin-bottom: 10px;">Error loading plot</p>
-                <p style="color: var(--text-muted, #999); font-size: 0.9rem; max-width: 500px;">${errorDetails}</p>
-                <p style="color: var(--text-muted, #999); font-size: 0.85rem; margin-top: 15px; max-width: 500px;">
-                    ${recommendations}
-                </p>
-                ${fileSize > 10 * 1024 * 1024 ? `<p style="color: var(--text-muted, #999); font-size: 0.8rem; margin-top: 10px;">File size: ${fileSizeStr}</p>` : ''}
-            </div>
-        `;
+        window._logLines = text.split('\n');
+        console.log('[Log] Total lines after split:', window._logLines.length);
+        window._logFilter = 'all';
+        renderLogLines('all');
+    } catch (e) {
+        console.error('[Analysis] Error loading log parquet:', e);
+        document.getElementById('log-content').innerHTML = '<span style="color: var(--text-muted, #999);">Could not load log file.</span>';
     }
 }
 
@@ -1722,7 +1626,7 @@ function createExportBar(url, participant, displayName) {
 
 // Load and display a log file in the main content area with level filtering
 async function loadLogFile(url, displayName, participant) {
-    console.log('[Analysis] loadLogFile called:', { url, displayName, participant });
+    console.log('[Analysis] loadLogFile called with:', { url, displayName, participant });
     
     const emptyState = document.getElementById('empty-state');
     const plotDisplays = document.getElementById('plot-displays');
@@ -1740,10 +1644,14 @@ async function loadLogFile(url, displayName, participant) {
     // Mark clicked item as active
     if (event && event.target) {
         const item = event.target.closest('.tree-item');
-        if (item) item.classList.add('active');
+        if (item) {
+            item.classList.add('active');
+            console.log('[Analysis] Marked log tree item as active');
+        }
     }
     
     emptyState.style.display = 'none';
+    console.log('[Analysis] Hid empty state');
     
     // Scroll the main area to top so the log header is visible
     const mainArea = document.querySelector('.analysis-main');
@@ -1769,17 +1677,23 @@ async function loadLogFile(url, displayName, participant) {
         </div>
     `;
 
+    console.log('[Analysis] Log display HTML set, starting data fetch...');
+
     try {
         await waitForHyparquet();
+        console.log('[Analysis] Hyparquet loaded, fetching log file from:', url);
         // Fetch raw parquet file from GitHub
         const arrayBuffer = await fetchRawArrayBuffer(url);
         
+        console.log('[Analysis] Fetched log file arrayBuffer');
         const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
+        console.log('[Analysis] Parsed log rows:', rows.length);
+        
         // Extract text: join all string values from all rows
         let text = '';
         if (rows.length > 0) {
             const cols = Object.keys(rows[0]);
-            console.log('[Log] Rows:', rows.length, 'Columns:', cols);
+            console.log('[Log] Columns:', cols);
             // Find the column most likely containing log text
             const textCol = cols.find(c => /log|text|message|content|output/i.test(c)) || cols[0];
             console.log('[Log] Using column:', textCol);
