@@ -611,6 +611,8 @@ window.SITE_BASE_URL = "{{ config.base_url | safe }}";
         .then(data => {
             window.plotsData = data;
             console.log('[Analysis] Plot data loaded successfully:', data.length, 'plots');
+            // Initialize the page after data is loaded
+            initAnalysisPage();
         })
         .catch(error => {
             console.error('[Analysis] Error loading plot data:', error);
