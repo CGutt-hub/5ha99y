@@ -599,6 +599,23 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 // Provide base URL to JS for asset resolution
 window.SITE_BASE_URL = "{{ config.base_url | safe }}";
 </script>
+<script>
+    // Load plot data from JSON file
+    fetch('static/data/analysis_plots.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to load plot data: HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            window.plotsData = data;
+            console.log('[Analysis] Plot data loaded successfully:', data.length, 'plots');
+        })
+        .catch(error => {
+            console.error('[Analysis] Error loading plot data:', error);
+        });
+</script>
 <script src="{{ get_url(path='analysis-page.js') }}?v={{ now() | date(format='%s') }}"></script>
 {% endblock content %}
 
