@@ -7,9 +7,20 @@
       "url": "https://github.com/CGutt-hub/5ha99y",
       "language": "JavaScript",
       "stars": 0,
-      "updated": "2026-06-24T12:37:21Z",
-      "pushed_at": "2026-06-25T10:46:29Z",
+      "updated": "2026-06-25T12:15:40Z",
+      "pushed_at": "2026-06-25T12:15:34Z",
       "commits_url": "https://api.github.com/repos/CGutt-hub/5ha99y/commits"
+    },
+    {
+      "name": "continueAgent",
+      "description": "No description",
+      "readme": "# ContinueAutomation Agent\n\nIntelligent token optimization agent for VS Code Continue extension. Automatically selects between Mistral and Claude based on question complexity, simplifies queries, and tracks costs in real-time.\n\n## Features\n\n- **Smart Model Selection**: Analyzes question complexity and auto-switches between Mistral (simple) and Claude (complex)\n- **Query Simplification**: Reduces token usage by simplifying questions while preserving meaning\n- **Cost Tracking**: Real-time token and cost estimation before and after each query\n- **Auto-Install**: One-command installation that runs as background service on startup\n- **Prompt Caching**: Caches frequently used prompts for efficiency\n\n## Installation from GitHub\n\n```bash\ngit clone https://github.com/yourusername/continueAgent.git\ncd continueAgent\npython install_service.py\n```\n\nThis will:\n- Install dependencies (Flask, PyYAML, requests)\n- Create startup service (auto-starts on login)\n- Start API server on http://localhost:5001\n\n## Configure Continue\n\nAdd to `~/.continue/config.yaml`:\n\n```yaml\n- name: ContinueAutomation\n  provider: openai\n  model: continue-automation\n  apiBase: http://localhost:5001/v1\n  apiKey: dummy\n```\n\nRestart VS Code and select \"ContinueAutomation\" from the model dropdown.\n\n## How It Works\n\n1. **Initial Assessment**: Analyzes question, decides model, simplifies query, shows estimated cost\n2. **Model Call**: Sends simplified question to chosen model (Mistral/Claude)\n3. **Final Report**: Shows actual token usage and cost\n\n## License\n\nMIT License - see [LICENSE](LICENSE) file",
+      "url": "https://github.com/CGutt-hub/continueAgent",
+      "language": "Python",
+      "stars": 0,
+      "updated": "2026-06-25T12:11:26Z",
+      "pushed_at": "2026-06-25T12:11:16Z",
+      "commits_url": "https://api.github.com/repos/CGutt-hub/continueAgent/commits"
     },
     {
       "name": "EmotiView",
@@ -32,17 +43,6 @@
       "updated": "2026-06-24T12:26:20Z",
       "pushed_at": "2026-06-24T12:26:01Z",
       "commits_url": "https://api.github.com/repos/CGutt-hub/AnalysisToolbox/commits"
-    },
-    {
-      "name": "continueAgent",
-      "description": "No description",
-      "readme": "# ContinueAutomation Repository\n\nThis repository contains the `ContinueAutomation` agent for optimizing interactions with Mistral and Claude. The agent includes:\n\n1. **Token Calculator**: Calculate the cost of burned tokens in euros.\n2. **Query Simplifier**: Simplify queries to reduce token usage.\n3. **Prompt Cache**: Cache frequently used prompts to save tokens and improve efficiency.\n4. **Question Complexity Assessor**: Automatically assess question complexity and switch to Claude for complex questions.\n\n## Setup\n\n### Prerequisites\n- Python 3.6 or higher\n- PyYAML library\n\n### Installation\n1. Clone this repository:\n   ```bash\n   git clone <repository-url>\n   ```\n\n2. Install the required library:\n   ```bash\n   pip install pyyaml\n   ```\n\n## Usage\n\n### Running the Agent\n1. Import the `ContinueAutomation` class:\n   ```python\n   from continue_automation import ContinueAutomation\n   ```\n\n2. Initialize the agent:\n   ```python\n   automation = ContinueAutomation()\n   ```\n\n3. Process a question:\n   ```python\n   question = \"Your question here\"\n   results = automation.process_question(question)\n   ```\n\n4. Display the results:\n   ```python\n   print(automation.display_results(results))\n   ```\n\n### Managing the Prompt Cache\n1. Add a prompt to the cache:\n   ```python\n   automation.prompt_cache.add_prompt(\"greeting\", \"Hello! How can I assist you today?\")\n   ```\n\n2. Retrieve a cached prompt:\n   ```python\n   cached_prompt = automation.prompt_cache.get_cached_prompt(\"greeting\")\n   ```\n\n## Configuration\n\nThe `continue_config.yaml` file contains the configuration for the agent. You can adjust the following settings:\n\n### Token Calculator\n- `default_rate`: Default token-to-euro conversion rate.\n- `display_cost`: Whether to display the cost of tokens.\n\n### Query Simplifier\n- `enabled`: Enable or disable query simplification.\n- `synonyms`: Define synonyms for simplifying queries.\n\n### Prompt Cache\n- `enabled`: Enable or disable prompt caching.\n- `max_size`: Maximum number of prompts to cache.\n- `cache_dir`: Directory to store cached prompts.\n\n### Question Complexity Assessor\n- `enabled`: Enable or disable complexity assessment.\n- `complexity_threshold`: Threshold to switch from Mistral to Claude.\n- `criteria`: Criteria for assessing question complexity (length, rare words, depth).\n- `models`: Token costs for Mistral and Claude.\n\n### Display Configuration\n- `show_cost`: Display the cost of tokens.\n- `show_simplification`: Display the simplified query.\n- `show_savings`: Display token savings when switching models.\n- `show_model_switch`: Display when the model is switched from Mistral to Claude.\n\n## License\n\nThis project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.",
-      "url": "https://github.com/CGutt-hub/continueAgent",
-      "language": "Python",
-      "stars": 0,
-      "updated": "2026-06-22T15:28:25Z",
-      "pushed_at": "2026-06-22T15:26:32Z",
-      "commits_url": "https://api.github.com/repos/CGutt-hub/continueAgent/commits"
     },
     {
       "name": "tVNS_deviceplan",

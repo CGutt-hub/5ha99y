@@ -660,7 +660,24 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 // Provide base URL to JS for asset resolution
 window.SITE_BASE_URL = "https://cgutt-hub.github.io/5ha99y";
 </script>
-<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782387841"></script>
+<script>
+    // Load plot data from JSON file
+    fetch('static/data/analysis_plots.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to load plot data: HTTP ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            window.plotsData = data;
+            console.log('[Analysis] Plot data loaded successfully:', data.length, 'plots');
+        })
+        .catch(error => {
+            console.error('[Analysis] Error loading plot data:', error);
+        });
+</script>
+<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782389754"></script>
 
     </main>
     

@@ -69,7 +69,7 @@
 <hr />
 <h3 id="5ha99y">5ha99y</h3>
 <p><strong>Sprache:</strong> JavaScript<br />
-<strong>Zuletzt aktualisiert:</strong> 2026-06-24</p>
+<strong>Zuletzt aktualisiert:</strong> 2026-06-25</p>
 <details>
 <summary>README anzeigen</summary>
 <h1 id="zola-github-pages-site-scientific-hub">Zola GitHub Pages Site - Scientific Hub</h1>
@@ -205,6 +205,50 @@
 </ul>
 </details>
 <p><a rel="external" href="https://github.com/CGutt-hub/5ha99y">Auf GitHub ansehen →</a></p>
+<hr />
+<h3 id="continueagent">continueAgent</h3>
+<p><strong>Sprache:</strong> Python<br />
+<strong>Zuletzt aktualisiert:</strong> 2026-06-25</p>
+<details>
+<summary>README anzeigen</summary>
+<h1 id="continueautomation-agent">ContinueAutomation Agent</h1>
+<p>Intelligent token optimization agent for VS Code Continue extension. Automatically selects between Mistral and Claude based on question complexity, simplifies queries, and tracks costs in real-time.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Smart Model Selection</strong>: Analyzes question complexity and auto-switches between Mistral (simple) and Claude (complex)</li>
+<li><strong>Query Simplification</strong>: Reduces token usage by simplifying questions while preserving meaning</li>
+<li><strong>Cost Tracking</strong>: Real-time token and cost estimation before and after each query</li>
+<li><strong>Auto-Install</strong>: One-command installation that runs as background service on startup</li>
+<li><strong>Prompt Caching</strong>: Caches frequently used prompts for efficiency</li>
+</ul>
+<h2 id="installation-from-github">Installation from GitHub</h2>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">git</span><span style="color: #A6E3A1;"> clone https://github.com/yourusername/continueAgent.git</span></span>
+<span class="giallo-l"><span style="color: #F38BA8;font-style: italic;">cd</span><span style="color: #A6E3A1;"> continueAgent</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python</span><span style="color: #A6E3A1;"> install_service.py</span></span></code></pre>
+<p>This will:</p>
+<ul>
+<li>Install dependencies (Flask, PyYAML, requests)</li>
+<li>Create startup service (auto-starts on login)</li>
+<li>Start API server on http://localhost:5001</li>
+</ul>
+<h2 id="configure-continue">Configure Continue</h2>
+<p>Add to <code>~/.continue/config.yaml</code>:</p>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #9399B2;">-</span><span style="color: #89B4FA;"> name</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> ContinueAutomation</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">  provider</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> openai</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">  model</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> continue-automation</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">  apiBase</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> http://localhost:5001/v1</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">  apiKey</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> dummy</span></span></code></pre>
+<p>Restart VS Code and select "ContinueAutomation" from the model dropdown.</p>
+<h2 id="how-it-works-1">How It Works</h2>
+<ol>
+<li><strong>Initial Assessment</strong>: Analyzes question, decides model, simplifies query, shows estimated cost</li>
+<li><strong>Model Call</strong>: Sends simplified question to chosen model (Mistral/Claude)</li>
+<li><strong>Final Report</strong>: Shows actual token usage and cost</li>
+</ol>
+<h2 id="license">License</h2>
+<p>MIT License - see <a href="https://cgutt-hub.github.io/5ha99y/de/projects/LICENSE">LICENSE</a> file</p>
+</details>
+<p><a rel="external" href="https://github.com/CGutt-hub/continueAgent">Auf GitHub ansehen →</a></p>
 <hr />
 <h3 id="emotiview">EmotiView</h3>
 <p><strong>Sprache:</strong> Jupyter Notebook<br />
@@ -361,97 +405,6 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 </details>
 <p><a rel="external" href="https://github.com/CGutt-hub/AnalysisToolbox">Auf GitHub ansehen →</a></p>
 <hr />
-<h3 id="continueagent">continueAgent</h3>
-<p><strong>Sprache:</strong> Python<br />
-<strong>Zuletzt aktualisiert:</strong> 2026-06-22</p>
-<details>
-<summary>README anzeigen</summary>
-<h1 id="continueautomation-repository">ContinueAutomation Repository</h1>
-<p>This repository contains the <code>ContinueAutomation</code> agent for optimizing interactions with Mistral and Claude. The agent includes:</p>
-<ol>
-<li><strong>Token Calculator</strong>: Calculate the cost of burned tokens in euros.</li>
-<li><strong>Query Simplifier</strong>: Simplify queries to reduce token usage.</li>
-<li><strong>Prompt Cache</strong>: Cache frequently used prompts to save tokens and improve efficiency.</li>
-<li><strong>Question Complexity Assessor</strong>: Automatically assess question complexity and switch to Claude for complex questions.</li>
-</ol>
-<h2 id="setup">Setup</h2>
-<h3 id="prerequisites-1">Prerequisites</h3>
-<ul>
-<li>Python 3.6 or higher</li>
-<li>PyYAML library</li>
-</ul>
-<h3 id="installation">Installation</h3>
-<ol>
-<li>
-<p>Clone this repository:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">git</span><span style="color: #A6E3A1;"> clone</span><span style="color: #94E2D5;"> &lt;</span><span style="color: #A6E3A1;">repository-ur</span><span>l</span><span style="color: #94E2D5;">&gt;</span></span></code></pre></li>
-<li>
-<p>Install the required library:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install pyyaml</span></span></code></pre></li>
-</ol>
-<h2 id="usage-1">Usage</h2>
-<h3 id="running-the-agent">Running the Agent</h3>
-<ol>
-<li>
-<p>Import the <code>ContinueAutomation</code> class:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="python"><span class="giallo-l"><span style="color: #CBA6F7;">from</span><span> continue_automation</span><span style="color: #CBA6F7;"> import</span><span> ContinueAutomation</span></span></code></pre></li>
-<li>
-<p>Initialize the agent:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="python"><span class="giallo-l"><span>automation</span><span style="color: #94E2D5;"> =</span><span style="color: #89B4FA;"> ContinueAutomation</span><span style="color: #9399B2;">()</span></span></code></pre></li>
-<li>
-<p>Process a question:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="python"><span class="giallo-l"><span>question</span><span style="color: #94E2D5;"> =</span><span style="color: #A6E3A1;"> &quot;Your question here&quot;</span></span>
-<span class="giallo-l"><span>results</span><span style="color: #94E2D5;"> =</span><span> automation</span><span style="color: #9399B2;">.</span><span style="color: #89B4FA;">process_question</span><span style="color: #9399B2;">(</span><span>question</span><span style="color: #9399B2;">)</span></span></code></pre></li>
-<li>
-<p>Display the results:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="python"><span class="giallo-l"><span style="color: #FAB387;font-style: italic;">print</span><span style="color: #9399B2;">(</span><span>automation</span><span style="color: #9399B2;">.</span><span style="color: #89B4FA;">display_results</span><span style="color: #9399B2;">(</span><span>results</span><span style="color: #9399B2;">))</span></span></code></pre></li>
-</ol>
-<h3 id="managing-the-prompt-cache">Managing the Prompt Cache</h3>
-<ol>
-<li>
-<p>Add a prompt to the cache:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="python"><span class="giallo-l"><span>automation</span><span style="color: #9399B2;">.</span><span>prompt_cache</span><span style="color: #9399B2;">.</span><span style="color: #89B4FA;">add_prompt</span><span style="color: #9399B2;">(</span><span style="color: #A6E3A1;">&quot;greeting&quot;</span><span style="color: #9399B2;">,</span><span style="color: #A6E3A1;"> &quot;Hello! How can I assist you today?&quot;</span><span style="color: #9399B2;">)</span></span></code></pre></li>
-<li>
-<p>Retrieve a cached prompt:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="python"><span class="giallo-l"><span>cached_prompt</span><span style="color: #94E2D5;"> =</span><span> automation</span><span style="color: #9399B2;">.</span><span>prompt_cache</span><span style="color: #9399B2;">.</span><span style="color: #89B4FA;">get_cached_prompt</span><span style="color: #9399B2;">(</span><span style="color: #A6E3A1;">&quot;greeting&quot;</span><span style="color: #9399B2;">)</span></span></code></pre></li>
-</ol>
-<h2 id="configuration">Configuration</h2>
-<p>The <code>continue_config.yaml</code> file contains the configuration for the agent. You can adjust the following settings:</p>
-<h3 id="token-calculator">Token Calculator</h3>
-<ul>
-<li><code>default_rate</code>: Default token-to-euro conversion rate.</li>
-<li><code>display_cost</code>: Whether to display the cost of tokens.</li>
-</ul>
-<h3 id="query-simplifier">Query Simplifier</h3>
-<ul>
-<li><code>enabled</code>: Enable or disable query simplification.</li>
-<li><code>synonyms</code>: Define synonyms for simplifying queries.</li>
-</ul>
-<h3 id="prompt-cache">Prompt Cache</h3>
-<ul>
-<li><code>enabled</code>: Enable or disable prompt caching.</li>
-<li><code>max_size</code>: Maximum number of prompts to cache.</li>
-<li><code>cache_dir</code>: Directory to store cached prompts.</li>
-</ul>
-<h3 id="question-complexity-assessor">Question Complexity Assessor</h3>
-<ul>
-<li><code>enabled</code>: Enable or disable complexity assessment.</li>
-<li><code>complexity_threshold</code>: Threshold to switch from Mistral to Claude.</li>
-<li><code>criteria</code>: Criteria for assessing question complexity (length, rare words, depth).</li>
-<li><code>models</code>: Token costs for Mistral and Claude.</li>
-</ul>
-<h3 id="display-configuration">Display Configuration</h3>
-<ul>
-<li><code>show_cost</code>: Display the cost of tokens.</li>
-<li><code>show_simplification</code>: Display the simplified query.</li>
-<li><code>show_savings</code>: Display token savings when switching models.</li>
-<li><code>show_model_switch</code>: Display when the model is switched from Mistral to Claude.</li>
-</ul>
-<h2 id="license">License</h2>
-<p>This project is licensed under the MIT License. See the <a href="https://cgutt-hub.github.io/5ha99y/de/projects/LICENSE">LICENSE</a> file for details.</p>
-</details>
-<p><a rel="external" href="https://github.com/CGutt-hub/continueAgent">Auf GitHub ansehen →</a></p>
-<hr />
 <h3 id="tvns-deviceplan">tVNS_deviceplan</h3>
 <p><strong>Sprache:</strong> Unbekannt<br />
 <strong>Zuletzt aktualisiert:</strong> 2026-06-10</p>
@@ -497,8 +450,8 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <li><strong>Memory</strong>: 4GB RAM minimum (8GB recommended for large datasets)</li>
 <li><strong>Storage</strong>: 100MB free space minimum</li>
 </ul>
-<h2 id="installation-1">Installation</h2>
-<h3 id="prerequisites-2">Prerequisites</h3>
+<h2 id="installation">Installation</h2>
+<h3 id="prerequisites-1">Prerequisites</h3>
 <p>Ensure you have Python 3.8+ installed on your system. You can download it from <a rel="external" href="https://www.python.org/downloads/">python.org</a>.</p>
 <h3 id="install-dependencies">Install Dependencies</h3>
 <pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Clone the repository</span></span>
@@ -520,7 +473,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <li><strong>Fill Out Questionnaires</strong>: Have participants complete their questionnaires</li>
 <li><strong>Extract Data</strong>: Collect and consolidate data from completed questionnaires into a masterfile</li>
 </ol>
-<h2 id="usage-2">Usage</h2>
+<h2 id="usage-1">Usage</h2>
 <h3 id="generate-participant-folders">Generate Participant Folders</h3>
 <ol>
 <li>Select template files for each questionnaire type</li>
@@ -639,7 +592,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <tr><td><strong>Linux</strong></td><td><code>GitRef-x86_64.AppImage</code> or <code>gitref</code></td><td><code>chmod +x</code> and move to <code>/usr/local/bin/</code>, or run: <code>curl -fsSL https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.sh | bash</code></td></tr>
 </tbody></table>
 <h3 id="from-source">From source</h3>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install git+https://github.com/CGutt-hub/gitref.git</span></span></code></pre><h2 id="features">Features</h2>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install git+https://github.com/CGutt-hub/gitref.git</span></span></code></pre><h2 id="features-1">Features</h2>
 <ul>
 <li><strong>DOI / arXiv / ISBN lookup</strong> – paste an identifier, metadata is fetched automatically</li>
 <li><strong>PDF download</strong> – auto-downloads from arXiv or DOI resolvers</li>
@@ -678,7 +631,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 </ol>
 <h2 id="browser-extension">Browser extension</h2>
 <p>GitRef includes a Chrome/Edge extension (Manifest V3) that works like the Zotero Connector — click the toolbar icon on any paper page to save it to your library.</p>
-<h3 id="setup-1">Setup</h3>
+<h3 id="setup">Setup</h3>
 <ol>
 <li>Start the local server:<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> serve</span></span></code></pre></li>
 <li>Load the extension:
