@@ -1508,20 +1508,243 @@ function showRepoInfo(owner, repoName) {
         .catch(function() { readmeEl.innerHTML = '<p style="color: var(--text-muted, #999);">Could not load README.</p>'; });
 }
 
-// Load and display a log file in the main content area with level filtering
-async function loadLogFile(url, displayName, participant) {
+// Load and display a plot file in the main content area
+async function loadPlotFile(url, displayName, participant) {
+    console.log('[Analysis] loadPlotFile called:', { url, displayName, participant });
+    
     const emptyState = document.getElementById('empty-state');
     const plotDisplays = document.getElementById('plot-displays');
-    if (!emptyState || !plotDisplays) return;
-
-    // Remove previous active states and mark clicked item
-    document.querySelectorAll('.tree-item.active').forEach(item => item.classList.remove('active'));
+    
+    if (!emptyState || !plotDisplays) {
+        console.error('[Analysis] Required DOM elements not found');
+        return;
+    }
+    
+    // Remove previous active states
+    document.querySelectorAll('.tree-item.active').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Mark clicked item as active
     if (event && event.target) {
         const item = event.target.closest('.tree-item');
         if (item) item.classList.add('active');
     }
+    
     emptyState.style.display = 'none';
+    
+    // Create plot display with size warning
+    let sizeWarning = '';
+    const fileSize = 0;
+    if (window.analysisData && window.analysisData.allFiles) {
+        const file = window.analysisData.allFiles.find(f => f.url === url);
+        if (file) {
+            fileSize = file.size;
+            console.log('[Analysis] Found file size:', fileSize, 'bytes');
+        } else {
+            console.warn('[Analysis] File not found in analysisData:', url);
+        }
+    } else {
+        console.warn('[Analysis] analysisData not available');
+    }
+    
+    const fileSizeStr = fileSize >= 1024 * 1024
+        ? (fileSize / (1024 * 1024)).toFixed(1) + ' MB'
+        : fileSize > 0 ? (fileSize / 1024).toFixed(1) + ' KB' : '';
+    const isLargeFile = fileSize > 10 * 1024 * 1024; // > 10MB
+    const isVeryLargeFile = fileSize > 50 * 1024 * 1024; // > 50MB
+    
+    // Hide empty state
+    emptyState.style.display = 'none';
+    
+    // Create plot display with size warning
+    if (isVeryLargeFile) {
+        sizeWarning = `
+            <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px; padding: 10px; margin-bottom: 15px; font-size: 0.85rem;">
+                <strong>Large File Warning:</strong> This file is ${fileSizeStr}. Loading may take 1-2 minutes and requires significant memory.
+                <br><span style="font-size: 0.8rem; color: #856404;">Data files are highly compressed but may still be large. Please be patient.</span>
+            </div>
+        `;
+    } else if (isLargeFile) {
+        sizeWarning = `
+            <div style="background: #d1ecf1; border: 1px solid #17a2b8; border-radius: 5px; padding: 8px; margin-bottom: 12px; font-size: 0.8rem;">
+                <strong>Info:</strong> This file is ${fileSizeStr} and may take 10-30 seconds to load.
+            </div>
+        `;
+    }
+    
+    // Generate pipeline tree HTML if available
+    const repoPath = url.replace('https://raw.githubusercontent.com/', '').split('/').slice(0, 2).join('/');
+    const pipelineForRepo = (window.pipelineDataMap && window.pipelineDataMap[repoPath]) || window.pipelineData;
+    const pipelineHTML = pipelineForRepo 
+        ? generatePipelineTreeHTML(displayName, pipelineForRepo)
+        : '';
+    
+    // Create plot display
+    const divider = '<hr style="border: none; border-top: 1px solid var(--border-primary, #2a2a2a); margin: 25px 0;">';
+    plotDisplays.innerHTML = `
+        <div class="plot-display active" id="current-plot">
+            <div class="plot-header">
+                <h2>${displayName}</h2>
+                <div class="plot-meta">
+                    <p><strong>Participant:</strong> ${participant}</p>
+                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    ${sizeWarning}
+                    <div class="export-bar">
+                        <button class="export-btn png" onclick="exportPlotAsPNG('current-plot-chart')">
+                            &#8659; PNG
+                        </button>
+                        <button class="export-btn pdf" onclick="exportPlotAsPDF('current-plot-chart', '${participant}', '${displayName}')">
+                            &#8659; PDF
+                        </button>
+                        <button class="export-btn parquet" onclick="downloadParquetFile({repo_name: window.analysisData.repoName, file_path: '${url.replace(`https://raw.githubusercontent.com/CGutt-hub/${window.analysisData.repoName}/main/`, '')}'})">
+                            &#8659; Parquet
+                        </button>
+                        <button class="export-btn csv" onclick="exportPlotAsCSV('${url}', '${displayName}')">
+                            &#8659; CSV
+                        </button>
+                        <span id="load-status" style="color: var(--text-muted, #999); font-size: 0.85rem; margin-left: auto;">
+                            Preparing...${fileSizeStr ? ' (' + fileSizeStr + ')' : ''}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div id="current-plot-chart" style="width: 100%; height: 650px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-primary); padding: 15px;">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 15px;">
+                    <div class="spinner" style="width: 50px; height: 50px; border: 5px solid var(--bg-tertiary, #ddd); border-top: 5px solid var(--accent-primary, #c9a227); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p id="load-progress" style="color: var(--text-secondary, #666); font-size: 0.95rem;">Fetching${fileSizeStr ? ' ' + fileSizeStr : ''} file from GitHub...</p>
+                    <p style="color: var(--text-muted, #999); font-size: 0.8rem;">Large files may take a moment to load</p>
+                </div>
+            </div>
+            ${pipelineHTML ? divider + pipelineHTML : ''}
+        </div>
+    `;
 
+    console.log('[Analysis] Plot display created, starting data fetch...');
+
+    try {
+        const startTime = Date.now();
+        
+        // Update progress: downloading
+        const progressEl = document.getElementById('load-progress');
+        if (progressEl) progressEl.textContent = `Downloading${fileSizeStr ? ' ' + fileSizeStr : ''}...`;
+        
+        const { rows } = await fetchParquetData(url, fileSize);
+        
+        // Update progress: parsing
+        const downloadTime = ((Date.now() - startTime) / 1000).toFixed(1);
+        if (progressEl) progressEl.textContent = `Downloaded in ${downloadTime}s. Parsing parquet data...`;
+        
+        const plotlyData = await parquetToPlotly(rows, displayName);
+        
+        // Update progress: rendering
+        if (progressEl) progressEl.textContent = `Rendering ${plotlyData.data.length} trace(s)...`;
+        
+        const chartDiv = document.getElementById('current-plot-chart');
+        await Plotly.newPlot(chartDiv, plotlyData.data, plotlyData.layout, {responsive: true});
+        
+        // Update status
+        const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+        const statusSpan = document.getElementById('load-status');
+        if (statusSpan) {
+            statusSpan.textContent = `Loaded in ${totalTime}s${fileSizeStr ? ' (' + fileSizeStr + ')' : ''}`;
+            statusSpan.style.color = 'var(--accent-primary, #28a745)';
+        }
+    } catch (error) {
+        console.error('[Analysis] Error loading plot:', error);
+        const chartDiv = document.getElementById('current-plot-chart');
+        const statusSpan = document.getElementById('load-status');
+        if (statusSpan) {
+            statusSpan.textContent = 'Failed to load';
+            statusSpan.style.color = '#dc3545';
+        }
+        
+        // Provide more specific error messages
+        let errorDetails = error.message;
+        let recommendations = '';
+        
+        if (/unsupported compression codec|unsupported codec|ZSTD|Snappy|Brotli|LZ4|compression/i.test(error.message)) {
+            errorDetails = 'Unsupported parquet compression codec';
+            recommendations = 'This file uses a compression codec (e.g. ZSTD, Snappy, Brotli, LZ4) that is not supported in browser-based readers. Please re-export the file with uncompressed or GZIP compression.';
+        } else if (error.message.includes('Parquet library failed')) {
+            errorDetails = 'Parquet library could not load';
+            recommendations = 'Please check your internet connection and try refreshing the page.';
+        } else if (error.message.includes('HTTP 404')) {
+            errorDetails = 'File not found on GitHub';
+            recommendations = 'The parquet file may have been moved or deleted.';
+        } else if (error.message.includes('out of memory') || error.message.includes('allocation')) {
+            errorDetails = 'Browser ran out of memory';
+            recommendations = 'This data file is too large for browser processing. Try closing other tabs or using a smaller time window.';
+        } else if (fileSize > 100 * 1024 * 1024) {
+            recommendations = 'Files over 100MB may be too large for browser-based visualization. Consider pre-processing the data into smaller segments.';
+        } else {
+            recommendations = 'This file might be corrupted or in an unsupported format.';
+        }
+        
+        chartDiv.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; padding: 40px; text-align: center;">
+                <p style="color: var(--text-secondary, #666); font-size: 1.1rem; margin-bottom: 10px;">Error loading plot</p>
+                <p style="color: var(--text-muted, #999); font-size: 0.9rem; max-width: 500px;">${errorDetails}</p>
+                <p style="color: var(--text-muted, #999); font-size: 0.85rem; margin-top: 15px; max-width: 500px;">
+                    ${recommendations}
+                </p>
+                ${fileSize > 10 * 1024 * 1024 ? `<p style="color: var(--text-muted, #999); font-size: 0.8rem; margin-top: 10px;">File size: ${fileSizeStr}</p>` : ''}
+            </div>
+        `;
+    }
+}
+
+// Simplified export bar for plot displays
+function createExportBar(url, participant, displayName) {
+    const exportBar = document.createElement('div');
+    exportBar.className = 'export-bar';
+    exportBar.innerHTML = `
+        <button class="export-btn png" onclick="exportPlotAsPNG('current-plot-chart')">
+            &#8659; PNG
+        </button>
+        <button class="export-btn pdf" onclick="exportPlotAsPDF('current-plot-chart', '${participant}', '${displayName}')">
+            &#8659; PDF
+        </button>
+        <button class="export-btn parquet" onclick="downloadParquetFile({repo_name: window.analysisData.repoName, file_path: '${url.replace(`https://raw.githubusercontent.com/CGutt-hub/${window.analysisData.repoName}/main/`, '')}'})">
+            &#8659; Parquet
+        </button>
+        <button class="export-btn csv" onclick="exportPlotAsCSV('${url}', '${displayName}')">
+            &#8659; CSV
+        </button>
+        <span id="load-status" style="color: var(--text-muted, #999); font-size: 0.85rem; margin-left: auto;">
+            Preparing...
+        </span>
+    `;
+    return exportBar;
+}
+
+// Load and display a log file in the main content area with level filtering
+async function loadLogFile(url, displayName, participant) {
+    console.log('[Analysis] loadLogFile called:', { url, displayName, participant });
+    
+    const emptyState = document.getElementById('empty-state');
+    const plotDisplays = document.getElementById('plot-displays');
+    
+    if (!emptyState || !plotDisplays) {
+        console.error('[Analysis] Required DOM elements not found');
+        return;
+    }
+    
+    // Remove previous active states
+    document.querySelectorAll('.tree-item.active').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Mark clicked item as active
+    if (event && event.target) {
+        const item = event.target.closest('.tree-item');
+        if (item) item.classList.add('active');
+    }
+    
+    emptyState.style.display = 'none';
+    
     // Scroll the main area to top so the log header is visible
     const mainArea = document.querySelector('.analysis-main');
     if (mainArea) mainArea.scrollTop = 0;
@@ -1578,102 +1801,6 @@ async function loadLogFile(url, displayName, participant) {
         document.getElementById('log-content').innerHTML = '<span style="color: var(--text-muted, #999);">Could not load log file.</span>';
     }
 }
-
-function filterLog(level) {
-    window._logFilter = level;
-    // Update button styles
-    ['all', 'warn', 'error'].forEach(function(l) {
-        var btn = document.getElementById('log-filter-' + l);
-        if (!btn) return;
-        if (l === level) {
-            btn.style.background = 'var(--accent-primary, #c9a227)';
-            btn.style.color = 'var(--bg-primary, #0f0f0f)';
-            btn.style.fontWeight = '600';
-        } else {
-            btn.style.background = 'var(--bg-secondary, #161616)';
-            btn.style.color = 'var(--text-primary, #e8e8e8)';
-            btn.style.fontWeight = 'normal';
-        }
-    });
-    renderLogLines(level);
-}
-
-function renderLogLines(level) {
-    var lines = window._logLines || [];
-    var el = document.getElementById('log-content');
-    if (!el) return;
-    var filtered;
-    if (level === 'warn') {
-        filtered = lines.filter(function(l) { return /warn|warning/i.test(l); });
-    } else if (level === 'error') {
-        filtered = lines.filter(function(l) { return /error|exception|fatal|critical/i.test(l); });
-    } else {
-        filtered = lines;
-    }
-    if (filtered.length === 0) {
-        el.innerHTML = '<span style="color: var(--text-muted, #999);">No ' + (level === 'all' ? '' : level + ' ') + 'entries found.</span>';
-        return;
-    }
-    // Show line count
-    var countEl = document.getElementById('log-line-count');
-    if (countEl) {
-        countEl.textContent = filtered.length + ' / ' + lines.length + ' lines';
-    }
-    // Colorize lines
-    var html = filtered.map(function(line) {
-        var escaped = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        if (/error|exception|fatal|critical/i.test(line)) {
-            return '<span style="color: #ff6b6b;">' + escaped + '</span>';
-        } else if (/warn|warning/i.test(line)) {
-            return '<span style="color: #ffd93d;">' + escaped + '</span>';
-        }
-        return escaped;
-    }).join('\n');
-    el.innerHTML = html;
-    // Reset scroll after layout to ensure we start at the top
-    requestAnimationFrame(function() {
-        el.scrollTop = 0;
-        var mainArea = document.querySelector('.analysis-main');
-        if (mainArea) mainArea.scrollTop = 0;
-    });
-}
-
-// Simplified export bar for plot displays
-function createExportBar(url, participant, displayName) {
-    const exportBar = document.createElement('div');
-    exportBar.className = 'export-bar';
-    exportBar.innerHTML = `
-        <button class="export-btn png" onclick="exportPlotAsPNG('current-plot-chart')">
-            &#8659; PNG
-        </button>
-        <button class="export-btn pdf" onclick="exportPlotAsPDF('current-plot-chart', '${participant}', '${displayName}')">
-            &#8659; PDF
-        </button>
-        <button class="export-btn parquet" onclick="downloadParquetFile({repo_name: window.analysisData.repoName, file_path: '${url.replace(`https://raw.githubusercontent.com/CGutt-hub/${window.analysisData.repoName}/main/`, '')}'})">
-            &#8659; Parquet
-        </button>
-        <button class="export-btn csv" onclick="exportPlotAsCSV('${url}', '${displayName}')">
-            &#8659; CSV
-        </button>
-        <span id="load-status" style="color: var(--text-muted, #999); font-size: 0.85rem; margin-left: auto;">
-            Preparing...
-        </span>
-    `;
-    return exportBar;
-}
-
-// Expose functions to global scope for inline onclick handlers
-window.loadPlotFile = loadPlotFile;
-window.toggleFolder = toggleFolder;
-window.showRepoInfo = showRepoInfo;
-window.loadLogFile = loadLogFile;
-window.filterLog = filterLog;
-window.exportPlotAsPNG = exportPlotAsPNG;
-window.exportPlotAsSVG = exportPlotAsSVG;
-window.exportPlotAsPDF = exportPlotAsPDF;
-window.exportPlotAsCSV = exportPlotAsCSV;
-window.exportPlotAsXLS = exportPlotAsXLS;
-window.pipelineZoom = pipelineZoom;
 
 // Re-apply Plotly colors when theme changes (light/dark toggle)
 new MutationObserver(() => {
