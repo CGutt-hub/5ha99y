@@ -1275,6 +1275,22 @@ document.addEventListener('wheel', function(e) {
     });
 })();
 
+// Toggle folder visibility in the file tree
+function toggleFolder(element) {
+    const isExpanded = element.getAttribute('data-expanded') === 'true';
+    const content = element.nextElementSibling;
+    const icon = element.querySelector('.tree-folder-icon');
+    if (isExpanded) {
+        element.setAttribute('data-expanded', 'false');
+        content.style.display = 'none';
+        if (icon) icon.textContent = '▶';
+    } else {
+        element.setAttribute('data-expanded', 'true');
+        content.style.display = 'block';
+        if (icon) icon.textContent = '▼';
+    }
+}
+
 // Toggle project info panel and lazy-load README
 function showRepoInfo(owner, repoName) {
     var description = (window._repoDescriptions || {})[owner + '/' + repoName] || '';
