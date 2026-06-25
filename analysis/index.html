@@ -672,12 +672,14 @@ window.SITE_BASE_URL = "https://cgutt-hub.github.io/5ha99y";
         .then(data => {
             window.plotsData = data;
             console.log('[Analysis] Plot data loaded successfully:', data.length, 'plots');
+            // Initialize the page after data is loaded
+            initAnalysisPage();
         })
         .catch(error => {
             console.error('[Analysis] Error loading plot data:', error);
         });
 </script>
-<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782390838"></script>
+<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782390867"></script>
 
     </main>
     
