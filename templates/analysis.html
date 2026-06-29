@@ -587,13 +587,20 @@ renderer.link = function(href, title, text) {
 marked.setOptions({ renderer: renderer, breaks: false, gfm: true });
 </script>
 <script type="module">
-// Load hyparquet + compressors (adds ZSTD, Snappy, Brotli, LZ4 via WASM)
+// Load hyparquet core first — this is required
 import { parquetReadObjects, asyncBufferFromUrl } from 'https://cdn.jsdelivr.net/npm/hyparquet@1.25.1/+esm';
-import { compressors } from 'https://cdn.jsdelivr.net/npm/hyparquet-compressors@0.2.2/+esm';
 window.hyparquetReadObjects = parquetReadObjects;
 window.hyparquetAsyncBufferFromUrl = asyncBufferFromUrl;
-window.hyparquetCompressors = compressors;
-console.log('[Analysis] hyparquet + compressors loaded successfully');
+console.log('[Analysis] hyparquet loaded');
+// Load compressors separately — best-effort, adds ZSTD/Snappy/Brotli/LZ4 support
+try {
+    const { compressors } = await import('https://cdn.jsdelivr.net/npm/hyparquet-compressors@0.2.2/+esm');
+    window.hyparquetCompressors = compressors;
+    console.log('[Analysis] hyparquet-compressors loaded (ZSTD/Snappy/Brotli/LZ4 supported)');
+} catch (e) {
+    console.warn('[Analysis] hyparquet-compressors failed to load — only GZIP/uncompressed parquet supported.', e);
+    window.hyparquetCompressors = {};
+}
 </script>
 <script>
 // Debug: Check if libraries loaded
