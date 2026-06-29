@@ -1013,7 +1013,7 @@ async function loadPlotFile(url, displayName, folderLabel) {
             <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${displayName}')">⤓ PNG</button>
             <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${displayName}')">⤓ PDF</button>
         </div>
-        <div id="${cid}" class="plot-container" style="height:550px">
+        <div id="${cid}" class="plot-container">
             <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
                 <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading…</div>
             </div>
@@ -1056,7 +1056,7 @@ async function loadLogFile(url, displayName, folderLabel) {
             <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${displayName}')">⤓ PNG</button>
             <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${displayName}')">⤓ PDF</button>
         </div>
-        <div id="${cid}" class="plot-container" style="height:550px">
+        <div id="${cid}" class="plot-container">
             <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
                 <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading…</div>
             </div>
