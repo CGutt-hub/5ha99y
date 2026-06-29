@@ -618,6 +618,21 @@ try {
     console.warn('[Analysis] hyparquet-compressors failed to load — only GZIP/uncompressed parquet supported.', e);
     window.hyparquetCompressors = {};
 }
+// Signal that hyparquet is fully ready before loading repo data
+window._hyparquetReady = true;
+// Now fetch repo list and init — guaranteed hyparquet is available
+fetch('{{ get_url(path="data/github.json") }}')
+    .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+    .then(data => {
+        const repos = Array.isArray(data) ? data : (data.repos || []);
+        console.log('[Analysis] Loaded', repos.length, 'repos, scanning for *_results…');
+        initAnalysisPage(repos);
+    })
+    .catch(err => {
+        console.error('[Analysis] Error loading repo data:', err);
+        const es = document.getElementById('empty-state');
+        if (es) es.innerHTML = `<h2>Error</h2><p>${err.message}</p>`;
+    });
 </script>
 <script>
 // Debug: Check if libraries loaded
@@ -626,23 +641,6 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 window.SITE_BASE_URL = "{{ config.base_url | safe }}";
 </script>
 <script src="{{ get_url(path='analysis-page.js') }}?v={{ now() | date(format='%s') }}"></script>
-<script>
-    // Load repo list from github.json, then dynamically discover *_results folders
-    fetch('{{ get_url(path="data/github.json") }}')
-        .then(response => {
-            if (!response.ok) throw new Error(`Failed to load repo data: HTTP ${response.status}`);
-            return response.json();
-        })
-        .then(data => {
-            const repos = Array.isArray(data) ? data : (data.repos || []);
-            console.log('[Analysis] Loaded', repos.length, 'repos, scanning for *_results…');
-            initAnalysisPage(repos);
-        })
-        .catch(error => {
-            console.error('[Analysis] Error loading repo data:', error);
-            const es = document.getElementById('empty-state');
-            if (es) es.innerHTML = `<h2>Error</h2><p>${error.message}</p>`;
-        });
-</script>
+
 {% endblock content %}
 

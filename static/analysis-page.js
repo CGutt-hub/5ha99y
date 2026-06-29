@@ -35,12 +35,12 @@ function downloadParquetFile(plotItem) {
 
 // Wait for hyparquet to be available (loaded as ES module in analysis.html)
 async function waitForHyparquet() {
-    if (window.hyparquetReadObjects) return;
+    if (window._hyparquetReady) return;
     console.log('[Analysis] Waiting for hyparquet to load...');
     await new Promise((resolve, reject) => {
         const start = Date.now();
         const check = setInterval(() => {
-            if (window.hyparquetReadObjects) { clearInterval(check); resolve(); }
+            if (window._hyparquetReady) { clearInterval(check); resolve(); }
             else if (Date.now() - start > 15000) { clearInterval(check); reject(new Error('hyparquet library failed to load after 15s. Check internet connection.')); }
         }, 100);
     });
