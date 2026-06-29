@@ -1,4 +1,4 @@
-// Open Data Analysis Page JavaScript
+﻿// Open Data Analysis Page JavaScript
 // Fetches and renders parquet files directly from GitHub repos
 
 // Global variable for plot data (loaded from JSON)
@@ -156,12 +156,12 @@ async function parquetToPlotly(rowsOrBuffer, title = null) {
         return conditionRowsToPlotly(rows, title, COLORS);
     }
 
-    // Flat table: no plot_type, no x_data/y_data — render as a data table, not a plot
+    // Flat table: no plot_type, no x_data/y_data â€” render as a data table, not a plot
     if (!columns.includes('x_data') && !columns.includes('y_data')) {
         return flatTableToPlotly(rows, title);
     }
 
-    // Fallback: generic columnar data — plot all numeric columns
+    // Fallback: generic columnar data â€” plot all numeric columns
     return genericToPlotly(rows, title, COLORS);
 }
 
@@ -193,7 +193,7 @@ function plotSpecToPlotly(rows, title, COLORS) {
     // Determine if y_data is nested (array of series arrays) or flat
     let seriesData;
     if (yDataNested.length > 0 && Array.isArray(yDataNested[0]) && Array.isArray(yDataNested[0][0])) {
-        // Double nested: y_data = [[[s1_vals], [s2_vals]]] — unwrap one layer
+        // Double nested: y_data = [[[s1_vals], [s2_vals]]] â€” unwrap one layer
         seriesData = yDataNested[0];
     } else if (yDataNested.length > 0 && Array.isArray(yDataNested[0])) {
         // Each element is a series: [[s1_vals], [s2_vals], ...]
@@ -304,7 +304,7 @@ function plotSpecToPlotly(rows, title, COLORS) {
                 traces.push({
                     x: [...xLabels, ...[...xLabels].reverse()],
                     y: [...upper, ...lower.reverse()],
-                    name: `${label} ±var`,
+                    name: `${label} Â±var`,
                     type: 'scatter', mode: 'lines', fill: 'toself',
                     fillcolor: color.replace(')', ', 0.15)').replace('rgb', 'rgba'),
                     line: { color: 'transparent' },
@@ -406,7 +406,7 @@ function conditionRowsToPlotly(rows, title, COLORS) {
                 traces.push({
                     x: [...xData, ...[...xData].reverse()],
                     y: [...upper, ...lower.reverse()],
-                    name: `${label} ±var`,
+                    name: `${label} Â±var`,
                     type: 'scatter', mode: 'lines', fill: 'toself',
                     fillcolor: color.replace(')', ', 0.15)').replace('rgb', 'rgba'),
                     line: { color: 'transparent' },
@@ -459,7 +459,7 @@ function conditionRowsToPlotly(rows, title, COLORS) {
     };
 }
 
-// Fallback: generic columnar data — plot all numeric columns vs first column
+// Fallback: generic columnar data â€” plot all numeric columns vs first column
 function flatTableToPlotly(rows, title) {
     const columns = Object.keys(rows[0]);
     const cs = typeof getComputedStyle !== 'undefined' ? getComputedStyle(document.documentElement) : null;
@@ -673,7 +673,7 @@ async function downloadPlotPDFA(plotItem, plotIndex) {
         
         // Set PDF metadata
         pdfDoc.setTitle(plotItem.file_path);
-        pdfDoc.setAuthor('Çağatay Özcan Jagiello Gutt');
+        pdfDoc.setAuthor('Ã‡aÄŸatay Ã–zcan Jagiello Gutt');
         pdfDoc.setSubject(`Research data from ${plotItem.repo_name}`);
         pdfDoc.setKeywords(['research', 'open data', 'analysis']);
         pdfDoc.setCreator('Open Data - 5ha99y');
@@ -746,42 +746,6 @@ async function exportPlotAsCSV(url, displayName) {
     }
 }
 
-// Export plot data as XLS using SheetJS
-async function exportPlotAsXLS(url, displayName) {
-    try {
-        const { rows } = await fetchParquetData(url);
-        if (!rows || rows.length === 0) {
-            console.error('[Analysis] No data to export as XLS');
-            return;
-        }
-
-        // Load SheetJS library dynamically
-        if (!window.XLSX) {
-            await loadScript('https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js');
-        }
-
-        // Convert rows to worksheet
-        const worksheet = window.XLSX.utils.json_to_sheet(rows);
-        const workbook = window.XLSX.utils.book_new();
-        window.XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-        
-        // Export to XLS
-        const xlsData = window.XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([xlsData], { type: 'application/octet-stream' });
-        const xlsUrl = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = xlsUrl;
-        a.download = `${displayName.replace('.parquet', '')}.xlsx`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(xlsUrl);
-    } catch (error) {
-        console.error('[Analysis] Error exporting XLS:', error);
-    }
-}
-
 // Helper function to load external scripts
 async function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -793,134 +757,48 @@ async function loadScript(src) {
     });
 }
 
-// Initialize page: data is already loaded via window.plotsData
-// Discover all repos with analysis results
-// Check GitHub API rate limit and return remaining calls
-async function checkRateLimit() {
-    try {
-        const response = await fetch('https://api.github.com/rate_limit');
-        if (response.ok) {
-            const data = await response.json();
-            const core = data.rate || data.resources?.core;
-            if (core) {
-                const resetDate = new Date(core.reset * 1000);
-                return { remaining: core.remaining, limit: core.limit, reset: resetDate };
-            }
-        }
-    } catch (e) { /* ignore */ }
-    return null;
-}
 
-// Fetch the full Git tree for a repo in a single API call (replaces multiple contents API calls)
-async function fetchRepoTree(owner, repo) {
-    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`;
-    try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-            if (response.status === 403 || response.status === 429) {
-                const rateInfo = await checkRateLimit();
-                if (rateInfo && rateInfo.remaining === 0) {
-                    throw new Error(`RATE_LIMIT:${rateInfo.reset.toISOString()}`);
-                }
-            }
-            return null;
-        }
-        const data = await response.json();
-        return data.tree || null; // Array of {path, type: 'blob'|'tree', size, ...}
-    } catch (error) {
-        if (error.message.startsWith('RATE_LIMIT:')) throw error;
-        console.error('[Analysis] Error fetching tree for', repo, error);
-        return null;
+// Initialize analysis page - converts plotsData to file tree and renders sidebar
+async function initAnalysisPage() {
+    const emptyState = document.getElementById('empty-state');
+    const plotDisplays = document.getElementById('plot-displays');
+    if (!emptyState || !plotDisplays) return;
+
+    if (!window.plotsData || window.plotsData.length === 0) {
+        emptyState.innerHTML = '<h2>No Analysis Results Found</h2><p>No plots or logs available.</p>';
+        return;
     }
+
+    // Group by repo, then by folder path (between resultsDir and filename)
+    const repoMap = {};
+    window.plotsData.forEach(item => {
+        const repoName = item.repo_name;
+        const owner = item.repo_url ? item.repo_url.split('/')[3] : 'CGutt-hub';
+        const pathParts = item.file_path.split('/');
+        const resultsDir = pathParts[0];
+        const filename = pathParts[pathParts.length - 1];
+        const folderPath = pathParts.slice(1, -1).join('/');
+
+        if (!repoMap[repoName]) {
+            repoMap[repoName] = { name: repoName, owner, resultsDir, description: '', folders: {} };
+        }
+        if (!repoMap[repoName].folders[folderPath]) {
+            repoMap[repoName].folders[folderPath] = [];
+        }
+        const url = `https://raw.githubusercontent.com/${owner}/${repoName}/main/${item.file_path}`;
+        repoMap[repoName].folders[folderPath].push({
+            name: filename,
+            url,
+            size: item.plot_data?.size || 0,
+            folderPath,
+            updated: item.updated
+        });
+    });
+
+    loadReposFromData(Object.values(repoMap), emptyState);
 }
 
-async function discoverAnalysisRepos(username) {
-    console.log('[Analysis] Discovering repos for user:', username);
-    
-    try {
-        // Fetch all public repos for the user (1 API call)
-        const reposUrl = `https://api.github.com/users/${username}/repos?per_page=100`;
-        const response = await fetch(reposUrl);
-        
-        if (!response.ok) {
-            if (response.status === 403 || response.status === 429) {
-                const rateInfo = await checkRateLimit();
-                if (rateInfo && rateInfo.remaining === 0) {
-                    throw new Error(`RATE_LIMIT:${rateInfo.reset.toISOString()}`);
-                }
-            }
-            throw new Error(`GitHub API error: ${response.status}`);
-        }
-        
-        const repos = await response.json();
-        console.log('[Analysis] Found', repos.length, 'total repos');
-        
-        const analysisRepos = [];
-        
-        // Fetch full tree for each repo (1 API call per repo instead of N)
-        for (const repo of repos) {
-            const tree = await fetchRepoTree(username, repo.name);
-            if (!tree) continue;
-            
-            // Find all directories ending with _results
-            const resultsDirs = new Set();
-            for (const item of tree) {
-                const parts = item.path.split('/');
-                if (parts.length >= 1 && parts[0].endsWith('_results')) {
-                    resultsDirs.add(parts[0]);
-                }
-            }
-            
-            if (resultsDirs.size > 0) {
-                console.log('[Analysis] Found analysis repo:', repo.name, 'with folders:', [...resultsDirs]);
-                
-                for (const dir of resultsDirs) {
-                    // Build a nested folder structure from all files under this results dir
-                    const folders = {};
-                    const escaped = dir.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const prefix = new RegExp(`^${escaped}/`);
-                    for (const item of tree) {
-                        if (item.type !== 'blob') continue;
-                        if (!prefix.test(item.path)) continue;
-                        // Get relative path within results dir
-                        const relPath = item.path.replace(prefix, '');
-                        const parts = relPath.split('/');
-                        // Skip dotfiles and files inside dot-directories (e.g. .bin/)
-                        if (parts.some(p => p.startsWith('.'))) continue;
-                        const fileName = parts.pop();
-                        const folderPath = parts.join('/');
-                        if (!folders[folderPath]) folders[folderPath] = [];
-                        folders[folderPath].push({
-                            name: fileName,
-                            path: item.path,
-                            size: item.size || 0,
-                            folderPath: folderPath,
-                            url: `https://raw.githubusercontent.com/${username}/${repo.name}/main/${item.path}`
-                        });
-                    }
-                    
-                    analysisRepos.push({
-                        owner: username,
-                        name: repo.name,
-                        description: repo.description || '',
-                        resultsDir: dir,
-                        folders: folders
-                    });
-                }
-            }
-        }
-        
-        console.log('[Analysis] Discovered', analysisRepos.length, 'analysis repos');
-        return analysisRepos;
-        
-    } catch (error) {
-        if (error.message.startsWith('RATE_LIMIT:')) throw error;
-        console.error('[Analysis] Error discovering repos:', error);
-        return [];
-    }
-}
-
-// Build a proper tree structure from flat folder-path → files map
+// Build a proper tree structure from flat folder-path -> files map
 function buildFolderTree(folders) {
     const root = { children: {}, files: folders[''] || [] };
     for (const [folderPath, files] of Object.entries(folders)) {
@@ -936,123 +814,67 @@ function buildFolderTree(folders) {
     return root;
 }
 
-// Count all files recursively in a tree node
 function countTreeFiles(node) {
     let count = node.files.length;
     for (const child of Object.values(node.children)) count += countTreeFiles(child);
     return count;
 }
 
-// Render a single file item in the sidebar tree
 function renderFileItem(file) {
-    if (!file.name.endsWith('.parquet')) return '';
+    if (!file.name.endsWith('.parquet') && !file.name.endsWith('.log')) return '';
     const sizeKB = (file.size / 1024).toFixed(1);
     const displayName = file.name.replace(/_/g, '_<wbr>').replace(/\./g, '<wbr>.');
     const folderLabel = (file.folderPath || '').replace(/'/g, "\\'");
-    const isLog = /\.log\.parquet$/i.test(file.name);
+    const isLog = /\.log\.parquet$/i.test(file.name) || file.name.endsWith('.log');
+    const urlSafe = file.url.replace(/'/g, "\\'");
+    const nameSafe = file.name.replace(/'/g, "\\'");
+    const sizeSpan = `<span style="color:var(--text-muted,#999);font-size:0.8em;margin-left:5px">(${sizeKB}KB)</span>`;
     if (isLog) {
-        return `
-            <div class="tree-item" onclick="loadLogFile('${file.url}', '${file.name}', '${folderLabel}')" data-filename="${file.name.toLowerCase()}">
-                📄 ${displayName}
-                <span style="color: var(--text-muted, #999); font-size: 0.8em; margin-left: 5px;">(${sizeKB}KB)</span>
-            </div>
-        `;
+        return `<div class="tree-item" onclick="loadLogFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">📄 ${displayName}${sizeSpan}</div>`;
     }
-    return `
-        <div class="tree-item" onclick="loadPlotFile('${file.url}', '${file.name}', '${folderLabel}')" data-filename="${file.name.toLowerCase()}">
-            📊 ${displayName}
-            <span style="color: var(--text-muted, #999); font-size: 0.8em; margin-left: 5px;">(${sizeKB}KB)</span>
-        </div>
-    `;
+    return `<div class="tree-item" onclick="loadPlotFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">📊 ${displayName}${sizeSpan}</div>`;
 }
 
-// Recursively render a tree node into sidebar HTML
 function renderTreeNode(node) {
     let html = '';
-    // Render files at this level
     node.files.forEach(file => { html += renderFileItem(file); });
-    // Render child folders
-    const childNames = Object.keys(node.children).sort();
-    childNames.forEach(name => {
+    Object.keys(node.children).sort().forEach(name => {
         const child = node.children[name];
         const count = countTreeFiles(child);
-        html += `
-            <div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false">
-                <span class="tree-folder-icon">▶</span>
-                <span>${name}</span>
-                <span style="color: var(--text-muted, #999); font-size: 0.85em; margin-left: 5px;">(${count})</span>
-            </div>
-            <div class="tree-folder-content" style="margin-left: 10px;">
-        `;
+        html += `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false"><span class="tree-folder-icon">▶</span><span>${name}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${count})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
         html += renderTreeNode(child);
         html += '</div>';
     });
     return html;
 }
 
-// Render file tree in sidebar
 function renderFileTree(structure, append = false) {
-    console.log('[Analysis] Rendering file tree for:', structure.repoName, 'append:', append);
-    
     const fileTree = document.getElementById('file-tree');
+    if (!fileTree) return;
     const { repoName, repoOwner, description, folders } = structure;
-    
-    // Store description for lookup by showRepoInfo
+
     window._repoDescriptions = window._repoDescriptions || {};
     window._repoDescriptions[repoOwner + '/' + repoName] = description || '';
 
     const tree = buildFolderTree(folders);
     const totalFiles = countTreeFiles(tree);
 
-    // Build tree HTML
-    let html = `
-        <div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false" data-repo-owner="${repoOwner}" data-repo-name="${repoName}">
-            <span class="tree-folder-icon">▶</span>
-            <span>${repoName}</span>
-            <span style="color: var(--text-muted, #999); font-size: 0.85em; margin-left: 5px;">(${totalFiles})</span>
-        </div>
-        <div class="tree-folder-content" style="margin-left: 10px;">
-    `;
-
+    let html = `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false" data-repo-owner="${repoOwner}" data-repo-name="${repoName}"><span class="tree-folder-icon">▶</span><span>${repoName}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${totalFiles})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
     html += renderTreeNode(tree);
+    html += `<div class="tree-item" onclick="showRepoInfo('${repoOwner}','${repoName}')" style="font-style:italic;color:var(--accent-primary,#c9a227);font-size:0.82rem;cursor:pointer">📖 README</div></div>`;
 
-    // README as last item
-    html += `
-            <div class="tree-item" onclick="showRepoInfo('${repoOwner}', '${repoName}')" style="font-style: italic; color: var(--accent-primary, #c9a227); font-size: 0.82rem; cursor: pointer;">
-                📖 README
-            </div>
-        </div>
-    `;
-    
-    // Either replace or append
-    if (append) {
-        fileTree.innerHTML += html;
-    } else {
-        fileTree.innerHTML = html;
-    }
-    
-    // Flatten all files for size lookup in loadPlotFile
-    const allFiles = [];
-    for (const files of Object.values(folders)) {
-        allFiles.push(...files);
-    }
+    fileTree.innerHTML = append ? fileTree.innerHTML + html : html;
 
-    // Store globally for search and pipeline trace (extend if appending)
-    if (!window.analysisData) {
-        window.analysisData = { repos: [], allFiles: [] };
-    }
+    const allFiles = Object.values(folders).flat();
+    if (!window.analysisData) window.analysisData = { repos: [], allFiles: [] };
     if (append) {
-        window.analysisData.repos = window.analysisData.repos || [];
         window.analysisData.repos.push(structure);
-        window.analysisData.allFiles = (window.analysisData.allFiles || []).concat(allFiles);
+        window.analysisData.allFiles = window.analysisData.allFiles.concat(allFiles);
     } else {
-        window.analysisData = { repos: [structure], allFiles: allFiles };
+        window.analysisData = { repos: [structure], allFiles };
     }
-    
-    console.log('[Analysis] File tree rendered successfully');
 }
 
-// Render repos from discovery data (used by both fresh fetch and cache)
 function loadReposFromData(analysisRepos, emptyState) {
     let loadedCount = 0;
     for (const repoConfig of analysisRepos) {
@@ -1063,674 +885,194 @@ function loadReposFromData(analysisRepos, emptyState) {
             resultsDir: repoConfig.resultsDir,
             folders: repoConfig.folders
         };
-        
-        const hasFiles = structure.folders && Object.values(structure.folders).some(f => f.length > 0);
-        if (!hasFiles) continue;
-        
+        if (!structure.folders || !Object.values(structure.folders).some(f => f.length > 0)) continue;
         renderFileTree(structure, loadedCount > 0);
-        
-        if (loadedCount === 0) {
-            emptyState.style.display = 'none';
-        }
-        
-        // Pipeline trace uses raw.githubusercontent.com (not API, no rate limit)
+        if (loadedCount === 0) emptyState.style.display = 'none';
         fetchPipelineTrace(`${structure.repoOwner}/${structure.repoName}`, structure.resultsDir);
-        
         loadedCount++;
     }
-    
     if (loadedCount === 0) {
-        emptyState.innerHTML = `
-            <h2>No Plot Data Found</h2>
-            <p>Found ${analysisRepos.length} result folder(s) but none contain displayable files.</p>
-        `;
+        emptyState.innerHTML = `<h2>No Plot Data Found</h2><p>Found ${analysisRepos.length} repo(s) but none have displayable files.</p>`;
     } else {
         const searchInput = document.getElementById('search-box');
         if (searchInput && !searchInput.hasAttribute('data-initialized')) {
             searchInput.setAttribute('data-initialized', 'true');
-            searchInput.addEventListener('input', (e) => {
-                filterFileTree(e.target.value);
-            });
+            searchInput.addEventListener('input', e => filterFileTree(e.target.value));
         }
     }
 }
 
-async function initAnalysisPage() {
-    console.log('[Analysis] Initializing page - discovering repos...');
-    
-    const emptyState = document.getElementById('empty-state');
-    const CACHE_KEY = 'analysis_repos_cache_v2';
-    const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
-    
-    // Try sessionStorage cache first to avoid unnecessary API calls
-    try {
-        const cached = sessionStorage.getItem(CACHE_KEY);
-        if (cached) {
-            const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < CACHE_TTL && data.length > 0) {
-                console.log('[Analysis] Using cached discovery data (' + data.length + ' repos)');
-                loadReposFromData(data, emptyState);
-                return;
-            }
-        }
-    } catch (e) { /* cache miss, proceed with API */ }
-    
-    // Show loading state
-    emptyState.innerHTML = `
-        <h2>Discovering Analysis Repositories...</h2>
-        <p>Scanning GitHub for repositories with analysis results</p>
-        <div class="spinner" style="width: 40px; height: 40px; border: 4px solid var(--border-primary, #ddd); border-top: 4px solid var(--accent-primary, #c9a227); border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto;"></div>
-    `;
-    
-    try {
-        // Fetch GitHub username from our own data
-        const baseUrl = (window.SITE_BASE_URL || '').replace(/\/$/, '') + '/';
-        let username = 'CGutt-hub';
-        try {
-            const githubDataResponse = await fetch(baseUrl + 'data/github.json');
-            if (githubDataResponse.ok) {
-                const githubData = await githubDataResponse.json();
-                if (githubData.repos && githubData.repos[0]) {
-                    username = githubData.repos[0].url.split('/')[3] || username;
-                }
-            }
-        } catch (e) {
-            console.warn('[Analysis] Could not load github.json, using fallback username');
-        }
-        
-        console.log('[Analysis] GitHub username:', username);
-        
-        // Discover all repos with *_results folders (uses Git Trees API: 1 call per repo)
-        const analysisRepos = await discoverAnalysisRepos(username);
-        
-        if (analysisRepos.length === 0) {
-            // Check if rate limiting is the cause
-            const rateInfo = await checkRateLimit();
-            if (rateInfo && rateInfo.remaining === 0) {
-                const resetMin = Math.ceil((rateInfo.reset - new Date()) / 60000);
-                emptyState.innerHTML = `
-                    <h2>GitHub API Rate Limit Reached</h2>
-                    <p>The unauthenticated GitHub API allows 60 requests per hour.</p>
-                    <p style="color: var(--text-secondary); margin-top: 10px;">Rate limit resets in <strong>${resetMin > 0 ? resetMin : '< 1'} minute(s)</strong> (at ${rateInfo.reset.toLocaleTimeString()}).</p>
-                    <p style="color: var(--text-muted); font-size: 0.85em; margin-top: 15px;">Please wait and refresh the page afterward.</p>
-                `;
-            } else {
-                emptyState.innerHTML = `
-                    <h2>No Analysis Results Found</h2>
-                    <p>No repositories with <code>*_results/*/plots/*.parquet</code> structure found for <strong>${username}</strong>.</p>
-                    <p style="color: var(--text-muted); font-size: 0.85em; margin-top: 15px;">Check console for details or try refreshing.</p>
-                `;
-            }
-            return;
-        }
-        
-        console.log('[Analysis] Found', analysisRepos.length, 'analysis repos');
-        
-        // Cache successful discovery in sessionStorage
-        try {
-            sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data: analysisRepos, timestamp: Date.now() }));
-        } catch (e) { /* storage full or unavailable */ }
-        
-        loadReposFromData(analysisRepos, emptyState);
-        
-    } catch (error) {
-        console.error('[Analysis] Error initializing page:', error);
-        
-        if (error.message.startsWith('RATE_LIMIT:')) {
-            const resetDate = new Date(error.message.split(':').slice(1).join(':'));
-            const resetMin = Math.ceil((resetDate - new Date()) / 60000);
-            emptyState.innerHTML = `
-                <h2>GitHub API Rate Limit Reached</h2>
-                <p>The unauthenticated GitHub API allows 60 requests per hour.</p>
-                <p style="color: var(--text-secondary); margin-top: 10px;">Rate limit resets in <strong>${resetMin > 0 ? resetMin : '< 1'} minute(s)</strong> (at ${resetDate.toLocaleTimeString()}).</p>
-                <p style="color: var(--text-muted); font-size: 0.85em; margin-top: 15px;">Please wait and refresh the page afterward.</p>
-            `;
-        } else {
-            emptyState.innerHTML = `
-                <h2>Error Loading Data</h2>
-                <p>Could not discover analysis repositories: ${error.message}</p>
-                <p style="color: var(--text-secondary); font-size: 0.9em;">Check the console for details or try refreshing.</p>
-            `;
-        }
-    }
+// Toggle folder expand/collapse
+function toggleFolder(el) {
+    const expanded = el.getAttribute('data-expanded') === 'true';
+    el.setAttribute('data-expanded', String(!expanded));
+    const icon = el.querySelector('.tree-folder-icon');
+    if (icon) icon.style.transform = expanded ? '' : 'rotate(90deg)';
+    const content = el.nextElementSibling;
+    if (content) content.style.display = expanded ? 'none' : 'block';
 }
 
-// Start when page loads
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAnalysisPage);
-} else {
-    initAnalysisPage();
-}
-
-// Pipeline zoom/pan state and controls
-var _pipelineState = { scale: 1, panX: 0, panY: 0 };
-var _pipelineStateL2 = { scale: 1, panX: 0, panY: 0 };
-
-function _getPipelineEls(level) {
-    var suffix = level === 'l2' ? '-l2' : '';
-    return {
-        inner: document.getElementById('pipeline-zoom-inner' + suffix),
-        container: document.getElementById('pipeline-zoom-container' + suffix),
-        state: level === 'l2' ? _pipelineStateL2 : _pipelineState
-    };
-}
-
-function _applyPipelineTransform(inner, state) {
-    inner.style.transform = 'translate(' + state.panX + 'px,' + state.panY + 'px) scale(' + state.scale + ')';
-}
-
-function pipelineZoom(dir, level) {
-    var els = _getPipelineEls(level);
-    if (!els.inner) return;
-    var s = els.state;
-    if (dir === 0) { s.scale = 1; s.panX = 0; s.panY = 0; }
-    else { s.scale = Math.min(5, Math.max(0.3, s.scale + dir * 0.25)); }
-    _applyPipelineTransform(els.inner, s);
-}
-
-// Mouse-wheel zoom on pipeline containers
-document.addEventListener('wheel', function(e) {
-    var container = document.getElementById('pipeline-zoom-container');
-    var containerL2 = document.getElementById('pipeline-zoom-container-l2');
-    var level = null;
-    if (container && container.contains(e.target)) level = 'l1';
-    else if (containerL2 && containerL2.contains(e.target)) level = 'l2';
-    if (!level) return;
-    e.preventDefault();
-    pipelineZoom(e.deltaY < 0 ? 1 : -1, level === 'l2' ? 'l2' : undefined);
-}, { passive: false });
-
-// Drag-to-pan on pipeline containers
-(function() {
-    var dragging = false, dragLevel = null, startX = 0, startY = 0, startPanX = 0, startPanY = 0;
-
-    document.addEventListener('mousedown', function(e) {
-        if (e.button !== 0) return;
-        var container = document.getElementById('pipeline-zoom-container');
-        var containerL2 = document.getElementById('pipeline-zoom-container-l2');
-        var level = null;
-        if (container && container.contains(e.target)) level = 'l1';
-        else if (containerL2 && containerL2.contains(e.target)) level = 'l2';
-        if (!level) return;
-        dragging = true;
-        dragLevel = level === 'l2' ? 'l2' : undefined;
-        var s = _getPipelineEls(dragLevel).state;
-        startX = e.clientX; startY = e.clientY;
-        startPanX = s.panX; startPanY = s.panY;
-        e.preventDefault();
+// Filter sidebar file tree by search query
+function filterFileTree(query) {
+    const q = query.toLowerCase().trim();
+    document.querySelectorAll('#file-tree .tree-item').forEach(item => {
+        const fn = item.getAttribute('data-filename') || '';
+        item.style.display = (!q || fn.includes(q)) ? '' : 'none';
     });
-
-    document.addEventListener('mousemove', function(e) {
-        if (!dragging) return;
-        var els = _getPipelineEls(dragLevel);
-        if (!els.inner) return;
-        var s = els.state;
-        s.panX = startPanX + (e.clientX - startX);
-        s.panY = startPanY + (e.clientY - startY);
-        _applyPipelineTransform(els.inner, s);
-    });
-
-    document.addEventListener('mouseup', function() {
-        dragging = false;
-    });
-})();
-
-// Toggle folder visibility in the file tree
-function toggleFolder(element) {
-    const isExpanded = element.getAttribute('data-expanded') === 'true';
-    const content = element.nextElementSibling;
-    const icon = element.querySelector('.tree-folder-icon');
-    if (isExpanded) {
-        element.setAttribute('data-expanded', 'false');
-        content.style.display = 'none';
-        if (icon) icon.textContent = '▶';
-    } else {
-        element.setAttribute('data-expanded', 'true');
-        content.style.display = 'block';
-        if (icon) icon.textContent = '▼';
-    }
 }
 
-// Toggle project info panel and lazy-load README
+// Show repo README in main panel
 function showRepoInfo(owner, repoName) {
-    var description = (window._repoDescriptions || {})[owner + '/' + repoName] || '';
-    var plotDisplays = document.getElementById('plot-displays');
-    var emptyState = document.getElementById('empty-state');
+    const plotDisplays = document.getElementById('plot-displays');
+    const emptyState = document.getElementById('empty-state');
+    if (!plotDisplays) return;
+    document.querySelectorAll('#file-tree .tree-item').forEach(i => i.classList.remove('active'));
+    if (emptyState) emptyState.style.display = 'none';
+    const key = owner + '/' + repoName;
+    const description = (window._repoDescriptions && window._repoDescriptions[key]) || '';
+    plotDisplays.innerHTML = `
+        <div class="plot-header">
+            <h2><a href="https://github.com/${owner}/${repoName}" target="_blank" rel="noopener">${repoName}</a></h2>
+            <div class="plot-meta">Repository: <a href="https://github.com/${owner}/${repoName}" target="_blank" rel="noopener">github.com/${owner}/${repoName}</a></div>
+        </div>
+        <div class="rendered-markdown" style="margin-top:1.5rem">${description ? (typeof marked !== 'undefined' ? marked.parse(description) : '<pre>' + description + '</pre>') : '<p style="color:var(--text-secondary)">No README available.</p>'}</div>
+    `;
+}
+
+// Load and render a parquet plot/table file
+async function loadPlotFile(url, displayName, folderLabel) {
+    const plotDisplays = document.getElementById('plot-displays');
+    const emptyState = document.getElementById('empty-state');
+    if (!plotDisplays) return;
+
+    document.querySelectorAll('#file-tree .tree-item').forEach(i => i.classList.remove('active'));
+    const active = document.querySelector(`#file-tree .tree-item[data-filename="${displayName.toLowerCase()}"]`);
+    if (active) active.classList.add('active');
     if (emptyState) emptyState.style.display = 'none';
 
-    // Generate pipeline tree HTML if available — resolve correct repo
-    var repoPath = owner + '/' + repoName;
-
-    // --- Pipeline/Results Tree Section ---
-    function buildResultsTreeBox() {
-        const files = (window.analysisData && window.analysisData.allFiles) || [];
-        // Build tree: level (l1/l2/root) > participant > files
-        const tree = {};
-        files.forEach(f => {
-            const pathParts = f.path ? f.path.split('/') : [];
-            let lvl = null, participant = null;
-            if (pathParts.length >= 4 && /^l[12]$/.test(pathParts[1])) {
-                lvl = pathParts[1];
-                participant = pathParts[2];
-            } else {
-                participant = pathParts[1];
-            }
-            const lvlKey = lvl || 'root';
-            if (!tree[lvlKey]) tree[lvlKey] = {};
-            if (!tree[lvlKey][participant]) tree[lvlKey][participant] = [];
-            tree[lvlKey][participant].push(f.filename || f.path);
-        });
-        // Render as interactive collapsible tree
-        function renderTree(obj, depth = 0) {
-            const container = document.createElement('div');
-            for (const key in obj) {
-                const value = obj[key];
-                if (Array.isArray(value)) {
-                    // Folder with file leaves
-                    const folder = document.createElement('div');
-                    folder.style.marginLeft = (depth * 18) + 'px';
-                    folder.style.padding = '4px 8px';
-                    folder.style.cursor = 'pointer';
-                    folder.style.fontWeight = 'bold';
-                    folder.style.userSelect = 'none';
-                    folder.style.display = 'flex';
-                    folder.style.alignItems = 'center';
-                    folder.style.gap = '6px';
-                    folder.style.borderRadius = '4px';
-                    folder.dataset.expanded = 'false';
-                    const icon = document.createElement('span');
-                    icon.textContent = '\u25B6';
-                    icon.style.display = 'inline-block';
-                    icon.style.width = '14px';
-                    icon.style.fontSize = '10px';
-                    icon.style.transition = 'transform 0.2s';
-                    folder.appendChild(icon);
-                    const label = document.createElement('span');
-                    label.textContent = key + '/';
-                    folder.appendChild(label);
-                    const count = document.createElement('span');
-                    count.textContent = '(' + value.length + ')';
-                    count.style.color = 'var(--text-muted, #999)';
-                    count.style.fontSize = '0.85em';
-                    count.style.marginLeft = '4px';
-                    folder.appendChild(count);
-                    const filesList = document.createElement('div');
-                    filesList.style.display = 'none';
-                    filesList.style.marginLeft = ((depth + 1) * 18) + 'px';
-                    value.forEach(f => {
-                        const item = document.createElement('div');
-                        item.textContent = f;
-                        item.style.padding = '2px 8px';
-                        item.style.fontSize = '0.85em';
-                        item.style.color = 'var(--text-secondary, #aaa)';
-                        filesList.appendChild(item);
-                    });
-                    folder.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const expanded = folder.dataset.expanded === 'true';
-                        folder.dataset.expanded = expanded ? 'false' : 'true';
-                        icon.style.transform = expanded ? 'rotate(0deg)' : 'rotate(90deg)';
-                        filesList.style.display = expanded ? 'none' : 'block';
-                    });
-                    folder.addEventListener('mouseenter', function() { folder.style.background = 'var(--bg-tertiary, #333)'; });
-                    folder.addEventListener('mouseleave', function() { folder.style.background = ''; });
-                    container.appendChild(folder);
-                    container.appendChild(filesList);
-                } else if (typeof value === 'object') {
-                    // Nested folder
-                    const folder = document.createElement('div');
-                    folder.style.marginLeft = (depth * 18) + 'px';
-                    folder.style.padding = '4px 8px';
-                    folder.style.cursor = 'pointer';
-                    folder.style.fontWeight = 'bold';
-                    folder.style.userSelect = 'none';
-                    folder.style.display = 'flex';
-                    folder.style.alignItems = 'center';
-                    folder.style.gap = '6px';
-                    folder.style.borderRadius = '4px';
-                    folder.style.marginTop = '4px';
-                    folder.dataset.expanded = 'false';
-                    const icon = document.createElement('span');
-                    icon.textContent = '\u25B6';
-                    icon.style.display = 'inline-block';
-                    icon.style.width = '14px';
-                    icon.style.fontSize = '10px';
-                    icon.style.transition = 'transform 0.2s';
-                    folder.appendChild(icon);
-                    const label = document.createElement('span');
-                    label.textContent = key + '/';
-                    folder.appendChild(label);
-                    const childCount = Object.keys(value).length;
-                    const count = document.createElement('span');
-                    count.textContent = '(' + childCount + ')';
-                    count.style.color = 'var(--text-muted, #999)';
-                    count.style.fontSize = '0.85em';
-                    count.style.marginLeft = '4px';
-                    folder.appendChild(count);
-                    const childContainer = renderTree(value, depth + 1);
-                    childContainer.style.display = 'none';
-                    folder.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const expanded = folder.dataset.expanded === 'true';
-                        folder.dataset.expanded = expanded ? 'false' : 'true';
-                        icon.style.transform = expanded ? 'rotate(0deg)' : 'rotate(90deg)';
-                        childContainer.style.display = expanded ? 'none' : 'block';
-                    });
-                    folder.addEventListener('mouseenter', function() { folder.style.background = 'var(--bg-tertiary, #333)'; });
-                    folder.addEventListener('mouseleave', function() { folder.style.background = ''; });
-                    container.appendChild(folder);
-                    container.appendChild(childContainer);
-                }
-            }
-            return container;
-        }
-        const box = document.createElement('div');
-        box.style.margin = '25px 0';
-        box.style.background = 'var(--bg-primary, #222)';
-        box.style.color = 'var(--text-primary, #e8e8e8)';
-        box.style.padding = '16px';
-        box.style.borderRadius = '8px';
-        box.style.overflowX = 'auto';
-        box.style.fontFamily = 'var(--font-mono, monospace)';
-        box.style.fontSize = '1em';
-        const title = document.createElement('div');
-        title.textContent = 'Pipeline/Results Tree';
-        title.style.fontWeight = 'bold';
-        title.style.fontSize = '1.1em';
-        title.style.marginBottom = '10px';
-        box.appendChild(title);
-        // Download button
-        const dlBtn = document.createElement('button');
-        dlBtn.textContent = 'Download Tree JSON';
-        dlBtn.style.marginBottom = '10px';
-        dlBtn.style.marginLeft = '10px';
-        dlBtn.style.padding = '4px 10px';
-        dlBtn.style.fontSize = '0.95em';
-        dlBtn.style.borderRadius = '4px';
-        dlBtn.style.border = '1px solid var(--border-primary, #444)';
-        dlBtn.style.background = 'var(--bg-tertiary, #333)';
-        dlBtn.style.color = 'var(--text-primary, #e8e8e8)';
-        dlBtn.onclick = () => {
-            const blob = new Blob([JSON.stringify(tree, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'pipeline_tree.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        };
-        box.appendChild(dlBtn);
-        box.appendChild(renderTree(tree));
-        return box;
-    }
-
-    plotDisplays.innerHTML = '';
-    const mainDiv = document.createElement('div');
-    mainDiv.className = 'plot-display active';
-    mainDiv.id = 'current-plot';
-    // Header
-    const headerDiv = document.createElement('div');
-    headerDiv.style.marginBottom = '20px';
-    headerDiv.innerHTML = `<div style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary, #e8e8e8); margin-bottom: 4px;">${repoName}</div>${description ? '<div style="font-size: 0.9rem; color: var(--text-secondary, #aaa); margin-bottom: 16px;">' + description.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>' : ''}`;
-    mainDiv.appendChild(headerDiv);
-    // README
-    const readmeDiv = document.createElement('div');
-    readmeDiv.id = 'repo-readme';
-    readmeDiv.style.padding = '20px';
-    readmeDiv.style.background = 'var(--bg-secondary, #161616)';
-    readmeDiv.style.border = '1px solid var(--border-primary, #2a2a2a)';
-    readmeDiv.style.borderRadius = '8px';
-    readmeDiv.style.minHeight = '200px';
-    readmeDiv.style.maxHeight = 'calc(100vh - 280px)';
-    readmeDiv.style.overflowY = 'auto';
-    readmeDiv.style.lineHeight = '1.6';
-    readmeDiv.style.fontSize = '0.9rem';
-    readmeDiv.style.color = 'var(--text-primary, #e8e8e8)';
-    readmeDiv.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 120px; flex-direction: column; gap: 10px;">
-                    <div class="spinner" style="width: 30px; height: 30px; border: 3px solid var(--bg-tertiary, #ddd); border-top: 3px solid var(--accent-primary, #c9a227); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                    <p style="color: var(--text-muted, #999); font-size: 0.85rem;">Loading README...</p>
-                </div>`;
-    mainDiv.appendChild(readmeDiv);
-    // Pipeline/Results Tree
-    mainDiv.appendChild(buildResultsTreeBox());
-    plotDisplays.appendChild(mainDiv);
-
-    // Load README
-    var readmeEl = document.getElementById('repo-readme');
-    fetch('https://raw.githubusercontent.com/' + owner + '/' + repoName + '/main/README.md')
-        .then(function(r) { return r.ok ? r.text() : null; })
-        .then(function(text) {
-            if (!text) { readmeEl.innerHTML = '<p style="color: var(--text-muted, #999);">No README available.</p>'; return; }
-            readmeEl.innerHTML = '<div class="rendered-markdown">' + marked.parse(text) + '</div>';
-        })
-        .catch(function() { readmeEl.innerHTML = '<p style="color: var(--text-muted, #999);">Could not load README.</p>'; });
-}
-
-// Load and display a plot file in the main content area
-async function loadPlotFile(url, displayName, participant) {
-    console.log('[Analysis] loadPlotFile called with:', { url, displayName, participant });
-    
-    const emptyState = document.getElementById('empty-state');
-    const plotDisplays = document.getElementById('plot-displays');
-    
-    if (!emptyState || !plotDisplays) {
-        console.error('[Analysis] Required DOM elements not found');
-        return;
-    }
-    
-    // Remove previous active states
-    document.querySelectorAll('.tree-item.active').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // Mark clicked item as active
-    if (event && event.target) {
-        const item = event.target.closest('.tree-item');
-        if (item) {
-            item.classList.add('active');
-            console.log('[Analysis] Marked log tree item as active');
-        }
-    }
-    
-    emptyState.style.display = 'none';
-    console.log('[Analysis] Hid empty state');
-    
-    // Scroll the main area to top so the log header is visible
-    const mainArea = document.querySelector('.analysis-main');
-    if (mainArea) mainArea.scrollTop = 0;
-
+    const cid = 'plot-main';
     plotDisplays.innerHTML = `
-        <div class="plot-display active" id="current-plot" style="display: flex; flex-direction: column; height: calc(100vh - 220px);">
-            <div style="margin-bottom: 12px; flex-shrink: 0;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #e8e8e8); margin-bottom: 4px;">Log: ${displayName}</div>
-                <div style="font-size: 0.8rem; color: var(--text-secondary, #aaa); margin-bottom: 12px;">Participant: ${participant} <span id="log-line-count" style="margin-left: 16px; color: var(--text-muted, #666);"></span></div>
-                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                    <button id="log-filter-all" onclick="filterLog('all')" style="padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border-primary, #2a2a2a); background: var(--accent-primary, #c9a227); color: var(--bg-primary, #0f0f0f); font-size: 0.8rem; cursor: pointer; font-weight: 600;">All</button>
-                    <button id="log-filter-warn" onclick="filterLog('warn')" style="padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border-primary, #2a2a2a); background: var(--bg-secondary, #161616); color: var(--text-primary, #e8e8e8); font-size: 0.8rem; cursor: pointer;">⚠ Warnings</button>
-                    <button id="log-filter-error" onclick="filterLog('error')" style="padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border-primary, #2a2a2a); background: var(--bg-secondary, #161616); color: var(--text-primary, #e8e8e8); font-size: 0.8rem; cursor: pointer;">✖ Errors</button>
-                </div>
-            </div>
-            <div id="log-content" style="padding: 16px; background: var(--bg-secondary, #161616); border: 1px solid var(--border-primary, #2a2a2a); border-radius: 8px; flex: 1; min-height: 0; overflow-y: auto; font-family: monospace; font-size: 0.8rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; color: var(--text-primary, #e8e8e8);">
-                <div style="display: flex; align-items: center; justify-content: center; height: 120px; flex-direction: column; gap: 10px;">
-                    <div class="spinner" style="width: 30px; height: 30px; border: 3px solid var(--bg-tertiary, #ddd); border-top: 3px solid var(--accent-primary, #c9a227); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                    <p style="color: var(--text-muted, #999); font-size: 0.85rem;">Loading log file...</p>
-                </div>
-            </div>
+        <div class="plot-header">
+            <h2>${displayName}</h2>
+            <div class="plot-meta">${folderLabel}</div>
         </div>
-    `;
-
-    console.log('[Analysis] Log display HTML set, starting data fetch...');
+        <div class="export-bar">
+            <span class="plot-download-label">Download:</span>
+            <button class="export-btn" onclick="window._directDownload('${url}','${displayName}')">⤓ Parquet</button>
+            <button class="export-btn" onclick="exportPlotAsCSV('${url}','${displayName}')">⤓ CSV</button>
+            <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${displayName}')">⤓ PNG</button>
+            <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${displayName}')">⤓ PDF</button>
+        </div>
+        <div id="${cid}" class="plot-container" style="height:550px">
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
+                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading…</div>
+            </div>
+        </div>`;
 
     try {
-        await waitForHyparquet();
-        console.log('[Analysis] Hyparquet loaded, fetching log file from:', url);
-        // Fetch raw parquet file from GitHub
-        const arrayBuffer = await fetchRawArrayBuffer(url);
-        
-        console.log('[Analysis] Fetched log file arrayBuffer');
-        const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
-        console.log('[Analysis] Parsed log rows:', rows.length);
-        
-        // Extract text: join all string values from all rows
-        let text = '';
-        if (rows.length > 0) {
-            const cols = Object.keys(rows[0]);
-            console.log('[Log] Columns:', cols);
-            // Find the column most likely containing log text
-            const textCol = cols.find(c => /log|text|message|content|output/i.test(c)) || cols[0];
-            console.log('[Log] Using column:', textCol);
-            // Each row's value may itself contain newlines (e.g. entire log in one cell)
-            const parts = [];
-            for (const r of rows) {
-                const val = r[textCol];
-                if (val != null) parts.push(String(val));
-            }
-            text = parts.join('\n');
-            console.log('[Log] Total text length:', text.length, 'chars');
+        const { rows } = await fetchParquetData(url);
+        const plotSpec = await parquetToPlotly(rows, displayName.replace(/\.parquet$/i, ''));
+        if (!plotSpec) {
+            document.getElementById(cid).innerHTML = '<p style="padding:2rem;color:var(--text-secondary)">No renderable data in this file.</p>';
+            return;
         }
-        window._logLines = text.split('\n');
-        console.log('[Log] Total lines after split:', window._logLines.length);
-        window._logFilter = 'all';
-        renderLogLines('all');
-    } catch (e) {
-        console.error('[Analysis] Error loading log parquet:', e);
-        document.getElementById('log-content').innerHTML = '<span style="color: var(--text-muted, #999);">Could not load log file.</span>';
+        Plotly.newPlot(cid, plotSpec.data, plotSpec.layout, { responsive: true, displayModeBar: true });
+    } catch (err) {
+        document.getElementById(cid).innerHTML = `<div style="padding:2rem;color:#ef5350"><strong>Error:</strong> ${err.message}</div>`;
     }
 }
 
-// Simplified export bar for plot displays
-function createExportBar(url, participant, displayName) {
-    const exportBar = document.createElement('div');
-    exportBar.className = 'export-bar';
-    exportBar.innerHTML = `
-        <button class="export-btn png" onclick="exportPlotAsPNG('current-plot-chart')">
-            &#8659; PNG
-        </button>
-        <button class="export-btn pdf" onclick="exportPlotAsPDF('current-plot-chart', '${participant}', '${displayName}')">
-            &#8659; PDF
-        </button>
-        <button class="export-btn parquet" onclick="downloadParquetFile({repo_name: window.analysisData.repoName, file_path: '${url.replace(`https://raw.githubusercontent.com/CGutt-hub/${window.analysisData.repoName}/main/`, '')}'})">
-            &#8659; Parquet
-        </button>
-        <button class="export-btn csv" onclick="exportPlotAsCSV('${url}', '${displayName}')">
-            &#8659; CSV
-        </button>
-        <span id="load-status" style="color: var(--text-muted, #999); font-size: 0.85rem; margin-left: auto;">
-            Preparing...
-        </span>
-    `;
-    return exportBar;
-}
-
-// Load and display a log file in the main content area with level filtering
-async function loadLogFile(url, displayName, participant) {
-    console.log('[Analysis] loadLogFile called with:', { url, displayName, participant });
-    
-    const emptyState = document.getElementById('empty-state');
+// Load and render a log parquet file as a flat table
+async function loadLogFile(url, displayName, folderLabel) {
     const plotDisplays = document.getElementById('plot-displays');
-    
-    if (!emptyState || !plotDisplays) {
-        console.error('[Analysis] Required DOM elements not found');
-        return;
-    }
-    
-    // Remove previous active states
-    document.querySelectorAll('.tree-item.active').forEach(item => {
-        item.classList.remove('active');
-    });
-    
-    // Mark clicked item as active
-    if (event && event.target) {
-        const item = event.target.closest('.tree-item');
-        if (item) {
-            item.classList.add('active');
-            console.log('[Analysis] Marked log tree item as active');
-        }
-    }
-    
-    emptyState.style.display = 'none';
-    console.log('[Analysis] Hid empty state');
-    
-    // Scroll the main area to top so the log header is visible
-    const mainArea = document.querySelector('.analysis-main');
-    if (mainArea) mainArea.scrollTop = 0;
+    const emptyState = document.getElementById('empty-state');
+    if (!plotDisplays) return;
 
+    document.querySelectorAll('#file-tree .tree-item').forEach(i => i.classList.remove('active'));
+    const active = document.querySelector(`#file-tree .tree-item[data-filename="${displayName.toLowerCase()}"]`);
+    if (active) active.classList.add('active');
+    if (emptyState) emptyState.style.display = 'none';
+
+    const cid = 'log-main';
     plotDisplays.innerHTML = `
-        <div class="plot-display active" id="current-plot" style="display: flex; flex-direction: column; height: calc(100vh - 220px);">
-            <div style="margin-bottom: 12px; flex-shrink: 0;">
-                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary, #e8e8e8); margin-bottom: 4px;">Log: ${displayName}</div>
-                <div style="font-size: 0.8rem; color: var(--text-secondary, #aaa); margin-bottom: 12px;">Participant: ${participant} <span id="log-line-count" style="margin-left: 16px; color: var(--text-muted, #666);"></span></div>
-                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                    <button id="log-filter-all" onclick="filterLog('all')" style="padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border-primary, #2a2a2a); background: var(--accent-primary, #c9a227); color: var(--bg-primary, #0f0f0f); font-size: 0.8rem; cursor: pointer; font-weight: 600;">All</button>
-                    <button id="log-filter-warn" onclick="filterLog('warn')" style="padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border-primary, #2a2a2a); background: var(--bg-secondary, #161616); color: var(--text-primary, #e8e8e8); font-size: 0.8rem; cursor: pointer;">⚠ Warnings</button>
-                    <button id="log-filter-error" onclick="filterLog('error')" style="padding: 4px 12px; border-radius: 4px; border: 1px solid var(--border-primary, #2a2a2a); background: var(--bg-secondary, #161616); color: var(--text-primary, #e8e8e8); font-size: 0.8rem; cursor: pointer;">✖ Errors</button>
-                </div>
-            </div>
-            <div id="log-content" style="padding: 16px; background: var(--bg-secondary, #161616); border: 1px solid var(--border-primary, #2a2a2a); border-radius: 8px; flex: 1; min-height: 0; overflow-y: auto; font-family: monospace; font-size: 0.8rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; color: var(--text-primary, #e8e8e8);">
-                <div style="display: flex; align-items: center; justify-content: center; height: 120px; flex-direction: column; gap: 10px;">
-                    <div class="spinner" style="width: 30px; height: 30px; border: 3px solid var(--bg-tertiary, #ddd); border-top: 3px solid var(--accent-primary, #c9a227); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                    <p style="color: var(--text-muted, #999); font-size: 0.85rem;">Loading log file...</p>
-                </div>
-            </div>
+        <div class="plot-header">
+            <h2>${displayName}</h2>
+            <div class="plot-meta">${folderLabel}</div>
         </div>
-    `;
-
-    console.log('[Analysis] Log display HTML set, starting data fetch...');
+        <div class="export-bar">
+            <span class="plot-download-label">Download:</span>
+            <button class="export-btn" onclick="window._directDownload('${url}','${displayName}')">⤓ Parquet</button>
+            <button class="export-btn" onclick="exportPlotAsCSV('${url}','${displayName}')">⤓ CSV</button>
+            <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${displayName}')">⤓ PNG</button>
+            <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${displayName}')">⤓ PDF</button>
+        </div>
+        <div id="${cid}" class="plot-container" style="height:550px">
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
+                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading…</div>
+            </div>
+        </div>`;
 
     try {
-        await waitForHyparquet();
-        console.log('[Analysis] Hyparquet loaded, fetching log file from:', url);
-        // Fetch raw parquet file from GitHub
-        const arrayBuffer = await fetchRawArrayBuffer(url);
-        
-        console.log('[Analysis] Fetched log file arrayBuffer');
-        const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
-        console.log('[Analysis] Parsed log rows:', rows.length);
-        
-        // Extract text: join all string values from all rows
-        let text = '';
-        if (rows.length > 0) {
-            const cols = Object.keys(rows[0]);
-            console.log('[Log] Columns:', cols);
-            // Find the column most likely containing log text
-            const textCol = cols.find(c => /log|text|message|content|output/i.test(c)) || cols[0];
-            console.log('[Log] Using column:', textCol);
-            // Each row's value may itself contain newlines (e.g. entire log in one cell)
-            const parts = [];
-            for (const r of rows) {
-                const val = r[textCol];
-                if (val != null) parts.push(String(val));
-            }
-            text = parts.join('\n');
-            console.log('[Log] Total text length:', text.length, 'chars');
+        const { rows } = await fetchParquetData(url);
+        const plotSpec = flatTableToPlotly(rows, displayName.replace(/\.parquet$/i, ''));
+        if (!plotSpec) {
+            document.getElementById(cid).innerHTML = '<p style="padding:2rem;color:var(--text-secondary)">No data in log file.</p>';
+            return;
         }
-        window._logLines = text.split('\n');
-        console.log('[Log] Total lines after split:', window._logLines.length);
-        window._logFilter = 'all';
-        renderLogLines('all');
-    } catch (e) {
-        console.error('[Analysis] Error loading log parquet:', e);
-        document.getElementById('log-content').innerHTML = '<span style="color: var(--text-muted, #999);">Could not load log file.</span>';
+        Plotly.newPlot(cid, plotSpec.data, plotSpec.layout, { responsive: true });
+    } catch (err) {
+        document.getElementById(cid).innerHTML = `<div style="padding:2rem;color:#ef5350"><strong>Error:</strong> ${err.message}</div>`;
     }
 }
 
-// Re-apply Plotly colors when theme changes (light/dark toggle)
-new MutationObserver(() => {
-    const chartDiv = document.getElementById('current-plot-chart');
-    if (!chartDiv || !chartDiv.data || !chartDiv.data.length) return;
-    const cs = getComputedStyle(document.documentElement);
-    const bg = cs.getPropertyValue('--bg-secondary').trim() || '#161616';
-    const txt = cs.getPropertyValue('--text-primary').trim() || '#e8e8e8';
-    const grid = cs.getPropertyValue('--border-primary').trim() || '#2a2a2a';
-    Plotly.relayout(chartDiv, {
-        'paper_bgcolor': bg, 'plot_bgcolor': bg,
-        'font.color': txt, 'title.font.color': txt,
-        'xaxis.tickfont.color': txt, 'xaxis.title.font.color': txt,
-        'xaxis.gridcolor': grid, 'xaxis.linecolor': grid,
-        'yaxis.tickfont.color': txt, 'yaxis.title.font.color': txt,
-        'yaxis.gridcolor': grid, 'yaxis.linecolor': grid,
-        'legend.font.color': txt,
+// Pipeline trace - fetches on demand, no API rate limit (uses raw.githubusercontent.com)
+async function fetchPipelineTrace(repoPath, resultsDir) {
+    // Loaded lazily when user clicks a pipeline trace file; no-op at init
+}
+
+// Export plot as PNG using Plotly
+function exportPlotAsPNG(containerId, displayName) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    Plotly.downloadImage(el, {
+        format: 'png',
+        width: 1400,
+        height: 800,
+        filename: displayName.replace(/\.parquet$/i, '')
     });
-}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+}
+
+// Export plot as PDF using Plotly toImage + pdf-lib
+async function exportPlotAsPDF(containerId, displayName) {
+    const el = document.getElementById(containerId);
+    if (!el) { alert('Plot not rendered yet.'); return; }
+    try {
+        if (typeof PDFLib === 'undefined') await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
+        const { PDFDocument, rgb } = PDFLib;
+        const imgData = await Plotly.toImage(el, { format: 'png', width: 1400, height: 800 });
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage([1400 * 0.75, 800 * 0.75]); // pt
+        const pngBytes = await fetch(imgData).then(r => r.arrayBuffer());
+        const pngImg = await pdfDoc.embedPng(pngBytes);
+        page.drawImage(pngImg, { x: 0, y: 0, width: page.getWidth(), height: page.getHeight() });
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = displayName.replace(/\.parquet$/i, '') + '.pdf';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+    } catch (err) {
+        alert('PDF export failed: ' + err.message);
+    }
+}
+
+// Direct download helper
+window._directDownload = function(url, filename) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+};
