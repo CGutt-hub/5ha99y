@@ -870,17 +870,27 @@ function countTreeFiles(node) {
     return count;
 }
 
+// Detect table-type result files by name pattern (anova, correlation, t-test, etc.)
+function isTableFile(name) {
+    return /(_anova|_condprof|_correl|_ttest|_effectsize|_descriptive|_regression|_ols|_lgcrct|_quest|_contrast|_zscore|_sentinel)[\._ ]/i.test(name)
+        || /(_summary|_stats|_results)[^/]*\.parquet$/i.test(name);
+}
+
 function renderFileItem(file) {
     if (!file.name.endsWith('.parquet') && !file.name.endsWith('.log')) return '';
     const sizeKB = (file.size / 1024).toFixed(1);
     const displayName = file.name.replace(/_/g, '_<wbr>').replace(/\./g, '<wbr>.');
     const folderLabel = (file.folderPath || '').replace(/'/g, "\\'");
     const isLog = /\.log\.parquet$/i.test(file.name) || file.name.endsWith('.log');
+    const isTable = !isLog && isTableFile(file.name);
     const urlSafe = file.url.replace(/'/g, "\\'");
     const nameSafe = file.name.replace(/'/g, "\\'");
     const sizeSpan = `<span style="color:var(--text-muted,#999);font-size:0.8em;margin-left:5px">(${sizeKB}KB)</span>`;
     if (isLog) {
         return `<div class="tree-item" onclick="loadLogFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">📄 ${displayName}${sizeSpan}</div>`;
+    }
+    if (isTable) {
+        return `<div class="tree-item" onclick="loadLogFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">📋 ${displayName}${sizeSpan}</div>`;
     }
     return `<div class="tree-item" onclick="loadPlotFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">📊 ${displayName}${sizeSpan}</div>`;
 }
