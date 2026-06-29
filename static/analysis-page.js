@@ -937,7 +937,14 @@ function renderFileTree(structure, append = false) {
 
     let html = `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false" data-repo-owner="${repoOwner}" data-repo-name="${repoName}"><span class="tree-folder-icon">▶</span><span>${repoName}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${totalFiles})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
     html += renderTreeNode(tree);
-    html += `<div class="tree-item" onclick="showRepoInfo('${repoOwner}','${repoName}')" style="font-style:italic;color:var(--accent-primary,#c9a227);font-size:0.82rem;cursor:pointer">📖 README</div></div>`;
+    const _traceDownload = structure.traceUrl
+        ? `<div class="tree-item" style="display:flex;align-items:center;justify-content:space-between;font-style:italic;color:#4fc3f7;font-size:0.82rem">
+              <span style="opacity:0.8">🔗 pipeline_trace.txt</span>
+              <span onclick="window._directDownload('${(structure.traceUrl||'').replace(/'/g,"\\'")}','pipeline_trace.txt')"
+                  style="cursor:pointer;padding:0 4px;font-size:1em" title="Download pipeline_trace.txt">⤓</span>
+           </div>`
+        : '';
+    html += `<div class="tree-item" onclick="showRepoInfo('${repoOwner}','${repoName}')" style="font-style:italic;color:var(--accent-primary,#c9a227);font-size:0.82rem;cursor:pointer">📖 README</div>${_traceDownload}</div>`;
 
     fileTree.innerHTML = append ? fileTree.innerHTML + html : html;
 
@@ -1362,11 +1369,203 @@ function _renderFilesView(content, repoName, stepName, backBtn) {
     </div>`;
 }
 
+// Load and render a Nextflow pipeline trace as an interactive Plotly timeline
+async function loadPipelineViz(traceUrl, repoName) {
+    const plotDisplays = document.getElementById('plot-displays');
+    const emptyState   = document.getElementById('empty-state');
+    if (!plotDisplays) return;
+    document.querySelectorAll('#file-tree .tree-item').forEach(i => i.classList.remove('active'));
+    if (emptyState) emptyState.style.display = 'none';
+
+    const cid = 'pipeline-viz';
+    const urlSafe = traceUrl.replace(/'/g, "\\'");
+    const nameSafe = 'pipeline_trace.txt';
+    plotDisplays.innerHTML = `
+        <div class="export-bar">
+            <span class="plot-download-label">Download:</span>
+            <button class="export-btn" onclick="window._directDownload('${urlSafe}','${nameSafe}')">⤓ .txt</button>
+            <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${repoName}_pipeline')">⤓ PNG</button>
+            <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${repoName}_pipeline')">⤓ PDF</button>
+        </div>
+        <div id="${cid}" class="plot-container">
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
+                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading pipeline trace…</div>
+            </div>
+        </div>`;
+
+    try {
+        const resp = await fetch(traceUrl);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const text = await resp.text();
+
+        // Parse TSV
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split('\t');
+        const idx = h => headers.indexOf(h);
+        const tasks = lines.slice(1).map(l => {
+            const c = l.split('\t');
+            return {
+                id:       c[idx('task_id')],
+                process:  c[idx('process')],
+                tag:      c[idx('tag')],
+                status:   c[idx('status')]   || 'COMPLETED',
+                duration: c[idx('realtime')] || '',
+                start:    c[idx('start')]    || '',
+                complete: c[idx('complete')] || '',
+            };
+        }).filter(t => t.process);
+
+        // Assign numeric x (task order) and y (process name → index)
+        const processOrder = [...new Set(tasks.map(t => t.process))];
+        const processIndex = Object.fromEntries(processOrder.map((p, i) => [p, i]));
+
+        const colorMap = { COMPLETED: '#2ecc71', FAILED: '#ef5350', CACHED: '#4fc3f7' };
+        const colors = tasks.map(t => colorMap[t.status] || '#999');
+        const xs     = tasks.map((_, i) => i);
+        const ys     = tasks.map(t => processIndex[t.process]);
+        const texts  = tasks.map(t =>
+            `<b>${t.process}</b><br>tag: ${t.tag}<br>status: ${t.status}<br>duration: ${t.duration}<br>start: ${t.start}`);
+
+        const cs = typeof getComputedStyle !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+        const bgColor   = cs?.getPropertyValue('--bg-secondary').trim()  || '#161616';
+        const textColor = cs?.getPropertyValue('--text-primary').trim()  || '#e8e8e8';
+        const gridColor = cs?.getPropertyValue('--border-primary').trim()|| '#2a2a2a';
+
+        const trace = {
+            x: xs, y: ys,
+            mode: 'markers',
+            type: 'scatter',
+            marker: { color: colors, size: 8, opacity: 0.85,
+                line: { color: gridColor, width: 0.5 } },
+            text: texts,
+            hovertemplate: '%{text}<extra></extra>',
+        };
+
+        const layout = {
+            title: { text: `${repoName} — Pipeline Execution (${tasks.length} tasks)`,
+                     font: { color: textColor, size: 15 } },
+            xaxis: { title: { text: 'Task sequence', font: { color: textColor } },
+                     tickfont: { color: textColor }, gridcolor: gridColor, linecolor: gridColor },
+            yaxis: {
+                tickvals: processOrder.map((_, i) => i),
+                ticktext: processOrder,
+                tickfont: { color: textColor, size: 10 },
+                gridcolor: gridColor, linecolor: gridColor,
+                automargin: true,
+            },
+            paper_bgcolor: bgColor, plot_bgcolor: bgColor,
+            font: { color: textColor, family: "'JetBrains Mono', monospace" },
+            hovermode: 'closest',
+            margin: { t: 60, b: 60, l: 220, r: 30 },
+        };
+
+        await Plotly.newPlot(cid, [trace], layout, { responsive: true, displayModeBar: true });
+        if (typeof resizeAnalysisLayout === 'function') resizeAnalysisLayout();
+        Plotly.Plots.resize(document.getElementById(cid));
+    } catch (err) {
+        document.getElementById(cid).innerHTML =
+            `<div style="padding:2rem;color:#ef5350"><strong>Error:</strong> ${err.message}</div>`;
+    }
+}
+
+// Load and render a Nextflow pipeline trace as an interactive Plotly timeline
+async function loadPipelineViz(traceUrl, repoName) {
+    const plotDisplays = document.getElementById('plot-displays');
+    const emptyState   = document.getElementById('empty-state');
+    if (!plotDisplays) return;
+    document.querySelectorAll('#file-tree .tree-item').forEach(i => i.classList.remove('active'));
+    if (emptyState) emptyState.style.display = 'none';
+
+    const cid = 'pipeline-viz';
+    const urlSafe  = traceUrl.replace(/'/g, "\\'");
+    const nameSafe = (repoName || 'pipeline').replace(/'/g, "\\'");
+    plotDisplays.innerHTML = `
+        <div class="export-bar">
+            <span class="plot-download-label">Download:</span>
+            <button class="export-btn" onclick="window._directDownload('${urlSafe}','pipeline_trace.txt')">⤓ .txt</button>
+            <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${nameSafe}_pipeline')">⤓ PNG</button>
+            <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${nameSafe}_pipeline')">⤓ PDF</button>
+        </div>
+        <div id="${cid}" class="plot-container">
+            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
+                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading pipeline trace…</div>
+            </div>
+        </div>`;
+
+    try {
+        const resp = await fetch(traceUrl);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const text = await resp.text();
+
+        const lines   = text.trim().split('\n');
+        const headers = lines[0].split('\t');
+        const idx = h => headers.indexOf(h);
+        const tasks = lines.slice(1).map(l => {
+            const c = l.split('\t');
+            return {
+                process:  c[idx('process')],
+                tag:      c[idx('tag')]      || '',
+                status:   c[idx('status')]   || 'COMPLETED',
+                duration: c[idx('realtime')] || '',
+                start:    c[idx('start')]    || '',
+            };
+        }).filter(t => t.process);
+
+        const processOrder = [...new Set(tasks.map(t => t.process))];
+        const processIndex = Object.fromEntries(processOrder.map((p, i) => [p, i]));
+        const colorMap = { COMPLETED: '#2ecc71', FAILED: '#ef5350', CACHED: '#4fc3f7' };
+
+        const xs     = tasks.map((_, i) => i);
+        const ys     = tasks.map(t => processIndex[t.process]);
+        const colors = tasks.map(t => colorMap[t.status] || '#999');
+        const hovers = tasks.map(t =>
+            `<b>${t.process}</b><br>tag: ${t.tag}<br>status: ${t.status}<br>duration: ${t.duration}<br>start: ${t.start}`);
+
+        const cs = typeof getComputedStyle !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+        const bgColor   = cs?.getPropertyValue('--bg-secondary').trim()  || '#161616';
+        const textColor = cs?.getPropertyValue('--text-primary').trim()  || '#e8e8e8';
+        const gridColor = cs?.getPropertyValue('--border-primary').trim()|| '#2a2a2a';
+
+        const plotSpec = {
+            data: [{
+                x: xs, y: ys,
+                mode: 'markers', type: 'scatter',
+                marker: { color: colors, size: 8, opacity: 0.85,
+                          line: { color: gridColor, width: 0.5 } },
+                text: hovers,
+                hovertemplate: '%{text}<extra></extra>',
+            }],
+            layout: {
+                title: { text: `${repoName} — Pipeline Execution (${tasks.length} tasks)`,
+                         font: { color: textColor, size: 15 } },
+                xaxis: { title: { text: 'Task sequence', font: { color: textColor } },
+                         tickfont: { color: textColor }, gridcolor: gridColor, linecolor: gridColor },
+                yaxis: {
+                    tickvals: processOrder.map((_, i) => i),
+                    ticktext: processOrder,
+                    tickfont: { color: textColor, size: 10 },
+                    gridcolor: gridColor, linecolor: gridColor, automargin: true,
+                },
+                paper_bgcolor: bgColor, plot_bgcolor: bgColor,
+                font: { color: textColor, family: "'JetBrains Mono', monospace" },
+                hovermode: 'closest',
+                margin: { t: 60, b: 60, l: 220, r: 30 },
+            },
+        };
+
+        await Plotly.newPlot(cid, plotSpec.data, plotSpec.layout, { responsive: true, displayModeBar: true });
+        if (typeof resizeAnalysisLayout === 'function') resizeAnalysisLayout();
+        Plotly.Plots.resize(document.getElementById(cid));
+    } catch (err) {
+        document.getElementById(cid).innerHTML =
+            `<div style="padding:2rem;color:#ef5350"><strong>Error:</strong> ${err.message}</div>`;
+    }
+}
+
 // Highlight the pipeline step that produced the currently loaded file (called from loadPlotFile/loadLogFile)
 function highlightPipelineStep(filename) {
     const guess = guessStepFromFilename(filename);
     if (!guess || !document.getElementById('trace-sidebar')?.classList.contains('open')) return;
-    // If currently on steps view, pulse the matching step box
     document.querySelectorAll('#trace-content div[title]').forEach(el => {
         const title = el.getAttribute('title') || '';
         const isMatch = title.includes('task') && el.textContent.includes(guess.split('_')[0]);
