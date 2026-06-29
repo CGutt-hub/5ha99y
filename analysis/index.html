@@ -329,6 +329,7 @@
     overflow: hidden;
     min-height: 0;
     min-width: 0;
+    box-sizing: border-box;
 }
 
 .empty-state {
@@ -393,13 +394,13 @@
 
 .plot-container {
     flex: 1;
-    min-height: 0;
+    min-height: 350px;
     width: 100%;
     background: var(--bg-secondary);
     border-radius: 8px;
     border: 1px solid var(--border-primary);
     padding: 15px;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .download-btn {
@@ -673,7 +674,7 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 // Provide base URL to JS for asset resolution
 window.SITE_BASE_URL = "https://cgutt-hub.github.io/5ha99y";
 </script>
-<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782734564"></script>
+<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782735140"></script>
 <script>
     // Load repo list from github.json, then dynamically discover *_results folders
     fetch('https://cgutt-hub.github.io/5ha99y/data/github.json')
