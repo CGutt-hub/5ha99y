@@ -655,7 +655,7 @@ window.hyparquetAsyncBufferFromUrl = asyncBufferFromUrl;
 console.log('[Analysis] hyparquet loaded');
 // Load compressors separately — best-effort, adds ZSTD/Snappy/Brotli/LZ4 support
 try {
-    const { compressors } = await import('https://cdn.jsdelivr.net/npm/hyparquet-compressors@0.2.2/+esm');
+    const { compressors } = await import('https://cdn.jsdelivr.net/npm/hyparquet-compressors@1.1.1/+esm');
     window.hyparquetCompressors = compressors;
     console.log('[Analysis] hyparquet-compressors loaded (ZSTD/Snappy/Brotli/LZ4 supported)');
 } catch (e) {
@@ -687,7 +687,7 @@ window.SITE_BASE_URL = "https://cgutt-hub.github.io/5ha99y";
             if (es) es.innerHTML = `<h2>Error</h2><p>${error.message}</p>`;
         });
 </script>
-<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782733452"></script>
+<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782733637"></script>
 
     </main>
     
