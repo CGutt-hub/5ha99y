@@ -648,11 +648,13 @@ renderer.link = function(href, title, text) {
 marked.setOptions({ renderer: renderer, breaks: false, gfm: true });
 </script>
 <script type="module">
-// Load hyparquet (pure JS parquet reader) as ES module
+// Load hyparquet + compressors (adds ZSTD, Snappy, Brotli, LZ4 via WASM)
 import { parquetReadObjects, asyncBufferFromUrl } from 'https://cdn.jsdelivr.net/npm/hyparquet@1.25.1/+esm';
+import { compressors } from 'https://cdn.jsdelivr.net/npm/hyparquet-compressors@0.2.2/+esm';
 window.hyparquetReadObjects = parquetReadObjects;
 window.hyparquetAsyncBufferFromUrl = asyncBufferFromUrl;
-console.log('[Analysis] hyparquet loaded successfully');
+window.hyparquetCompressors = compressors;
+console.log('[Analysis] hyparquet + compressors loaded successfully');
 </script>
 <script>
 // Debug: Check if libraries loaded
@@ -678,7 +680,7 @@ window.SITE_BASE_URL = "https://cgutt-hub.github.io/5ha99y";
             if (es) es.innerHTML = `<h2>Error</h2><p>${error.message}</p>`;
         });
 </script>
-<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782732740"></script>
+<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782733268"></script>
 
     </main>
     
