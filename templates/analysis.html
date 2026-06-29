@@ -608,6 +608,7 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 // Provide base URL to JS for asset resolution
 window.SITE_BASE_URL = "{{ config.base_url | safe }}";
 </script>
+<script src="{{ get_url(path='analysis-page.js') }}?v={{ now() | date(format='%s') }}"></script>
 <script>
     // Load repo list from github.json, then dynamically discover *_results folders
     fetch('{{ get_url(path="data/github.json") }}')
@@ -626,6 +627,5 @@ window.SITE_BASE_URL = "{{ config.base_url | safe }}";
             if (es) es.innerHTML = `<h2>Error</h2><p>${error.message}</p>`;
         });
 </script>
-<script src="{{ get_url(path='analysis-page.js') }}?v={{ now() | date(format='%s') }}"></script>
 {% endblock content %}
 
