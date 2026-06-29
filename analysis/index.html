@@ -67,7 +67,7 @@
 .analysis-layout {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 140px);
     overflow: hidden;
     margin: -20px;
     background: var(--bg-primary);
@@ -104,7 +104,7 @@
     display: flex;
     flex: 1;
     min-height: 0;
-    overflow: hidden;
+    overflow: hidden; /* clip — children own their scroll */
 }
 
 .analysis-sidebar {
@@ -116,12 +116,6 @@
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-}
-
-.plot-container {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
 }
 
 .search-container {
@@ -322,11 +316,10 @@
 
 .analysis-main {
     flex: 1;
-    display: flex;
-    flex-direction: column;
     padding: 3rem;
     background: var(--bg-primary);
-    overflow: hidden;
+    overflow-y: auto; /* the one scrollbar */
+    overflow-x: hidden;
     min-height: 0;
     min-width: 0;
     box-sizing: border-box;
@@ -393,14 +386,15 @@
 }
 
 .plot-container {
-    flex: 1;
-    min-height: 350px;
     width: 100%;
+    height: calc(100vh - 340px); /* fixed: viewport minus top-bar + page chrome + header/export */
+    min-height: 350px;
     background: var(--bg-secondary);
     border-radius: 8px;
     border: 1px solid var(--border-primary);
     padding: 15px;
-    overflow: auto;
+    overflow: hidden; /* Plotly owns its internals */
+    box-sizing: border-box;
 }
 
 .download-btn {
@@ -674,7 +668,7 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 // Provide base URL to JS for asset resolution
 window.SITE_BASE_URL = "https://cgutt-hub.github.io/5ha99y";
 </script>
-<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782735140"></script>
+<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782735533"></script>
 <script>
     // Load repo list from github.json, then dynamically discover *_results folders
     fetch('https://cgutt-hub.github.io/5ha99y/data/github.json')
