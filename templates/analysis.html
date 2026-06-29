@@ -260,11 +260,12 @@ main {
 
 .analysis-main {
     flex: 1;
-    padding: 2rem 3rem;
+    padding: 2rem 3rem 2rem 2.5rem;
     background: var(--bg-primary);
     overflow-y: auto;
     min-width: 0;
     box-sizing: border-box;
+    border-left: 3px solid var(--border-primary);
 }
 
 #plot-displays {}
@@ -415,21 +416,25 @@ main {
     transition: all 0.2s;
 }
 
+/* Parquet */
 .export-btn:hover {
     border-color: var(--accent-primary);
     color: var(--accent-primary);
 }
 
+/* CSV */
+.export-btn.csv:hover {
+    border-color: #4fc3f7;
+    color: #4fc3f7;
+}
+
+/* PNG */
 .export-btn.png:hover {
     border-color: #2ecc71;
     color: #2ecc71;
 }
 
-.export-btn.svg:hover {
-    border-color: #3498db;
-    color: #3498db;
-}
-
+/* PDF */
 .export-btn.pdf:hover {
     border-color: #9b59b6;
     color: #9b59b6;
