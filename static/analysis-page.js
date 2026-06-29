@@ -50,7 +50,7 @@ async function waitForHyparquet() {
 async function parseParquetBuffer(arrayBuffer) {
     await waitForHyparquet();
     // parquetReadObjects accepts ArrayBuffer directly and returns row objects
-    const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
+    const rows = await window.hyparquetReadObjects({ file: arrayBuffer, compressors: window.hyparquetCompressors });
     return rows;
 }
 
@@ -82,7 +82,7 @@ async function fetchParquetData(repoNameOrUrl, filePathOrSize = null) {
         
         console.log('[Analysis] Parsing parquet file with hyparquet...');
         const parseStart = Date.now();
-        const rows = await window.hyparquetReadObjects({ file: arrayBuffer });
+        const rows = await window.hyparquetReadObjects({ file: arrayBuffer, compressors: window.hyparquetCompressors });
         const parseTime = ((Date.now() - parseStart) / 1000).toFixed(1);
         console.log(`[Analysis] Parsed ${rows.length} rows in ${parseTime}s`);
         
