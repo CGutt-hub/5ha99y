@@ -600,22 +600,21 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 window.SITE_BASE_URL = "{{ config.base_url | safe }}";
 </script>
 <script>
-    // Load plot data from JSON file once on page load
-    fetch('{{ get_url(path="data/analysis_plots.json") }}')
+    // Load repo list from github.json, then dynamically discover *_results folders
+    fetch('{{ get_url(path="data/github.json") }}')
         .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to load plot data: HTTP ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Failed to load repo data: HTTP ${response.status}`);
             return response.json();
         })
         .then(data => {
-            window.plotsData = data;
-            console.log('[Analysis] Plot data loaded successfully:', data.length, 'plots');
-            // Initialize the page after data is loaded
-            initAnalysisPage();
+            const repos = Array.isArray(data) ? data : (data.repos || []);
+            console.log('[Analysis] Loaded', repos.length, 'repos, scanning for *_results…');
+            initAnalysisPage(repos);
         })
         .catch(error => {
-            console.error('[Analysis] Error loading plot data:', error);
+            console.error('[Analysis] Error loading repo data:', error);
+            const es = document.getElementById('empty-state');
+            if (es) es.innerHTML = `<h2>Error</h2><p>${error.message}</p>`;
         });
 </script>
 <script src="{{ get_url(path='analysis-page.js') }}?v={{ now() | date(format='%s') }}"></script>
