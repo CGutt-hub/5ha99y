@@ -1,4 +1,4 @@
-// Open Data Analysis Page JavaScript
+﻿// Open Data Analysis Page JavaScript
 // Fetches and renders parquet files directly from GitHub repos
 
 // Global variable for plot data (loaded from JSON)
@@ -772,7 +772,7 @@ async function initAnalysisPage(githubRepos) {
     emptyState.innerHTML = `
         <div style="text-align:center">
             <div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>
-            <p style="color:var(--text-secondary)">Scanning repositories for analysis results�</p>
+            <p style="color:var(--text-secondary)">Scanning repositories for analysis results�</p>
         </div>`;
 
     const analysisRepos = await discoverAnalysisData(githubRepos);
@@ -806,7 +806,7 @@ async function discoverRepoResults(repo, owner) {
         const resp = await fetch(treeUrl);
         if (!resp.ok) return null;
         const data = await resp.json();
-        if (data.truncated) console.warn(`[Analysis] Tree truncated for ${repoName} � some files may be missing`);
+        if (data.truncated) console.warn(`[Analysis] Tree truncated for ${repoName} � some files may be missing`);
 
         // Keep only blobs inside any *_results/ folder with a displayable extension
         const resultFiles = (data.tree || []).filter(item =>
@@ -835,12 +835,23 @@ async function discoverRepoResults(repo, owner) {
             });
         }
 
+        // Also look for pipeline_trace.txt inside .bin/ under the results folder
+        const traceItem = (data.tree || []).find(item =>
+            item.type === 'blob' &&
+            item.path.startsWith(resultsDir + '/') &&
+            item.path.endsWith('pipeline_trace.txt')
+        );
+        const traceUrl = traceItem
+            ? `https://raw.githubusercontent.com/${owner}/${repoName}/main/${traceItem.path}`
+            : null;
+
         return {
             name: repoName,
             owner,
             description: repo.readme || repo.description || '',
             resultsDir,
-            folders
+            folders,
+            traceUrl
         };
     } catch (err) {
         console.warn(`[Analysis] Could not scan ${repoName}:`, err.message);
@@ -918,10 +929,15 @@ function renderFileTree(structure, append = false) {
 
     const tree = buildFolderTree(folders);
     const totalFiles = countTreeFiles(tree);
+    const traceUrl = structure.traceUrl || null;
+    const traceUrlSafe = (traceUrl || '').replace(/'/g, "\\'");
+    const traceEntry = traceUrl
+        ? `<div class="tree-item" onclick="showPipelineTrace('${traceUrlSafe}','${repoOwner}','${repoName}')" style="font-style:italic;color:#4fc3f7;font-size:0.82rem;cursor:pointer">🔗 Pipeline Trace</div>`
+        : '';
 
-    let html = `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false" data-repo-owner="${repoOwner}" data-repo-name="${repoName}"><span class="tree-folder-icon">?</span><span>${repoName}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${totalFiles})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
+    let html = `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false" data-repo-owner="${repoOwner}" data-repo-name="${repoName}"><span class="tree-folder-icon">▶</span><span>${repoName}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${totalFiles})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
     html += renderTreeNode(tree);
-    html += `<div class="tree-item" onclick="showRepoInfo('${repoOwner}','${repoName}')" style="font-style:italic;color:var(--accent-primary,#c9a227);font-size:0.82rem;cursor:pointer">?? README</div></div>`;
+    html += `<div class="tree-item" onclick="showRepoInfo('${repoOwner}','${repoName}')" style="font-style:italic;color:var(--accent-primary,#c9a227);font-size:0.82rem;cursor:pointer">📖 README</div></div>`;
 
     fileTree.innerHTML = append ? fileTree.innerHTML + html : html;
 
@@ -933,6 +949,9 @@ function renderFileTree(structure, append = false) {
     } else {
         window.analysisData = { repos: [structure], allFiles };
     }
+    // Reveal the right sidebar toggle once data is available
+    const tog = document.getElementById('trace-toggle');
+    if (tog) tog.style.display = '';
 }
 
 function loadReposFromData(analysisRepos, emptyState) {
@@ -943,7 +962,8 @@ function loadReposFromData(analysisRepos, emptyState) {
             repoOwner: repoConfig.owner,
             description: repoConfig.description || '',
             resultsDir: repoConfig.resultsDir,
-            folders: repoConfig.folders
+            folders: repoConfig.folders,
+            traceUrl: repoConfig.traceUrl || null
         };
         if (!structure.folders || !Object.values(structure.folders).some(f => f.length > 0)) continue;
         renderFileTree(structure, loadedCount > 0);
@@ -1021,7 +1041,7 @@ async function loadPlotFile(url, displayName, folderLabel) {
         </div>
         <div id="${cid}" class="plot-container">
             <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
-                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading�</div>
+                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading�</div>
             </div>
         </div>`;
 
@@ -1062,7 +1082,7 @@ async function loadLogFile(url, displayName, folderLabel) {
         </div>
         <div id="${cid}" class="plot-container">
             <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
-                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading�</div>
+                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading�</div>
             </div>
         </div>`;
 
@@ -1082,6 +1102,276 @@ async function loadLogFile(url, displayName, folderLabel) {
 // Pipeline trace - fetches on demand, no API rate limit (uses raw.githubusercontent.com)
 async function fetchPipelineTrace(repoPath, resultsDir) {
     // Loaded lazily when user clicks a pipeline trace file; no-op at init
+}
+
+// Map filename fragments to pipeline step names
+const STEP_PATTERNS = [
+    [/bootstrap/i, 'bootstrap'],
+    [/ingest/i, 'ingestor'],
+    [/file_finder/i, 'file_finder'],
+    [/condprof|condition_profile/i, 'condition_profile_processor'],
+    [/concat|concatenat/i, 'concatenating_processor'],
+    [/epoch/i, 'epoching_processor'],
+    [/filter/i, 'filtering_processor'],
+    [/label|binner/i, 'label_binner'],
+    [/pivot/i, 'pivot_processor'],
+    [/reject/i, 'rejection_processor'],
+    [/psd|spectrum/i, 'psd_analyzer'],
+    [/fai|asym/i, 'asymmetry_analyzer'],
+    [/anova/i, 'anova_analyzer'],
+    [/ttest|t_test/i, 'ttest_analyzer'],
+    [/correl/i, 'correl_analyzer'],
+    [/effectsize|effect_size/i, 'effectsize_analyzer'],
+    [/descriptive/i, 'descriptive_analyzer'],
+    [/bootstrap/i, 'bootstrap_analyzer'],
+    [/plv/i, 'plv_analyzer'],
+    [/phase/i, 'phase_analyzer'],
+    [/amplitude/i, 'amplitude_analyzer'],
+    [/interval/i, 'interval_analyzer'],
+    [/group/i, 'group_analyzer'],
+    [/relative/i, 'relative_analyzer'],
+    [/zscore/i, 'zscore_analyzer'],
+    [/quest/i, 'quest_analyzer'],
+    [/lgcrct/i, 'lgcrct_loso_analyzer'],
+    [/lmm|mixed/i, 'lmm'],
+];
+
+function guessStepFromFilename(filename) {
+    const base = filename.replace(/\.parquet$/i, '').replace(/\.log$/i, '');
+    for (const [pat, step] of STEP_PATTERNS) {
+        if (pat.test(base)) return step;
+    }
+    return null;
+}
+
+// Parse Nextflow trace TSV and return ordered unique process list with status
+function parseTraceFile(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) return [];
+    const headers = lines[0].split('\t');
+    const idxProcess = headers.indexOf('process');
+    const idxStatus  = headers.indexOf('status');
+    if (idxProcess < 0) return [];
+    const seen = new Map(); // process -> {count, failed}
+    for (const line of lines.slice(1)) {
+        const cols = line.split('\t');
+        const proc = cols[idxProcess];
+        const status = idxStatus >= 0 ? cols[idxStatus] : 'COMPLETED';
+        if (!proc) continue;
+        if (!seen.has(proc)) seen.set(proc, { count: 0, failed: 0 });
+        seen.get(proc).count++;
+        if (status && status !== 'COMPLETED') seen.get(proc).failed++;
+    }
+    return Array.from(seen.entries()).map(([name, s]) => ({ name, ...s }));
+}
+
+// toggleTraceSidebar is defined in analysis.html (needs resizeAnalysisLayout in same scope)
+
+// ─── Right Sidebar: 3-level Pipeline Navigator ────────────────────────────
+// Level 0: Repo list   →   Level 1: Pipeline steps   →   Level 2: File list
+
+const _nav = { stack: [], traceCache: {} };
+
+// Entry point: open sidebar at repos level (or jump to steps for a specific repo)
+function openPipelineNav(repoName) {
+    _nav.stack = repoName ? [{ view: 'steps', repo: repoName }] : [];
+    toggleTraceSidebar(true);
+    _renderNav();
+}
+
+function _navBack() {
+    _nav.stack.pop();
+    _renderNav();
+}
+
+async function _renderNav() {
+    const content = document.getElementById('trace-content');
+    if (!content) return;
+    const state = _nav.stack.length ? _nav.stack[_nav.stack.length - 1] : { view: 'repos' };
+    const hasBack = _nav.stack.length > 0;
+    const backBtn = hasBack
+        ? `<button onclick="_navBack()" style="background:none;border:none;color:#4fc3f7;cursor:pointer;font-size:0.8rem;padding:0;margin-bottom:0.8rem;display:flex;align-items:center;gap:4px"><span style="font-size:1em">←</span> Back</button>`
+        : '';
+
+    switch (state.view) {
+        case 'repos':  _renderReposView(content, backBtn);                     break;
+        case 'steps':  await _renderStepsView(content, state.repo, backBtn);   break;
+        case 'files':  _renderFilesView(content, state.repo, state.step, backBtn); break;
+    }
+}
+
+function _navStyles() {
+    const cs = typeof getComputedStyle !== 'undefined' ? getComputedStyle(document.documentElement) : null;
+    return {
+        textPrimary: cs?.getPropertyValue('--text-primary').trim()   || '#e8e8e8',
+        textSec:     cs?.getPropertyValue('--text-secondary').trim() || '#999',
+        bgElev:      cs?.getPropertyValue('--bg-elevated').trim()    || '#1c1c1c',
+        bgTert:      cs?.getPropertyValue('--bg-tertiary').trim()    || '#181818',
+        border:      cs?.getPropertyValue('--border-primary').trim() || '#2a2a2a',
+        accent:      cs?.getPropertyValue('--accent-primary').trim() || '#c9a227',
+    };
+}
+
+// Level 0 — Repos
+function _renderReposView(content, backBtn) {
+    const st = _navStyles();
+    const repos = window.analysisData?.repos || [];
+    if (!repos.length) {
+        content.innerHTML = `<div style="padding:1rem">${backBtn}<p style="color:${st.textSec};font-size:0.82rem">No repos loaded yet.</p></div>`;
+        return;
+    }
+    const items = repos.map(r => {
+        const hasTrace = !!r.traceUrl;
+        const rSafe = r.repoName.replace(/'/g, "\\'");
+        return `<div onclick="_nav.stack.push({view:'steps',repo:'${rSafe}'});_renderNav()" style="
+            padding:10px 12px;border:1px solid ${st.border};border-radius:6px;margin-bottom:6px;
+            cursor:pointer;background:${st.bgElev};transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor='${st.accent}'" onmouseout="this.style.borderColor='${st.border}'">
+            <div style="color:${st.textPrimary};font-size:0.85rem;font-weight:600">${r.repoName}</div>
+            <div style="color:${st.textSec};font-size:0.72rem;margin-top:2px">
+                ${Object.values(r.folders).flat().length} files
+                ${hasTrace ? '· <span style="color:#4fc3f7">🔗 trace available</span>' : ''}
+            </div>
+        </div>`;
+    }).join('');
+    content.innerHTML = `<div style="padding:1rem">
+        ${backBtn}
+        <p style="color:${st.textSec};font-size:0.72rem;margin:0 0 0.8rem 0">Select a dataset to browse its pipeline steps.</p>
+        ${items}
+    </div>`;
+}
+
+// Level 1 — Pipeline steps
+async function _renderStepsView(content, repoName, backBtn) {
+    const st = _navStyles();
+    const repo = (window.analysisData?.repos || []).find(r => r.repoName === repoName);
+
+    // Show loading
+    content.innerHTML = `<div style="padding:1rem">${backBtn}<p style="color:${st.textSec};font-size:0.82rem">Loading pipeline…</p></div>`;
+
+    // Fetch or use cached trace
+    if (!_nav.traceCache[repoName]) {
+        if (repo?.traceUrl) {
+            try {
+                const resp = await fetch(repo.traceUrl);
+                const text = resp.ok ? await resp.text() : '';
+                _nav.traceCache[repoName] = parseTraceFile(text);
+            } catch { _nav.traceCache[repoName] = []; }
+        } else {
+            _nav.traceCache[repoName] = [];
+        }
+    }
+    const steps = _nav.traceCache[repoName];
+
+    const traceBtn = repo?.traceUrl
+        ? `<button onclick="window._directDownload('${repo.traceUrl.replace(/'/g,\"\\'\")  }','pipeline_trace.txt')" class="export-btn" style="font-size:0.7rem;padding:3px 8px" onmouseover="this.style.borderColor='#4fc3f7';this.style.color='#4fc3f7'" onmouseout="this.style.borderColor='';this.style.color=''">⤓ trace.txt</button>`
+        : '';
+
+    if (!steps.length) {
+        content.innerHTML = `<div style="padding:1rem">${backBtn}<p style="color:${st.textSec};font-size:0.82rem">No trace data available for <strong>${repoName}</strong>.</p>${traceBtn}</div>`;
+        return;
+    }
+
+    const stepItems = steps.map((s, i) => {
+        const color  = s.failed > 0 ? '#ef5350' : '#2ecc71';
+        const label  = s.name.replace(/_/g, '_<wbr>');
+        const isLast = i === steps.length - 1;
+        // Count matching files for this step
+        const allFiles = Object.values(repo?.folders || {}).flat();
+        const matchCount = allFiles.filter(f => guessStepFromFilename(f.name) === s.name).length;
+        const sSafe = s.name.replace(/'/g, "\\'");
+        const rSafe = repoName.replace(/'/g, "\\'");
+        const clickable = matchCount > 0;
+        return `<div style="display:flex;align-items:flex-start;gap:5px;margin-bottom:5px">
+            <div onclick="${clickable ? `_nav.stack.push({view:'files',repo:'${rSafe}',step:'${sSafe}'});_renderNav()` : ''}" style="
+                flex:1;padding:7px 10px;border:1.5px solid ${st.border};border-radius:6px;
+                background:${st.bgElev};font-size:0.75rem;font-family:var(--font-mono);
+                color:${clickable ? st.textPrimary : st.textSec};
+                cursor:${clickable ? 'pointer' : 'default'};
+                transition:border-color 0.2s,color 0.2s;"
+                onmouseover="${clickable ? `this.style.borderColor='${st.accent}'` : ''}"
+                onmouseout="${clickable ? `this.style.borderColor='${st.border}'` : ''}"
+                title="${s.count} task(s)${s.failed ? ` — ${s.failed} failed` : ''}${matchCount ? ` — ${matchCount} output file(s)` : ''}">
+                <span style="color:${color};margin-right:4px">●</span>${label}
+                ${matchCount ? `<span style="float:right;font-size:0.68em;color:#4fc3f7;opacity:0.85">${matchCount} files</span>` : ''}
+            </div>
+            ${!isLast ? `<span style="color:${st.textSec};padding-top:7px;font-size:0.85em">↓</span>` : ''}
+        </div>`;
+    }).join('');
+
+    content.innerHTML = `<div style="padding:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem">
+            <div>${backBtn}<span style="color:${st.textPrimary};font-size:0.88rem;font-weight:600">${repoName}</span></div>
+            ${traceBtn}
+        </div>
+        <p style="color:${st.textSec};font-size:0.72rem;margin:0 0 0.8rem 0">
+            ● green=ok · red=failed · click a step to see its output files
+        </p>
+        ${stepItems}
+    </div>`;
+}
+
+// Level 2 — Files matching a step
+function _renderFilesView(content, repoName, stepName, backBtn) {
+    const st = _navStyles();
+    const repo = (window.analysisData?.repos || []).find(r => r.repoName === repoName);
+    const allFiles = Object.values(repo?.folders || {}).flat();
+    const matching = allFiles.filter(f => guessStepFromFilename(f.name) === stepName);
+
+    // Group by participant (first path segment of folderPath)
+    const byPart = {};
+    for (const f of matching) {
+        const part = f.folderPath ? f.folderPath.split('/')[0] : '—';
+        if (!byPart[part]) byPart[part] = [];
+        byPart[part].push(f);
+    }
+
+    if (!matching.length) {
+        content.innerHTML = `<div style="padding:1rem">${backBtn}<p style="color:${st.textSec};font-size:0.82rem">No output files found for <strong>${stepName}</strong>.</p></div>`;
+        return;
+    }
+
+    const groups = Object.entries(byPart).map(([part, files]) => {
+        const fileItems = files.map(f => {
+            const urlSafe = f.url.replace(/'/g, "\\'");
+            const nameSafe = f.name.replace(/'/g, "\\'");
+            const isLog = /\.log\.parquet$/i.test(f.name) || isTableFile(f.name);
+            const icon = isLog ? '📋' : '📊';
+            const sizeKB = (f.size / 1024).toFixed(1);
+            return `<div onclick="${isLog ? `loadLogFile` : `loadPlotFile`}('${urlSafe}','${nameSafe}','${part}');toggleTraceSidebar(false)" style="
+                padding:5px 8px;cursor:pointer;border-radius:4px;
+                font-size:0.75rem;font-family:var(--font-mono);color:${st.textSec};
+                transition:background 0.15s;word-break:break-all;"
+                onmouseover="this.style.background='${st.bgTert}';this.style.color='${st.textPrimary}'"
+                onmouseout="this.style.background='';this.style.color='${st.textSec}'">
+                ${icon} ${f.name}
+                <span style="opacity:0.5;font-size:0.68em;margin-left:4px">${sizeKB}KB</span>
+            </div>`;
+        }).join('');
+        return `<div style="margin-bottom:10px">
+            <div style="font-size:0.72rem;color:${st.accent};font-weight:600;padding:3px 0;border-bottom:1px solid ${st.border};margin-bottom:4px">${part}</div>
+            ${fileItems}
+        </div>`;
+    }).join('');
+
+    content.innerHTML = `<div style="padding:1rem">
+        ${backBtn}
+        <div style="color:${st.textPrimary};font-size:0.85rem;font-weight:600;margin-bottom:0.2rem">${stepName.replace(/_/g,' ')}</div>
+        <p style="color:${st.textSec};font-size:0.72rem;margin:0 0 0.8rem 0">${matching.length} output file(s) across ${Object.keys(byPart).length} participant(s) · click to load</p>
+        ${groups}
+    </div>`;
+}
+
+// Highlight the pipeline step that produced the currently loaded file (called from loadPlotFile/loadLogFile)
+function highlightPipelineStep(filename) {
+    const guess = guessStepFromFilename(filename);
+    if (!guess || !document.getElementById('trace-sidebar')?.classList.contains('open')) return;
+    // If currently on steps view, pulse the matching step box
+    document.querySelectorAll('#trace-content div[title]').forEach(el => {
+        const title = el.getAttribute('title') || '';
+        const isMatch = title.includes('task') && el.textContent.includes(guess.split('_')[0]);
+        el.style.borderColor = isMatch ? '#c9a227' : '';
+    });
 }
 
 // Export plot as PNG using Plotly
