@@ -1,4 +1,4 @@
-﻿// Open Data Analysis Page JavaScript
+// Open Data Analysis Page JavaScript
 // Fetches and renders parquet files directly from GitHub repos
 
 // Global variable for plot data (loaded from JSON)
@@ -156,12 +156,12 @@ async function parquetToPlotly(rowsOrBuffer, title = null) {
         return conditionRowsToPlotly(rows, title, COLORS);
     }
 
-    // Flat table: no plot_type, no x_data/y_data â€” render as a data table, not a plot
+    // Flat table: no plot_type, no x_data/y_data — render as a data table, not a plot
     if (!columns.includes('x_data') && !columns.includes('y_data')) {
         return flatTableToPlotly(rows, title);
     }
 
-    // Fallback: generic columnar data â€” plot all numeric columns
+    // Fallback: generic columnar data — plot all numeric columns
     return genericToPlotly(rows, title, COLORS);
 }
 
@@ -193,7 +193,7 @@ function plotSpecToPlotly(rows, title, COLORS) {
     // Determine if y_data is nested (array of series arrays) or flat
     let seriesData;
     if (yDataNested.length > 0 && Array.isArray(yDataNested[0]) && Array.isArray(yDataNested[0][0])) {
-        // Double nested: y_data = [[[s1_vals], [s2_vals]]] â€” unwrap one layer
+        // Double nested: y_data = [[[s1_vals], [s2_vals]]] — unwrap one layer
         seriesData = yDataNested[0];
     } else if (yDataNested.length > 0 && Array.isArray(yDataNested[0])) {
         // Each element is a series: [[s1_vals], [s2_vals], ...]
@@ -304,7 +304,7 @@ function plotSpecToPlotly(rows, title, COLORS) {
                 traces.push({
                     x: [...xLabels, ...[...xLabels].reverse()],
                     y: [...upper, ...lower.reverse()],
-                    name: `${label} Â±var`,
+                    name: `${label} ±var`,
                     type: 'scatter', mode: 'lines', fill: 'toself',
                     fillcolor: color.replace(')', ', 0.15)').replace('rgb', 'rgba'),
                     line: { color: 'transparent' },
@@ -406,7 +406,7 @@ function conditionRowsToPlotly(rows, title, COLORS) {
                 traces.push({
                     x: [...xData, ...[...xData].reverse()],
                     y: [...upper, ...lower.reverse()],
-                    name: `${label} Â±var`,
+                    name: `${label} ±var`,
                     type: 'scatter', mode: 'lines', fill: 'toself',
                     fillcolor: color.replace(')', ', 0.15)').replace('rgb', 'rgba'),
                     line: { color: 'transparent' },
@@ -459,7 +459,7 @@ function conditionRowsToPlotly(rows, title, COLORS) {
     };
 }
 
-// Fallback: generic columnar data â€” plot all numeric columns vs first column
+// Fallback: generic columnar data — plot all numeric columns vs first column
 function flatTableToPlotly(rows, title) {
     const columns = Object.keys(rows[0]);
     const cs = typeof getComputedStyle !== 'undefined' ? getComputedStyle(document.documentElement) : null;
@@ -673,7 +673,7 @@ async function downloadPlotPDFA(plotItem, plotIndex) {
         
         // Set PDF metadata
         pdfDoc.setTitle(plotItem.file_path);
-        pdfDoc.setAuthor('Ã‡aÄŸatay Ã–zcan Jagiello Gutt');
+        pdfDoc.setAuthor('Çağatay Özcan Jagiello Gutt');
         pdfDoc.setSubject(`Research data from ${plotItem.repo_name}`);
         pdfDoc.setKeywords(['research', 'open data', 'analysis']);
         pdfDoc.setCreator('Open Data - 5ha99y');
@@ -772,7 +772,7 @@ async function initAnalysisPage(githubRepos) {
     emptyState.innerHTML = `
         <div style="text-align:center">
             <div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>
-            <p style="color:var(--text-secondary)">Scanning repositories for analysis results…</p>
+            <p style="color:var(--text-secondary)">Scanning repositories for analysis results�</p>
         </div>`;
 
     const analysisRepos = await discoverAnalysisData(githubRepos);
@@ -806,7 +806,7 @@ async function discoverRepoResults(repo, owner) {
         const resp = await fetch(treeUrl);
         if (!resp.ok) return null;
         const data = await resp.json();
-        if (data.truncated) console.warn(`[Analysis] Tree truncated for ${repoName} — some files may be missing`);
+        if (data.truncated) console.warn(`[Analysis] Tree truncated for ${repoName} � some files may be missing`);
 
         // Keep only blobs inside any *_results/ folder with a displayable extension
         const resultFiles = (data.tree || []).filter(item =>
@@ -887,12 +887,12 @@ function renderFileItem(file) {
     const nameSafe = file.name.replace(/'/g, "\\'");
     const sizeSpan = `<span style="color:var(--text-muted,#999);font-size:0.8em;margin-left:5px">(${sizeKB}KB)</span>`;
     if (isLog) {
-        return `<div class="tree-item" onclick="loadLogFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">📄 ${displayName}${sizeSpan}</div>`;
+        return `<div class="tree-item" onclick="loadLogFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">?? ${displayName}${sizeSpan}</div>`;
     }
     if (isTable) {
-        return `<div class="tree-item" onclick="loadLogFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">📋 ${displayName}${sizeSpan}</div>`;
+        return `<div class="tree-item" onclick="loadLogFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">?? ${displayName}${sizeSpan}</div>`;
     }
-    return `<div class="tree-item" onclick="loadPlotFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">📊 ${displayName}${sizeSpan}</div>`;
+    return `<div class="tree-item" onclick="loadPlotFile('${urlSafe}','${nameSafe}','${folderLabel}')" data-filename="${file.name.toLowerCase()}">?? ${displayName}${sizeSpan}</div>`;
 }
 
 function renderTreeNode(node) {
@@ -901,7 +901,7 @@ function renderTreeNode(node) {
     Object.keys(node.children).sort().forEach(name => {
         const child = node.children[name];
         const count = countTreeFiles(child);
-        html += `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false"><span class="tree-folder-icon">▶</span><span>${name}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${count})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
+        html += `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false"><span class="tree-folder-icon">?</span><span>${name}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${count})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
         html += renderTreeNode(child);
         html += '</div>';
     });
@@ -919,9 +919,9 @@ function renderFileTree(structure, append = false) {
     const tree = buildFolderTree(folders);
     const totalFiles = countTreeFiles(tree);
 
-    let html = `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false" data-repo-owner="${repoOwner}" data-repo-name="${repoName}"><span class="tree-folder-icon">▶</span><span>${repoName}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${totalFiles})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
+    let html = `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false" data-repo-owner="${repoOwner}" data-repo-name="${repoName}"><span class="tree-folder-icon">?</span><span>${repoName}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${totalFiles})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
     html += renderTreeNode(tree);
-    html += `<div class="tree-item" onclick="showRepoInfo('${repoOwner}','${repoName}')" style="font-style:italic;color:var(--accent-primary,#c9a227);font-size:0.82rem;cursor:pointer">📖 README</div></div>`;
+    html += `<div class="tree-item" onclick="showRepoInfo('${repoOwner}','${repoName}')" style="font-style:italic;color:var(--accent-primary,#c9a227);font-size:0.82rem;cursor:pointer">?? README</div></div>`;
 
     fileTree.innerHTML = append ? fileTree.innerHTML + html : html;
 
@@ -1012,20 +1012,16 @@ async function loadPlotFile(url, displayName, folderLabel) {
 
     const cid = 'plot-main';
     plotDisplays.innerHTML = `
-        <div class="plot-header">
-            <h2>${displayName}</h2>
-            <div class="plot-meta">${folderLabel}</div>
-        </div>
         <div class="export-bar">
             <span class="plot-download-label">Download:</span>
-            <button class="export-btn" onclick="window._directDownload('${url}','${displayName}')">⤓ Parquet</button>
-            <button class="export-btn" onclick="exportPlotAsCSV('${url}','${displayName}')">⤓ CSV</button>
-            <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${displayName}')">⤓ PNG</button>
-            <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${displayName}')">⤓ PDF</button>
+            <button class="export-btn" onclick="window._directDownload('${url}','${displayName}')">? Parquet</button>
+            <button class="export-btn csv" onclick="exportPlotAsCSV('${url}','${displayName}')">? CSV</button>
+            <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${displayName}')">? PNG</button>
+            <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${displayName}')">? PDF</button>
         </div>
         <div id="${cid}" class="plot-container">
             <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
-                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading…</div>
+                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading�</div>
             </div>
         </div>`;
 
@@ -1057,20 +1053,16 @@ async function loadLogFile(url, displayName, folderLabel) {
 
     const cid = 'log-main';
     plotDisplays.innerHTML = `
-        <div class="plot-header">
-            <h2>${displayName}</h2>
-            <div class="plot-meta">${folderLabel}</div>
-        </div>
         <div class="export-bar">
             <span class="plot-download-label">Download:</span>
-            <button class="export-btn" onclick="window._directDownload('${url}','${displayName}')">⤓ Parquet</button>
-            <button class="export-btn" onclick="exportPlotAsCSV('${url}','${displayName}')">⤓ CSV</button>
-            <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${displayName}')">⤓ PNG</button>
-            <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${displayName}')">⤓ PDF</button>
+            <button class="export-btn" onclick="window._directDownload('${url}','${displayName}')">? Parquet</button>
+            <button class="export-btn csv" onclick="exportPlotAsCSV('${url}','${displayName}')">? CSV</button>
+            <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${displayName}')">? PNG</button>
+            <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${displayName}')">? PDF</button>
         </div>
         <div id="${cid}" class="plot-container">
             <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
-                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading…</div>
+                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading�</div>
             </div>
         </div>`;
 

@@ -321,11 +321,12 @@ main {
 
 .analysis-main {
     flex: 1;
-    padding: 2rem 3rem;
+    padding: 2rem 3rem 2rem 2.5rem;
     background: var(--bg-primary);
     overflow-y: auto;
     min-width: 0;
     box-sizing: border-box;
+    border-left: 3px solid var(--border-primary);
 }
 
 #plot-displays {}
@@ -476,21 +477,25 @@ main {
     transition: all 0.2s;
 }
 
+/* Parquet */
 .export-btn:hover {
     border-color: var(--accent-primary);
     color: var(--accent-primary);
 }
 
+/* CSV */
+.export-btn.csv:hover {
+    border-color: #4fc3f7;
+    color: #4fc3f7;
+}
+
+/* PNG */
 .export-btn.png:hover {
     border-color: #2ecc71;
     color: #2ecc71;
 }
 
-.export-btn.svg:hover {
-    border-color: #3498db;
-    color: #3498db;
-}
-
+/* PDF */
 .export-btn.pdf:hover {
     border-color: #9b59b6;
     color: #9b59b6;
@@ -689,7 +694,7 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 // Provide base URL to JS for asset resolution
 window.SITE_BASE_URL = "https://cgutt-hub.github.io/5ha99y";
 </script>
-<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782739880"></script>
+<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782740545"></script>
 <script>
 // Dynamically size the analysis body and plot container based on actual header height,
 // so the footer remains visible and the page can scroll naturally.
