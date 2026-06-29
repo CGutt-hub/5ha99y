@@ -3,12 +3,29 @@
 {% block content %}
 <style>
 /* Analysis Toolbox-inspired layout adapted for in-page use */
+/* Lock the page to viewport — no outer scrollbar */
+body {
+    overflow: hidden !important;
+    height: 100vh !important;
+}
+main {
+    padding: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
 .analysis-layout {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 140px);
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
-    margin: -20px;
     background: var(--bg-primary);
 }
 
@@ -255,10 +272,11 @@
 
 .analysis-main {
     flex: 1;
-    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 3rem;
     background: var(--bg-primary);
-    overflow-y: auto; /* the one scrollbar */
-    overflow-x: hidden;
+    overflow: hidden;
     min-height: 0;
     min-width: 0;
     box-sizing: border-box;
@@ -325,14 +343,14 @@
 }
 
 .plot-container {
+    flex: 1;           /* fill whatever space remains after header + export bar */
+    min-height: 0;     /* allow flex shrink */
     width: 100%;
-    height: calc(100vh - 340px); /* fixed: viewport minus top-bar + page chrome + header/export */
-    min-height: 350px;
     background: var(--bg-secondary);
     border-radius: 8px;
     border: 1px solid var(--border-primary);
     padding: 15px;
-    overflow: hidden; /* Plotly owns its internals */
+    overflow: hidden;  /* Plotly owns its own pan/zoom/table scroll */
     box-sizing: border-box;
 }
 

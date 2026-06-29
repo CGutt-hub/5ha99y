@@ -1036,7 +1036,8 @@ async function loadPlotFile(url, displayName, folderLabel) {
             document.getElementById(cid).innerHTML = '<p style="padding:2rem;color:var(--text-secondary)">No renderable data in this file.</p>';
             return;
         }
-        Plotly.newPlot(cid, plotSpec.data, plotSpec.layout, { responsive: true, displayModeBar: true });
+        await Plotly.newPlot(cid, plotSpec.data, plotSpec.layout, { responsive: true, displayModeBar: true });
+        Plotly.relayout(cid, { width: undefined, height: undefined }); // let Plotly fill the container
     } catch (err) {
         document.getElementById(cid).innerHTML = `<div style="padding:2rem;color:#ef5350"><strong>Error:</strong> ${err.message}</div>`;
     }
