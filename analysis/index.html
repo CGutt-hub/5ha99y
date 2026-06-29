@@ -109,14 +109,13 @@
 
 .analysis-sidebar {
     width: 300px;
+    min-width: 300px;
     background: var(--bg-secondary);
     border-right: 1px solid var(--border-primary);
     display: flex;
     flex-direction: column;
-    position: sticky;
-    top: 0;
-    height: calc(100vh - 100px);
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .plot-container {
@@ -323,13 +322,13 @@
 
 .analysis-main {
     flex: 1;
+    display: flex;
+    flex-direction: column;
     padding: 3rem;
     background: var(--bg-primary);
-    overflow-y: auto;
+    overflow: hidden;
     min-height: 0;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
+    min-width: 0;
 }
 
 .empty-state {
@@ -393,13 +392,14 @@
 }
 
 .plot-container {
+    flex: 1;
+    min-height: 0;
     width: 100%;
-    height: calc(100vh - 380px);
-    min-height: 350px;
     background: var(--bg-secondary);
     border-radius: 8px;
     border: 1px solid var(--border-primary);
     padding: 15px;
+    overflow: hidden;
 }
 
 .download-btn {
@@ -560,7 +560,6 @@
     }
     
     .plot-container {
-        height: calc(100vh - 300px);
         min-height: 300px;
     }
 }
@@ -674,7 +673,7 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 // Provide base URL to JS for asset resolution
 window.SITE_BASE_URL = "https://cgutt-hub.github.io/5ha99y";
 </script>
-<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782734166"></script>
+<script src="https://cgutt-hub.github.io/5ha99y/analysis-page.js?v=1782734564"></script>
 <script>
     // Load repo list from github.json, then dynamically discover *_results folders
     fetch('https://cgutt-hub.github.io/5ha99y/data/github.json')
