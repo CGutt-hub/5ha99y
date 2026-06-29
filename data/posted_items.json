@@ -5,16 +5,16 @@
       "last_posted": ""
     },
     "EmotiView": {
-      "last_pushed": "2026-03-11T13:44:25Z",
-      "last_posted": "2026-03-09"
+      "last_pushed": "2026-06-24T12:27:46Z",
+      "last_posted": "2026-06-25"
     },
     "AnalysisToolbox": {
-      "last_pushed": "2026-03-09T15:15:03Z",
-      "last_posted": "2026-03-09"
+      "last_pushed": "2026-06-24T12:26:01Z",
+      "last_posted": "2026-06-25"
     },
     "surveyWorkbench": {
-      "last_pushed": "2026-02-18T17:12:35Z",
-      "last_posted": "2026-03-09"
+      "last_pushed": "2026-05-07T12:55:06Z",
+      "last_posted": "2026-06-25"
     },
     "5ha99y": {
       "last_pushed": "2026-02-12T13:24:02Z",
@@ -23,13 +23,29 @@
     "paperFinder": {
       "last_pushed": "2026-02-18T16:29:57Z",
       "last_posted": "2026-02-18"
+    },
+    "continueAgent": {
+      "last_pushed": "2026-06-25T12:11:16Z",
+      "last_posted": "2026-06-25"
+    },
+    "tVNS_deviceplan": {
+      "last_pushed": "2026-01-21T12:05:02Z",
+      "last_posted": "2026-06-25"
+    },
+    "GitRef": {
+      "last_pushed": "2026-04-15T17:07:51Z",
+      "last_posted": "2026-06-25"
+    },
+    "labourAIVolt": {
+      "last_pushed": "2026-03-18T13:38:59Z",
+      "last_posted": "2026-06-25"
     }
   },
   "publications": [
     "Neural-Autonomic Synchrony and Embodied Integration"
   ],
   "website": {
-    "last_pushed": "2026-03-11T14:54:08Z",
-    "last_posted": "2026-03-09"
+    "last_pushed": "2026-06-25T13:29:02Z",
+    "last_posted": "2026-06-25"
   }
 }

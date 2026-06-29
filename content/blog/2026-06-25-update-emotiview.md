@@ -1,6 +1,6 @@
 +++
 title = "Project Update: EmotiView"
-date = 2026-03-09
+date = 2026-06-25
 description = "Recent updates to EmotiView"
 [taxonomies]
 tags = ["project", "github", "update"]
@@ -10,7 +10,7 @@ Recent activity in [EmotiView](https://github.com/CGutt-hub/EmotiView):
 
 ## Recent Commits
 
-- `7cd4a06` Deploy: Sync public files from private repository CGutt-hub/EmotiViewPrivate@2b2
+- `ce17703` Deploy: Sync public files from private repository CGutt-hub/EmotiViewPrivate@dd7
 
 
 This project is actively maintained as part of my commitment to open and transparent science.

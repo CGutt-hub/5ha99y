@@ -9,7 +9,7 @@ title = "Code-Projekte & Repositories"
 ### 5ha99y
 
 **Sprache:** JavaScript  
-**Zuletzt aktualisiert:** 2026-03-11
+**Zuletzt aktualisiert:** 2026-06-25
 
 <details>
 <summary>README anzeigen</summary>
@@ -158,164 +158,152 @@ Edit `scripts/fetch_data.py`:
 
 ---
 
-### EmotiView
+### continueAgent
 
-**Sprache:** HTML  
-**Zuletzt aktualisiert:** 2026-03-11
+**Sprache:** Python  
+**Zuletzt aktualisiert:** 2026-06-25
 
 <details>
 <summary>README anzeigen</summary>
 
-# EmotiView: Neural-Autonomic Synchrony and Embodied Integration
-
-
-
-This repository accompanies ongoing research investigating the dynamic interplay between neural activity and autonomic nervous system responses during emotional experiences. Here you'll find the research article, presentations, analysis pipeline, and results—updated in real-time as the project progresses.
-
-
-
-**Principal Investigator:** Cagatay Özcan Jagiello Gutt
-
-
-
-| Platform | Role | Contents |
-
-|----------|------|----------|
-
-| **[OSF](https://osf.io/gwfyn/overview)** | Research output | Article, documentation |
-
-| **[GitHub](https://github.com/CGutt-hub/EmotiView)** | Technical implementation | Analysis pipeline, results, presentations, proposal |
-
-
-
-## Research Abstract
-
-
-
-Emotional states are fundamentally embodied, emerging from the dynamic interplay between central neural processing and peripheral physiological adjustments orchestrated by the autonomic nervous system (ANS). While ANS outputs like heart rate variability (HRV) and electrodermal activity (EDA) reflect emotional arousal and valence, understanding the precise temporal coordination between brain activity and these peripheral signals is crucial for elucidating brain-body interactions. This study investigates neural-autonomic phase synchrony during the conscious processing of distinct emotional states (positive, negative, neutral) by quantifying the temporal alignment between cortical and physiological rhythms.
-
-
-
-We employ a multimodal approach, simultaneously recording high-temporal-resolution electroencephalography (EEG), electrocardiography (ECG) for HRV analysis (specifically Root Mean Square of Successive Differences, RMSSD), EDA, and functional near-infrared spectroscopy (fNIRS) while participants view validated emotional video clips. Our primary analysis quantifies the Phase Locking Value (PLV) between frontal EEG oscillations (Alpha, Beta bands) and continuous signals derived from HRV (reflecting parasympathetic influence) and phasic EDA (reflecting sympathetic influence). EEG channel selection for PLV analysis is informed by task-related hemodynamic activity measured via fNIRS to focus on functionally relevant cortical areas.
-
-
-
-We hypothesize that PLV, indicating brain-body temporal integration, will be significantly modulated by emotional content compared to neutral conditions. We further expect synchrony strength to correlate with subjective arousal ratings. By examining the phase synchrony between brain signals and ANS-mediated physiological outputs, this research provides novel insights into the dynamic, embodied mechanisms underlying emotional experience. Understanding this temporal binding is critical for models of psychophysiological function and may inform assessments of cognitive load or stress regulation capacity.
-
-
-
-## Core Research Aims & Hypotheses
-
-
-
-This project seeks to understand how the brain and body coordinate during emotional processing, focusing on neural-autonomic phase synchrony. Key hypotheses include:
-
-
-
-1.  **Emotional Modulation of Synchrony:** Neural-autonomic synchrony (Phase Locking Value - PLV) will be enhanced during the processing of positive and negative emotional stimuli compared to neutral stimuli, for both brain-heart (EEG-HRV) and brain-sudomotor (EEG-EDA) coupling.
-
-2.  **Synchrony and Subjective Arousal:** The magnitude of neural-autonomic synchrony will positively correlate with subjective ratings of emotional arousal during emotional conditions.
-
-3.  **Baseline Vagal Tone and Task-Related Synchrony:** Individual differences in baseline parasympathetic regulation (resting-state RMSSD) will be associated with the degree of EEG-HRV synchrony during negative emotional stimuli.
-
-4.  **Frontal Asymmetry and Branch-Specific Synchrony:** The direction of prefrontal cortical asymmetry (Frontal Asymmetry Index - FAI) will be differentially associated with the strength of phase synchrony involving distinct autonomic branches (EEG-HRV vs. EEG-EDA).
-
-
-
-For a comprehensive understanding of the theoretical background, detailed methodology, and specific work packages, please refer to the full proposal document.
-
-
-
-## Methodology Overview
-
-
-
-A multimodal experimental design is employed, involving:
-
-
-
-*   **Stimuli:** Standardized, emotionally evocative video clips (positive, negative, neutral) from the E-MOVIE database.
-
-*   **Participants:** Healthy young adults, screened for relevant criteria.
-
-*   **Data Acquisition:** Simultaneous recording of:
-
-    *   **Electroencephalography (EEG):** To measure prefrontal neural dynamics.
-
-    *   **Functional Near-Infrared Spectroscopy (fNIRS):** To localize hemodynamic activity in prefrontal and parietal regions, informing EEG channel selection.
-
-    *   **Electrocardiography (ECG):** For Heart Rate Variability (HRV) analysis.
-
-    *   **Electrodermal Activity (EDA):** To measure sympathetic nervous system activity.
-
-*   **Subjective Measures:** Self-Assessment Manikin (SAM) for valence and arousal, Positive and Negative Affect Schedule (PANAS), and Behavioural Inhibition/Approach System (BIS/BAS) scales.
-
-
-
-## Repository Contents
-
-
-
-### Research Output (OSF)
-
-*   **Article**: *(Coming soon)* The research article summarizing findings and contributions.
-
-
-
-### Technical Implementation (GitHub)
-
-*   **`EV_results/`**: Processed data, analysis metrics, and visualizations.
-
-*   **`EV_analysis/`**: The Nextflow-based analysis pipeline with Python modules.
-
-*   **`EV_presentation/`**: Slides and presentation materials.
-
-*   **`EV_proposal/`**: The original research proposal with methodology and analysis plan.
-
-
-
-## Analysis Pipeline
-
-
-
-The analysis pipeline is built on **[GitAtbx](https://github.com/CGutt-hub/AnalysisToolbox)**—a modular Nextflow framework for scalable, reproducible data processing with automatic Git result synchronization. The EmotiView-specific pipeline in `EV_analysis/` extends this framework to:
-
-
-
-*   Load and parse multi-modal raw data (EEG, fNIRS, ECG, EDA, questionnaires).
-
-*   Perform standardized preprocessing steps specific to each physiological modality.
-
-*   Extract key features and metrics (e.g., EEG power, FAI, RMSSD, fNIRS ROI activation, PLV).
-
-*   Generate participant-level results and aggregated summaries.
-
-
-
-Configuration is managed via `EV_analysis/EV_parameters.config`. See the [GitAtbx documentation](https://github.com/CGutt-hub/AnalysisToolbox) for framework details.
-
-
-
-## Project Status
-
-
-
-Data collection and Thesis writing.
-
-
-
-## Contributors
-
-
-
-| Name | Role | Contact |
-
-|------|------|---------|
-
-| **Cagatay Özcan Jagiello Gutt** | Principal Investigator | [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--1774--532X-green?logo=orcid)](https://orcid.org/0000-0002-1774-532X) |
-
-| **Ben Gopin** | Technical Assistant | [![Email](https://img.shields.io/badge/Email-ben.gopin001-blue?logo=gmail)](mailto:ben.gopin001@stud.fh-dortmund.de) |
-
+# ContinueAutomation Agent
+
+Intelligent token optimization agent for VS Code Continue extension. Automatically selects between Mistral and Claude based on question complexity, simplifies queries, and tracks costs in real-time.
+
+## Features
+
+- **Smart Model Selection**: Analyzes question complexity and auto-switches between Mistral (simple) and Claude (complex)
+- **Query Simplification**: Reduces token usage by simplifying questions while preserving meaning
+- **Cost Tracking**: Real-time token and cost estimation before and after each query
+- **Auto-Install**: One-command installation that runs as background service on startup
+- **Prompt Caching**: Caches frequently used prompts for efficiency
+
+## Installation from GitHub
+
+```bash
+git clone https://github.com/yourusername/continueAgent.git
+cd continueAgent
+python install_service.py
+```
+
+This will:
+- Install dependencies (Flask, PyYAML, requests)
+- Create startup service (auto-starts on login)
+- Start API server on http://localhost:5001
+
+## Configure Continue
+
+Add to `~/.continue/config.yaml`:
+
+```yaml
+- name: ContinueAutomation
+  provider: openai
+  model: continue-automation
+  apiBase: http://localhost:5001/v1
+  apiKey: dummy
+```
+
+Restart VS Code and select "ContinueAutomation" from the model dropdown.
+
+## How It Works
+
+1. **Initial Assessment**: Analyzes question, decides model, simplifies query, shows estimated cost
+2. **Model Call**: Sends simplified question to chosen model (Mistral/Claude)
+3. **Final Report**: Shows actual token usage and cost
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file
+
+</details>
+
+[Auf GitHub ansehen →](https://github.com/CGutt-hub/continueAgent)
+
+---
+
+### EmotiView
+
+**Sprache:** Jupyter Notebook  
+**Zuletzt aktualisiert:** 2026-06-24
+
+<details>
+<summary>README anzeigen</summary>
+
+# EmotiView: Neural-Autonomic Synchrony and Embodied Integration
+
+This repository accompanies ongoing research investigating the dynamic interplay between neural activity and autonomic nervous system responses during emotional experiences. Here you'll find the research article, presentations, analysis pipeline, and results—updated in real-time as the project progresses.
+
+**Principal Investigator:** Cagatay Özcan Jagiello Gutt
+
+| Platform | Role | Contents |
+|----------|------|----------|
+| **[OSF](https://osf.io/gwfyn/overview)** | Research output | Article, documentation |
+| **[GitHub](https://github.com/CGutt-hub/EmotiView)** | Technical implementation | Analysis pipeline, results, presentations, proposal |
+
+## Research Abstract
+
+Emotional states are fundamentally embodied, emerging from the dynamic interplay between central neural processing and peripheral physiological adjustments orchestrated by the autonomic nervous system (ANS). While ANS outputs like heart rate variability (HRV) and electrodermal activity (EDA) reflect emotional arousal and valence, understanding the precise temporal coordination between brain activity and these peripheral signals is crucial for elucidating brain-body interactions. This study investigates neural-autonomic phase synchrony during the conscious processing of distinct emotional states (positive, negative, neutral) by quantifying the temporal alignment between cortical and physiological rhythms.
+
+We employ a multimodal approach, simultaneously recording high-temporal-resolution electroencephalography (EEG), electrocardiography (ECG) for HRV analysis (specifically Root Mean Square of Successive Differences, RMSSD), EDA, and functional near-infrared spectroscopy (fNIRS) while participants view validated emotional video clips. Our primary analysis quantifies the Phase Locking Value (PLV) between frontal EEG oscillations (Alpha, Beta bands) and continuous signals derived from HRV (reflecting parasympathetic influence) and phasic EDA (reflecting sympathetic influence). EEG channel selection for PLV analysis is informed by task-related hemodynamic activity measured via fNIRS to focus on functionally relevant cortical areas.
+
+We hypothesize that PLV, indicating brain-body temporal integration, will be significantly modulated by emotional content compared to neutral conditions. We further expect synchrony strength to correlate with subjective arousal ratings. By examining the phase synchrony between brain signals and ANS-mediated physiological outputs, this research provides novel insights into the dynamic, embodied mechanisms underlying emotional experience. Understanding this temporal binding is critical for models of psychophysiological function and may inform assessments of cognitive load or stress regulation capacity.
+
+## Core Research Aims & Hypotheses
+
+This project seeks to understand how the brain and body coordinate during emotional processing, focusing on neural-autonomic phase synchrony. Key hypotheses include:
+
+1.  **Emotional Modulation of Synchrony:** Neural-autonomic synchrony (Phase Locking Value - PLV) will be enhanced during the processing of positive and negative emotional stimuli compared to neutral stimuli, for both brain-heart (EEG-HRV) and brain-sudomotor (EEG-EDA) coupling.
+2.  **Synchrony and Subjective Arousal:** The magnitude of neural-autonomic synchrony will positively correlate with subjective ratings of emotional arousal during emotional conditions.
+3.  **Baseline Vagal Tone and Task-Related Synchrony:** Individual differences in baseline parasympathetic regulation (resting-state RMSSD) will be associated with the degree of EEG-HRV synchrony during negative emotional stimuli.
+4.  **Frontal Asymmetry and Branch-Specific Synchrony:** The direction of prefrontal cortical asymmetry (Frontal Asymmetry Index - FAI) will be differentially associated with the strength of phase synchrony involving distinct autonomic branches (EEG-HRV vs. EEG-EDA).
+
+For a comprehensive understanding of the theoretical background, detailed methodology, and specific work packages, please refer to the full proposal document.
+
+## Methodology Overview
+
+A multimodal experimental design is employed, involving:
+
+*   **Stimuli:** Standardized, emotionally evocative video clips (positive, negative, neutral) from the E-MOVIE database.
+*   **Participants:** Healthy young adults, screened for relevant criteria.
+*   **Data Acquisition:** Simultaneous recording of:
+    *   **Electroencephalography (EEG):** To measure prefrontal neural dynamics.
+    *   **Functional Near-Infrared Spectroscopy (fNIRS):** To localize hemodynamic activity in prefrontal and parietal regions, informing EEG channel selection.
+    *   **Electrocardiography (ECG):** For Heart Rate Variability (HRV) analysis.
+    *   **Electrodermal Activity (EDA):** To measure sympathetic nervous system activity.
+*   **Subjective Measures:** Self-Assessment Manikin (SAM) for valence and arousal, Positive and Negative Affect Schedule (PANAS), and Behavioural Inhibition/Approach System (BIS/BAS) scales.
+
+## Repository Contents
+
+### Research Output (OSF)
+*   **Article**: *(Coming soon)* The research article summarizing findings and contributions.
+
+### Technical Implementation (GitHub)
+*   **`EV_results/`**: Processed data, analysis metrics, and visualizations.
+*   **`EV_analysis/`**: The Nextflow-based analysis pipeline with Python modules.
+*   **`EV_presentation/`**: Slides and presentation materials.
+*   **`EV_proposal/`**: The original research proposal with methodology and analysis plan.
+
+## Analysis Pipeline
+
+The analysis pipeline is built on the **[AnalysisToolbox](https://github.com/CGutt-hub/AnalysisToolbox)**—a modular Nextflow framework for scalable, reproducible data processing with automatic result synchronization. The EmotiView-specific pipeline in `EV_analysis/` extends this framework to:
+
+*   Load and parse multi-modal raw data (EEG, fNIRS, ECG, EDA, questionnaires).
+*   Perform standardized preprocessing steps specific to each physiological modality.
+*   Extract key features and metrics (e.g., EEG power, FAI, RMSSD, fNIRS ROI activation, PLV).
+*   Generate participant-level results and aggregated summaries.
+
+Configuration is managed via `EV_analysis/EV_parameters.config`. See the [AnalysisToolbox documentation](https://github.com/CGutt-hub/AnalysisToolbox) for framework details.
+
+## Project Status
+
+Data collection and Thesis writing.
+
+## Contributors
+
+| Name | Role | Contact |
+|------|------|---------|
+| **Cagatay Özcan Jagiello Gutt** | Principal Investigator | [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--1774--532X-green?logo=orcid)](https://orcid.org/0000-0002-1774-532X) |
+| **Ben Gopin** | Technical Assistant | [![Email](https://img.shields.io/badge/Email-ben.gopin001-blue?logo=gmail)](mailto:ben.gopin001@stud.fh-dortmund.de) |
 | **Gerrit Jostler** | Technical Assistant | [![Email](https://img.shields.io/badge/Email-gerrit.jostler001-blue?logo=gmail)](mailto:gerrit.jostler001@stud.fh-dortmund.de) |
 
 </details>
@@ -324,56 +312,157 @@ Data collection and Thesis writing.
 
 ---
 
-### GitAtbx
+### AnalysisToolbox
 
 **Sprache:** Python  
-**Zuletzt aktualisiert:** 2026-04-27
+**Zuletzt aktualisiert:** 2026-06-24
 
 <details>
 <summary>README anzeigen</summary>
 
-# GitAtbx
+# AnalysisToolbox
 
-Ein modulares Framework für automatisierte Datenverarbeitungs- und Analysepipelines — mit eingebetteter Git-Synchronisierung der Ergebnisse. Aufgebaut auf **Nextflow** für skalierbare, reproduzierbare Workflows.
+A modular framework for automated data processing and statistical analysis pipelines. Built on **Nextflow** for scalable, reproducible workflows with automatic result synchronization.
 
-## Überblick
+## Overview
 
-GitAtbx bietet die Infrastruktur für Datenpipelines, die:
+The AnalysisToolbox provides infrastructure for building data processing pipelines that:
 
-- **Mehrere Datensätze parallel** verarbeiten mit automatischer Teilnehmer-Erkennung
-- **Ergebnisse automatisch versionieren** via Git-Commit und -Push nach jeder Analyse
-- **Fortschritt verfolgen** per Teilnehmer-Log und Live-Web-UI
-- **Fehler graceful behandeln** ohne abgeschlossene Arbeit zu verlieren
+- **Process multiple datasets** in parallel with automatic participant discovery
+- **Handle diverse data types** through a generic reader/processor/analyzer architecture
+- **Track progress** via per-participant logging visible live in the web UI
+- **Recover gracefully** from failures without losing completed work
 
-Das Framework ist domänenagnostisch — Module folgen einfachen Ein-/Ausgabe-Konventionen (Parquet/FIF) und können beliebige Verarbeitungslogik implementieren.
+The framework is domain-agnostic — modules follow simple input/output conventions (Parquet/FIF files) and can implement any processing logic.
 
-## Installation
+## Repository Structure
+
+```
+AnalysisToolbox/
+├── gitatbx/               # pip-installable package (installed via pip install GitAtbx)
+│   ├── bin/               # workflow_wrapper.nf, log_to_parquet.py, nextflow.config, ...
+│   ├── modules/           # analyzers/, processors/, readers/, utils/
+│   ├── templates/         # workflow_template.nf, modules_template.nf, parameters_template.config
+│   └── utils/             # serve_html.ps1, reinject.sh, result_collector.py
+├── pyproject.toml
+└── README.md
+```
+
+On first run `gitatbx` creates a **symlink** `~/Documents/GitAtbxModules` → `<site-packages>/gitatbx/modules/`. The symlink always reflects the live installed version — upgrading via `pip install --upgrade GitAtbx` automatically shows updated modules through the same symlink path.
+
+## Prerequisites
+
+### Java Runtime (required by Nextflow)
+
+```bash
+sudo apt update && sudo apt install default-jre
+java -version
+```
+
+### Nextflow
+
+```bash
+curl -s https://get.nextflow.io | bash
+sudo mv nextflow /usr/local/bin/
+nextflow -version
+```
+
+## Install
 
 ```bash
 pip install GitAtbx
 ```
 
-Python-Abhängigkeiten (`numpy`, `scipy`, `polars`, `mne`, `neurokit2`, …) werden automatisch installiert.
+Python dependencies (`numpy`, `scipy`, `polars`, `mne`, `neurokit2`, …) are installed automatically.
 
-## Kernbefehle
+On first run `gitatbx` creates a symlink `~/Documents/GitAtbxModules` → `<site-packages>/gitatbx/modules/` and saves the path to `~/.gitatbx_config`.
 
-| Befehl | Funktion |
+## Usage
+
+### Commands
+
+| Command | What it does |
 |---|---|
-| `gitatbx init <dir>` | Neues Analyseprojekt anlegen |
-| `gitatbx run [pattern]` | Pipeline per Projektname-Suche starten |
-| `gitatbx serve` | Ergebnis-HTML lokal im Browser anzeigen |
-| `gitatbx reinject <ID>` | Korrigierten Output für einen Teilnehmer neu einspielen |
-| `gitatbx move <ziel>` | Module-Symlink verschieben |
-| `gitatbx config show` | Aktuelle Konfiguration anzeigen |
+| `gitatbx init <dir>` | Scaffold a new analysis project |
+| `gitatbx run [pattern]` | Find and run a pipeline by project name pattern |
+| `gitatbx serve [--dir DIR] [--port PORT]` | Serve results HTML locally in browser |
+| `gitatbx reinject <PID> [options]` | Reinject a corrected output for one participant |
+| `gitatbx move <dest>` | Move the deployed modules folder to a new location |
+| `gitatbx config show` | Print current configuration (`~/.gitatbx_config`) |
 
-## Git-Integration
+### `gitatbx init`
 
-GitAtbx verwaltet ein Git-Repository für den Ergebnisordner. Nach jeder abgeschlossenen Teilnehmeranalyse werden die Ergebnisse automatisch committet und gepusht. `gitatbx init` richtet das Remote-Repository direkt ein und prüft die Authentifizierung.
+Prompts for project name, raw data directory, Python executable, toolbox path, git author identity, and an optional GitHub remote URL for the results repo. Then creates:
 
-## Voraussetzungen
+```
+<dir>/
+├── {name}_analysis/
+│   ├── {name}_pipeline.nf       ← edit your workflow here
+│   ├── {name}_modules.nf        ← add IOInterface includes here
+│   └── {name}_parameters.config ← pre-filled paths, params, and git identity
+└── {name}_results/
+    └── .git/                    ← initialised + remote added (if URL provided)
+```
 
-- Java Runtime + Nextflow
-- SSH-Key bei GitHub hinterlegt (für automatischen Push)
+Git author name and email default to your global `git config` values if already set. The remote URL is validated immediately with `git ls-remote` — if authentication fails (e.g. SSH key not yet added to GitHub), a warning is printed with a link to the GitHub SSH setup guide.
+
+The pipeline uses the stamped `params.git_user_name` / `params.git_user_email` as the commit author for all automatic result syncs.
+
+### `gitatbx run`
+
+GitAtbx searches the entire accessible filesystem (home directory and all drives on Windows) for a directory named `(name)_analysis` containing a `*_pipeline.nf`, then runs it automatically. No need to `cd` anywhere.
+
+```bash
+gitatbx run (name) --resume   # continue a previous run
+gitatbx run               # no pattern: use current directory
+```
+
+Found paths are cached in `~/.gitatbx_config` so subsequent calls are instant.
+
+### `gitatbx serve`
+
+Starts a local HTTP server to browse results HTML generated by the pipeline.
+
+```bash
+gitatbx serve --dir ../EV_results --port 8080
+```
+
+### `gitatbx reinject`
+
+Places a corrected parquet into `corrections/<script_name>/`, marks the participant for replay, invalidates relevant Nextflow cache entries, and resumes the pipeline for that participant only.
+
+```bash
+gitatbx reinject EV_002 --corrected-file fixed.parquet --script-name filtering_processor
+```
+
+### `gitatbx move`
+
+To move the symlink to a custom location:
+
+```bash
+gitatbx move /mnt/d/repoShaggy/GitAtbxModules
+```
+
+`gitatbx` moves the folder and updates `~/.gitatbx_config` automatically. `gitatbx init` will then default `toolbox_dir` to that path when scaffolding new projects.
+
+## Key Components
+
+### `bin/workflow_wrapper.nf`
+
+Discovers participant directories, manages per-participant output folders, runs `log_to_parquet.py` and `interactive_plotter.py` automatically, and handles per-participant git sync on completion.
+
+### `IOInterface`
+
+Generic Nextflow process that runs any script (reader/processor/analyzer) with automatic logging. Every module in `modules/` is called through `IOInterface`.
+
+### Modules
+
+The `modules/` folder is a curated but non-exhaustive starting collection of commonly useful scripts. The first time `gitatbx` is run it mirrors the full collection to `~/Documents/GitAtbxModules` (Windows) or `~/GitAtbxModules` (Linux/macOS) automatically. You can move that folder anywhere with `gitatbx move`. The local copy is yours to extend: add domain-specific scripts, modify existing ones, or organise them into subfolders. Any script there can be called via `IOInterface` identically to the built-in modules, as long as it follows the same convention: positional CLI arguments in, Parquet or FIF outputs, non-zero exit on failure.
+
+## Authors
+
+**Cagatay Özcan Jagiello Gutt** — Lead Developer
+ORCID: https://orcid.org/0000-0002-1774-532X
 
 </details>
 
@@ -381,62 +470,26 @@ GitAtbx verwaltet ein Git-Repository für den Ergebnisordner. Nach jeder abgesch
 
 ---
 
-### GitRef
+### tVNS_deviceplan
 
-**Sprache:** Python  
-**Zuletzt aktualisiert:** 2026-04-27
+**Sprache:** Unbekannt  
+**Zuletzt aktualisiert:** 2026-06-10
 
 <details>
 <summary>README anzeigen</summary>
 
-# GitRef
-
-Ein Git-basierter Literaturmanager — wie Zotero, aber die Bibliothek ist ein plain-text Git-Repository.
-
-## Installation
-
-```bash
-pip install gitref
-```
-
-## Funktionen
-
-- **DOI / arXiv / ISBN-Lookup** — Metadaten werden automatisch abgerufen
-- **PDF-Download** — Automatischer Download von arXiv oder DOI-Resolvern
-- **BibTeX-Speicher** — Alle Referenzen in `.resources.bib` (lesbar, diffbar, standardkonform)
-- **Zip-Archiv** — PDFs kompakt in `.resources.zip` für Git-Effizienz
-- **File Watcher** — `gitref watch` extrahiert PDFs, fügt neue automatisch hinzu, packt beim Schließen
-- **Git-Sync** — Auto-Commit + Pull + Push für geräteübergreifende Synchronisierung
-- **Terminal-UI** — Interaktiver Browser mit Suche, Detailansicht und Tagging
-- **Browser-Extension** — Ein-Klick-Speichern von beliebigen Paper-Seiten (wie Zotero Connector)
-
-## Schnellstart
-
-```bash
-gitref init          # Neue Bibliothek anlegen
-gitref add "10.1038/s41586-024-07487-w"  # Paper per DOI hinzufügen
-gitref watch         # Watcher starten (PDFs extrahieren, neue Dateien auto-hinzufügen)
-gitref browse        # Interaktive TUI öffnen
-gitref sync          # Mit Remote synchronisieren
-```
-
-## Workflow
-
-1. `gitref watch` starten — extrahiert alle PDFs aus dem Archiv
-2. `resources/resources.md` öffnen und per 📎-Link ein Paper lesen
-3. PDF in `resources/` ablegen — wird automatisch zur Bibliothek hinzugefügt
-4. Watcher beenden — Dateien werden automatisch neu gepackt
+# tVNS_deviceplan
 
 </details>
 
-[Auf GitHub ansehen →](https://github.com/CGutt-hub/gitref)
+[Auf GitHub ansehen →](https://github.com/CGutt-hub/tVNS_deviceplan)
 
 ---
 
 ### surveyWorkbench
 
-**Sprache:** Python  
-**Zuletzt aktualisiert:** 2026-02-18
+**Sprache:** HTML  
+**Zuletzt aktualisiert:** 2026-05-07
 
 <details>
 <summary>README anzeigen</summary>
@@ -639,6 +692,511 @@ For questions, issues, or feature requests, please contact the project maintaine
 </details>
 
 [Auf GitHub ansehen →](https://github.com/CGutt-hub/surveyWorkbench)
+
+---
+
+### GitRef
+
+**Sprache:** Python  
+**Zuletzt aktualisiert:** 2026-04-15
+
+<details>
+<summary>README anzeigen</summary>
+
+# GitRef
+
+A git-based reference manager — like Zotero, but your library is a plain git repo.
+
+## Install
+
+### pip (recommended)
+
+```bash
+pip install gitref
+```
+
+### Standalone binary
+
+Download from the [**Releases page**](https://github.com/CGutt-hub/gitref/releases/latest):
+
+| Platform | Asset | Install |
+|----------|-------|---------|
+| **Windows** | `gitref.exe` | Move to a folder on your PATH, or run: `irm https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.ps1 \| iex` |
+| **Linux** | `GitRef-x86_64.AppImage` or `gitref` | `chmod +x` and move to `/usr/local/bin/`, or run: `curl -fsSL https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.sh \| bash` |
+
+### From source
+
+```bash
+pip install git+https://github.com/CGutt-hub/gitref.git
+```
+
+## Features
+
+- **DOI / arXiv / ISBN lookup** – paste an identifier, metadata is fetched automatically
+- **PDF download** – auto-downloads from arXiv or DOI resolvers
+- **BibTeX store** – all references in `.resources.bib` (human-readable, diffable, standard)
+- **Zip archive** – PDFs stored compactly in `.resources.zip` for git efficiency
+- **File watcher** – `gitref watch` extracts all PDFs, auto-adds dropped files, auto-repacks on close
+- **Clickable links** – `resources.md` has direct PDF links when watcher is running
+- **Git sync** – auto-commit + pull + push to keep your library in sync across machines
+- **Terminal UI** – interactive browser with search, detail view, tagging
+- **Browser extension** – one-click save from any paper page (like Zotero Connector)
+
+## Quick start
+
+```bash
+# Initialise a new library
+gitref init
+
+# Add a paper by DOI
+gitref add "10.1038/s41586-024-07487-w"
+
+# Add by arXiv ID
+gitref add "2401.12345"
+
+# Start watcher (extracts PDFs, watches for new/modified files)
+gitref watch
+
+# Open interactive TUI
+gitref browse
+
+# Sync with remote
+gitref sync
+```
+
+## Workflow
+
+**DAU-friendly PDF access** — no need to use `gitref open` / `gitref close`:
+
+1. Run `gitref watch` — this extracts all PDFs from the archive
+2. Open `resources/resources.md` and click any 📎 link to read a paper
+3. Drop a PDF into `resources/` and it's auto-added to the library
+4. Close your PDF viewer (or just hit Ctrl+C on the watcher) — files are repacked
+
+## Browser extension
+
+GitRef includes a Chrome/Edge extension (Manifest V3) that works like the Zotero Connector — click the toolbar icon on any paper page to save it to your library.
+
+### Setup
+
+1. Start the local server:
+   ```bash
+   gitref serve
+   ```
+2. Load the extension:
+   - Open `chrome://extensions` (or `edge://extensions`)
+   - Enable **Developer mode**
+   - Click **Load unpacked** and select the `extension/` folder from this repo
+3. Navigate to any paper page and click the GitRef icon — the reference (and PDF if available) is saved automatically.
+
+The extension auto-detects DOIs, arXiv IDs, and citation metadata from the page, just like Zotero Connector.
+
+## Library structure
+
+```
+~/GitRef/
+├── .git/
+├── .github/workflows/      # auto-regenerates resources.md on push
+├── README.md
+└── resources/
+    ├── .resources.bib       # BibTeX metadata (source of truth)
+    ├── .resources.zip       # all PDFs, compressed
+    └── resources.md         # browsable table with clickable PDF links
+```
+
+## Commands
+
+Run `gitref --help` for full usage. Key commands:
+
+| Command | Description |
+|---------|-------------|
+| `gitref init` | Create a new library (git repo + bib) |
+| `gitref add <id>` | Add by DOI, arXiv ID, ISBN, or URL |
+| `gitref search <q>` | Search title, authors, tags |
+| `gitref list` | Print all entries |
+| `gitref browse` | Interactive TUI |
+| `gitref watch` | Extract all PDFs, auto-add/repack on changes |
+| `gitref open <key>` | Extract a single PDF for reading |
+| `gitref close <key>` | Repack a PDF into archive |
+| `gitref compact` | Pack all loose PDFs into archive |
+| `gitref sync` | Git add + commit + pull + push |
+| `gitref serve` | Start server for browser extension (port 7342) |
+| `gitref export` | Export library as RIS |
+
+Use `-l <path>` to specify a custom library location (default: `~/GitRef`).
+
+</details>
+
+[Auf GitHub ansehen →](https://github.com/CGutt-hub/GitRef)
+
+---
+
+### labourAIVolt
+
+**Sprache:** Python  
+**Zuletzt aktualisiert:** 2026-03-18
+
+<details>
+<summary>README anzeigen</summary>
+
+# labourAIVolt: AI & Human Labour Displacement Analysis for Volt
+
+[![LAV Analysis](https://github.com/CGutt-hub/labourAIVolt/actions/workflows/lav_analysis.yml/badge.svg)](https://github.com/CGutt-hub/labourAIVolt/actions/workflows/lav_analysis.yml)
+
+This repository hosts a **Nextflow + Python analysis pipeline** that automatically
+fetches current labour-market data from the
+[World Bank public API](https://datahelpdesk.worldbank.org/knowledgebase/articles/889392)
+and quantifies **AI-driven labour displacement** across the six Volt EU countries with
+the most active chapters — Germany, France, the Netherlands, Belgium, Italy, and Spain.
+
+The aim is to give [Volt Europa](https://www.volteuropa.org/) and its national chapters
+an evidence base for labour-market and technology policy: *which sectors are shedding jobs
+fastest as AI and automation accelerate, which countries are most exposed, and how does
+digital readiness moderate that exposure?*
+
+The pipeline is architecturally modelled after the
+**[EmotiView](https://github.com/CGutt-hub/EmotiView)** project and extends the
+**[AnalysisToolbox](https://github.com/CGutt-hub/AnalysisToolbox)** modular Nextflow
+framework for scalable, reproducible analysis with automatic result synchronisation.
+
+| Platform | Role | Contents |
+|----------|------|----------|
+| **[GitHub](https://github.com/CGutt-hub/labourAIVolt)** | Technical implementation | Pipeline, scripts, results |
+| **World Bank API** | Data source | Live labour-market indicators |
+
+---
+
+## Research Background
+
+The labour-market impact of AI and automation is one of the defining policy challenges
+of the 2020s. Early projections (Frey & Osborne, 2013) estimated that up to 47 % of US
+jobs faced high computerisation risk; subsequent analyses have moderated that figure while
+broadening it to task-level disruption rather than wholesale job destruction. What is clear
+is that the *pace* and *sector distribution* of displacement vary substantially across
+countries depending on industrial structure, education levels, and digital infrastructure.
+
+For a pan-European political movement like Volt, the relevant questions are:
+
+1. **Which EU sectors show the clearest employment decline correlated with automation?**
+2. **Are Volt's home countries converging toward or diverging from each other on displacement pressure?**
+3. **Does a country's digital readiness (internet penetration, high-tech exports) buffer it against displacement?**
+4. **Where should Volt's labour policy — reskilling funds, working-time reform, Universal Basic Income pilots — be concentrated first?**
+
+This pipeline operationalises those questions with reproducible, automatically updated data.
+
+---
+
+## Core Research Questions & Hypotheses
+
+1. **Sector displacement ordering**: Industry and agriculture will show larger negative
+   employment-share trends than services, consistent with higher Frey & Osborne automation
+   risk for routine physical/cognitive tasks.
+
+2. **Cross-country heterogeneity**: Countries with larger manufacturing sectors (Germany,
+   Italy) will exhibit higher AI Displacement Pressure Index (ADPI) than service-dominant
+   economies (Netherlands, Belgium).
+
+3. **Digitalization buffer**: Countries with higher Digitalization Readiness Scores
+   (internet penetration + high-tech export share) will show lower net Vulnerability Scores,
+   suggesting that digital transformation simultaneously creates displacement *and* provides
+   adaptive capacity.
+
+4. **Temporal acceleration**: Employment-share trends will steepen post-2018 as AI adoption
+   accelerates across all three sectors, visible as a structural break in the time-series.
+
+---
+
+## Analysis Pipeline
+
+The pipeline is built on the
+**[AnalysisToolbox](https://github.com/CGutt-hub/AnalysisToolbox)** — a modular Nextflow
+framework for scalable, reproducible data processing with automatic result synchronisation.
+The LAV-specific pipeline in `LAV_analysis/` extends this framework to:
+
+*   Discover country datasets and create per-country output directories (L1).
+*   Fetch and parse live labour-market time-series from the World Bank API.
+*   Perform standardised normalisation and cleaning.
+*   Extract displacement signals and automation-risk-weighted scores per sector.
+*   Fit time-series trend models to all available indicators.
+*   Aggregate across countries into cross-country rankings and Volt policy metrics (L2).
+
+Configuration is managed via `LAV_analysis/LAV_parameters.config`.
+See the [AnalysisToolbox documentation](https://github.com/CGutt-hub/AnalysisToolbox)
+for framework details.
+
+### Pipeline steps
+
+```
+L1 (per country)
+┌─────────────────────────────────────────────────────────────────────┐
+│  api_reader              Fetch 13 World Bank indicators (2010–2023) │
+│       ↓                                                             │
+│  normalizing_processor   Pivot long→wide; sort; deduplicate         │
+│       ↓              ↘                                              │
+│  displacement_analyzer   trend_analyzer                             │
+│  sector scores ×         OLS slope + p-value + R²                  │
+│  Frey & Osborne risk     per indicator                              │
+└─────────────────────────────────────────────────────────────────────┘
+       ↓ collect all countries
+L2 (cross-country)
+┌─────────────────────────────────────────────────────────────────────┐
+│  volt_report_analyzer    Displacement ranking · ADPI · DRS          │
+│                          Vulnerability Score · policy metrics       │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Displacement model
+
+Each broad employment sector receives a **displacement score**:
+
+```
+displacement_score  =  displacement_signal  ×  automation_risk
+```
+
+| Term | Definition |
+|------|-----------|
+| `displacement_signal` | Normalised negative employment-share trend: `max(0, −slope / mean_level)`. A sector losing share faster relative to its baseline scores higher. |
+| `automation_risk` | Sector-level probability of computerisation from Frey & Osborne (2013): agriculture 0.82, industry 0.79, services 0.63. |
+| `displacement_score` | Composite: high score = fast employment decline *and* high intrinsic automation susceptibility. |
+
+### Group-level metrics (L2)
+
+| Metric | Definition |
+|--------|-----------|
+| **ADPI** (AI Displacement Pressure Index) | Mean `displacement_score` across all sectors for a country. |
+| **DRS** (Digitalization Readiness Score) | Normalised mean of internet-user percentage and high-tech export share (latest year). |
+| **Vulnerability Score** | `ADPI / (DRS + ε)` — high ADPI *and* low digital readiness = most vulnerable. |
+
+### Data indicators (World Bank API, no key required)
+
+| Column | World Bank code | Description |
+|--------|----------------|-------------|
+| `employment_agriculture_pct` | SL.AGR.EMPL.ZS | Employment in agriculture (% total) |
+| `employment_industry_pct` | SL.IND.EMPL.ZS | Employment in industry (% total) |
+| `employment_services_pct` | SL.SRV.EMPL.ZS | Employment in services (% total) |
+| `unemployment_rate` | SL.UEM.TOTL.ZS | Unemployment (% labour force) |
+| `youth_unemployment_rate` | SL.UEM.1524.ZS | Youth unemployment (%) |
+| `employment_to_pop_ratio` | SL.EMP.TOTL.SP.ZS | Employment-to-population ratio |
+| `wage_salary_workers_pct` | SL.EMP.WORK.ZS | Wage & salaried workers (%) |
+| `internet_users_pct` | IT.NET.USER.ZS | Internet users (% population) |
+| `gdp_per_capita_usd` | NY.GDP.PCAP.CD | GDP per capita (current USD) |
+| `gdp_growth_annual_pct` | NY.GDP.MKTP.KD.ZG | GDP growth (annual %) |
+| `high_tech_exports_pct_mfg` | TX.VAL.TECH.MF.ZS | High-tech exports (% manufactured exports) |
+| `ict_goods_exports_pct` | TX.VAL.ICTG.ZS.UN | ICT goods exports (% total goods exports) |
+| `labor_force_total` | SL.TLF.TOTL.IN | Total labour force |
+
+---
+
+## Repository Structure
+
+```
+labourAIVolt/
+│
+├── LAV_analysis/                    Nextflow pipeline (mirrors EV_analysis/)
+│   ├── LAV_pipeline.nf              Main workflow orchestration
+│   ├── LAV_modules.nf               IOInterface alias declarations
+│   └── LAV_parameters.config        All pipeline parameters & script paths
+│
+├── LAV_data/                        Per-country input configs (mirrors rawData/)
+│   ├── LAV_001/  LAV_001_config.json    Germany        (Volt Deutschland)
+│   ├── LAV_002/  LAV_002_config.json    France         (Volt France)
+│   ├── LAV_003/  LAV_003_config.json    Netherlands    (Volt Nederland)
+│   ├── LAV_004/  LAV_004_config.json    Belgium        (Volt Belgium)
+│   ├── LAV_005/  LAV_005_config.json    Italy          (Volt Italia)
+│   └── LAV_006/  LAV_006_config.json    Spain          (Volt España)
+│
+├── LAV_results/                     Pipeline outputs (mirrors EV_results/)
+│   ├── .bin/                        Shared infrastructure (logs, HTML archive)
+│   ├── LAV_l1/                      First-level: per-country results
+│   │   ├── LAV_001/
+│   │   │   ├── plots/               Parquet output copies for QC
+│   │   │   ├── LAV_001_api_raw.parquet
+│   │   │   ├── LAV_001_normalized.parquet
+│   │   │   ├── LAV_001_displacement.parquet
+│   │   │   ├── LAV_001_trends.parquet
+│   │   │   └── LAV_001.log.parquet  Live execution log
+│   │   └── LAV_002/ … LAV_006/
+│   └── LAV_l2/                      Second-level: cross-country group results
+│       ├── LAV_volt_report.parquet
+│       ├── LAV_displacement_summary.parquet
+│       └── LAV_trends_summary.parquet
+│
+├── Python/                          Analysis scripts (no Nextflow dependency)
+│   ├── lav_run.py                   Standalone orchestrator (used by CI)
+│   ├── requirements.txt
+│   ├── readers/
+│   │   └── api_reader.py            Fetches World Bank labour-market data
+│   ├── processors/
+│   │   └── normalizing_processor.py Long→wide pivot, clean, sort
+│   └── analyzers/
+│       ├── displacement_analyzer.py AI displacement scores (Frey & Osborne)
+│       ├── trend_analyzer.py        OLS time-series trends per indicator
+│       └── volt_report_analyzer.py  Cross-country Volt policy synthesis
+│
+└── .github/workflows/
+    └── lav_analysis.yml             GitHub Actions CI (weekly + on push)
+```
+
+---
+
+## Running the Analysis
+
+### Option A — GitHub Actions *(recommended — no local setup needed)*
+
+The workflow in `.github/workflows/lav_analysis.yml` runs automatically:
+
+| Trigger | When |
+|---------|------|
+| **Scheduled** | Every Monday at 06:00 UTC (pulls the latest World Bank data) |
+| **On push** | Any change to `LAV_data/**` or `Python/**` on `main` |
+| **Manual** | Actions tab → *LAV Labour-AI-Volt Analysis* → **Run workflow** |
+
+Results are:
+1. Uploaded as a **downloadable artifact** (`lav-results-<run-number>`) for 90 days.
+2. **Committed back** to `LAV_results/` in the repository so outputs are versioned
+   alongside the code.
+
+No API keys, secrets, or local software are required.
+
+---
+
+### Option B — Standalone Python *(local, no Nextflow)*
+
+Use this for quick local runs or debugging individual scripts.
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/CGutt-hub/labourAIVolt.git
+cd labourAIVolt
+
+# 2. Install Python dependencies
+pip install -r Python/requirements.txt
+
+# 3. Run the full pipeline
+python Python/lav_run.py
+
+# Optional: override data/output directories
+python Python/lav_run.py --data-dir LAV_data --output-dir LAV_results
+```
+
+Results are written to `LAV_results/LAV_l1/<id>/` (per country) and
+`LAV_results/LAV_l2/` (group synthesis).
+
+---
+
+### Option C — Full Nextflow Pipeline *(local, requires AnalysisToolbox)*
+
+Use this for full pipeline tracing, parallel execution, and integration with the
+AnalysisToolbox interactive HTML archive.
+
+**Prerequisites:** Java ≥ 11, [Nextflow](https://www.nextflow.io/docs/latest/install.html)
+
+```bash
+# 1. Clone both repos as siblings
+git clone https://github.com/CGutt-hub/labourAIVolt.git
+git clone https://github.com/CGutt-hub/AnalysisToolbox.git
+
+# Your directory should now look like:
+#   parent/
+#   ├── AnalysisToolbox/
+#   └── labourAIVolt/
+
+# 2. Install Python dependencies
+cd labourAIVolt
+pip install -r Python/requirements.txt
+
+# 3. Adjust python_exe in LAV_parameters.config if needed
+#    (default: 'python3')
+
+# 4. Launch the pipeline from the LAV_analysis/ directory
+cd LAV_analysis
+nextflow run LAV_pipeline.nf -c LAV_parameters.config
+```
+
+The Nextflow pipeline adds on top of the standalone runner:
+- Parallel per-country execution
+- Full Nextflow trace (`LAV_results/.bin/pipeline_trace.txt`)
+- Interactive HTML result archive (via AnalysisToolbox `interactive_plotter`)
+- Automatic git commit + push of results after each country completes
+
+---
+
+## Output Files Reference
+
+### Per-country (L1) — `LAV_results/LAV_l1/LAV_XXX/`
+
+| File | Description |
+|------|-------------|
+| `LAV_XXX_api_raw.parquet` | Raw long-format data as returned by the World Bank API. Columns: `participant_id`, `country`, `iso3`, `source`, `indicator`, `indicator_code`, `year`, `value`. |
+| `LAV_XXX_normalized.parquet` | Wide-format time-series. One row per year, one column per indicator. Ready for analysis scripts. |
+| `LAV_XXX_displacement.parquet` | Per-sector displacement scores. Key columns: `sector`, `employment_mean_pct`, `trend_slope_pp_per_yr`, `trend_significant`, `automation_risk_frey_osborne`, `displacement_score`. |
+| `LAV_XXX_trends.parquet` | OLS trend results for every indicator. Key columns: `indicator`, `trend_slope`, `trend_p_value`, `trend_r_squared`, `trend_significant`, `total_change_pct`. |
+| `LAV_XXX.log.parquet` | Live pipeline execution log (Nextflow mode only). |
+
+### Group-level (L2) — `LAV_results/LAV_l2/`
+
+| File | Description |
+|------|-------------|
+| `LAV_volt_report.parquet` | Full combined table (displacement + policy metrics for all countries). |
+| `LAV_displacement_summary.parquet` | Cross-country displacement ranking per sector, with EU-wide mean, std, and per-country rank. |
+| `LAV_trends_summary.parquet` | EU-wide mean slope and significance counts for key indicators across all countries. |
+
+---
+
+## Adding a New Country
+
+1. Create a new directory: `LAV_data/LAV_007/`
+2. Add a config file `LAV_data/LAV_007/LAV_007_config.json`:
+
+```json
+{
+  "participant_id": "LAV_007",
+  "country": "Portugal",
+  "iso3": "PRT",
+  "iso2": "PT",
+  "year_start": 2010,
+  "year_end": 2025,
+  "volt_chapter": "Volt Portugal",
+  "population_millions": 10.3,
+  "eu_member": true,
+  "notes": "Optional notes about the country context"
+}
+```
+
+3. Push the file — the GitHub Action will pick it up automatically on the next run.
+
+---
+
+## Project Status
+
+Active development. Data fetching, pipeline, and group analysis are operational.
+Planned additions: visualisation layer, structural-break detection (2018 AI inflection
+point), and integration with OECD employment-by-occupation microdata for finer-grained
+occupational risk scoring.
+
+---
+
+## References
+
+*   Frey, C. B., & Osborne, M. A. (2013). *The Future of Employment: How Susceptible Are
+    Jobs to Computerisation?* Oxford Martin School Working Paper.
+*   World Bank Open Data. [https://data.worldbank.org](https://data.worldbank.org)
+*   Acemoglu, D., & Restrepo, P. (2020). Robots and Employment: Evidence from Europe.
+    *American Economic Review*, 110(6), 2188–2220.
+*   Autor, D. (2015). Why Are There Still So Many Jobs? *Journal of Economic Perspectives*,
+    29(3), 3–30.
+
+---
+
+## Contributors
+
+| Name | Role | Contact |
+|------|------|---------|
+| **Cagatay Özcan Jagiello Gutt** | Principal Investigator | [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--1774--532X-green?logo=orcid)](https://orcid.org/0000-0002-1774-532X) |
+
+</details>
+
+[Auf GitHub ansehen →](https://github.com/CGutt-hub/labourAIVolt)
 
 ---
 
