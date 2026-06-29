@@ -48,6 +48,50 @@ main {
     display: flex;
     /* height set by JS to viewport minus header */
     overflow: hidden;
+    position: relative;
+}
+
+/* Right sidebar for pipeline trace */
+.trace-sidebar {
+    width: 0;
+    min-width: 0;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border-primary);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: width 0.25s ease;
+    flex-shrink: 0;
+}
+.trace-sidebar.open {
+    width: 340px;
+    min-width: 340px;
+    overflow-y: auto;
+}
+.trace-toggle {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    padding: 10px 5px;
+    cursor: pointer;
+    color: #4fc3f7;
+    font-size: 0.75rem;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.05em;
+    transition: background 0.2s, right 0.25s ease;
+    user-select: none;
+}
+.trace-toggle:hover { background: var(--bg-tertiary); }
+.trace-toggle.open { right: 340px; }
+.trace-inner {
+    padding: 1rem;
+    min-width: 310px;
 }
 
 .analysis-sidebar {
@@ -59,8 +103,37 @@ main {
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
-    /* height inherits from .analysis-body */
+    transition: width 0.25s ease, min-width 0.25s ease;
+    flex-shrink: 0;
 }
+.analysis-sidebar.collapsed {
+    width: 0;
+    min-width: 0;
+    overflow: hidden;
+    border-right: none;
+}
+/* Left sidebar toggle tab — sits on the right edge of the sidebar */
+.explorer-toggle {
+    position: absolute;
+    left: 300px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    padding: 10px 5px;
+    cursor: pointer;
+    color: var(--accent-primary, #c9a227);
+    font-size: 0.75rem;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.05em;
+    transition: background 0.2s, left 0.25s ease;
+    user-select: none;
+}
+.explorer-toggle:hover { background: var(--bg-tertiary); }
+.explorer-toggle.collapsed { left: 0; }
 
 .search-container {
     padding: 20px;
@@ -548,11 +621,11 @@ main {
     </div>
     
     <div class="analysis-body">
-        <aside class="analysis-sidebar">
+        <div id="explorer-toggle" class="explorer-toggle" onclick="toggleExplorerSidebar()" title="Toggle file explorer">📁 Files</div>
+        <aside id="analysis-sidebar" class="analysis-sidebar">
             <div class="search-container">
                 <input type="text" id="search-box" class="search-box" placeholder="🔍 Search files...">
             </div>
-            
             <div class="file-explorer">
                 <div id="file-tree"></div>
             </div>
@@ -564,18 +637,16 @@ main {
                 <p>Click on any analysis file to view its interactive visualization.</p>
             </div>
             
-            <div id="download-all-section" class="download-all-section">
-                <div>
-                    <strong>Open Data Export</strong>
-                    <p style="margin: 5px 0 0 0; color: var(--text-secondary); font-size: 0.9rem;">
-                        Download all analysis data for independent verification and open-source analysis
-                    </p>
-                </div>
-                <button id="download-all-btn" class="download-all-btn">📥 Download All Data</button>
-            </div>
+            <div id="download-all-section" class="download-all-section"></div>
             
             <div id="plot-displays"></div>
         </main>
+
+        <!-- Right sidebar: pipeline trace (toggle hidden until a trace is available) -->
+        <div id="trace-toggle" class="trace-toggle" onclick="openPipelineNav()" title="Browse pipeline outputs" style="display:none">🔗 Outputs</div>
+        <aside id="trace-sidebar" class="trace-sidebar">
+            <div class="trace-inner" id="trace-content"></div>
+        </aside>
     </div>
 </div>
 
@@ -664,6 +735,30 @@ function resizeAnalysisLayout() {
     document.querySelectorAll('.plot-container [id]').forEach(el => {
         if (window.Plotly && el.data) Plotly.Plots.resize(el);
     });
+}
+
+// Toggle the left file explorer sidebar
+function toggleExplorerSidebar() {
+    const sidebar = document.getElementById('analysis-sidebar');
+    const toggle  = document.getElementById('explorer-toggle');
+    if (!sidebar) return;
+    const collapsed = sidebar.classList.toggle('collapsed');
+    if (toggle) {
+        toggle.classList.toggle('collapsed', collapsed);
+        toggle.style.left = collapsed ? '0' : '300px';
+    }
+    resizeAnalysisLayout();
+}
+
+// Toggle the right trace sidebar (also called from JS)
+function toggleTraceSidebar(forceOpen) {
+    const sidebar = document.getElementById('trace-sidebar');
+    const toggle  = document.getElementById('trace-toggle');
+    if (!sidebar) return;
+    const open = forceOpen !== undefined ? forceOpen : !sidebar.classList.contains('open');
+    sidebar.classList.toggle('open', open);
+    if (toggle) toggle.classList.toggle('open', open);
+    resizeAnalysisLayout();
 }
 
 resizeAnalysisLayout();
