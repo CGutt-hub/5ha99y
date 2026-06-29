@@ -758,44 +758,94 @@ async function loadScript(src) {
 }
 
 
-// Initialize analysis page - converts plotsData to file tree and renders sidebar
-async function initAnalysisPage() {
+// Initialize analysis page - dynamically discovers *_results folders from GitHub repos
+async function initAnalysisPage(githubRepos) {
     const emptyState = document.getElementById('empty-state');
     const plotDisplays = document.getElementById('plot-displays');
     if (!emptyState || !plotDisplays) return;
 
-    if (!window.plotsData || window.plotsData.length === 0) {
-        emptyState.innerHTML = '<h2>No Analysis Results Found</h2><p>No plots or logs available.</p>';
+    if (!githubRepos || githubRepos.length === 0) {
+        emptyState.innerHTML = '<h2>No Repositories Found</h2><p>Could not load repository list.</p>';
         return;
     }
 
-    // Group by repo, then by folder path (between resultsDir and filename)
-    const repoMap = {};
-    window.plotsData.forEach(item => {
-        const repoName = item.repo_name;
-        const owner = item.repo_url ? item.repo_url.split('/')[3] : 'CGutt-hub';
-        const pathParts = item.file_path.split('/');
-        const resultsDir = pathParts[0];
-        const filename = pathParts[pathParts.length - 1];
-        const folderPath = pathParts.slice(1, -1).join('/');
+    emptyState.innerHTML = `
+        <div style="text-align:center">
+            <div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>
+            <p style="color:var(--text-secondary)">Scanning repositories for analysis results…</p>
+        </div>`;
 
-        if (!repoMap[repoName]) {
-            repoMap[repoName] = { name: repoName, owner, resultsDir, description: '', folders: {} };
-        }
-        if (!repoMap[repoName].folders[folderPath]) {
-            repoMap[repoName].folders[folderPath] = [];
-        }
-        const url = `https://raw.githubusercontent.com/${owner}/${repoName}/main/${item.file_path}`;
-        repoMap[repoName].folders[folderPath].push({
-            name: filename,
-            url,
-            size: item.plot_data?.size || 0,
-            folderPath,
-            updated: item.updated
-        });
-    });
+    const analysisRepos = await discoverAnalysisData(githubRepos);
 
-    loadReposFromData(Object.values(repoMap), emptyState);
+    if (analysisRepos.length === 0) {
+        emptyState.innerHTML = '<h2>No Analysis Results Found</h2><p>No <code>*_results</code> folders found in any repository.</p>';
+        return;
+    }
+
+    loadReposFromData(analysisRepos, emptyState);
+}
+
+// Use GitHub Git Trees API (one call per repo) to discover *_results folders
+async function discoverAnalysisData(githubRepos) {
+    const OWNER = 'CGutt-hub';
+    const found = [];
+    // Process in batches of 3 to stay well within unauthenticated rate limits
+    for (let i = 0; i < githubRepos.length; i += 3) {
+        const batch = githubRepos.slice(i, i + 3);
+        const results = await Promise.all(batch.map(repo => discoverRepoResults(repo, OWNER)));
+        for (const r of results) { if (r) found.push(r); }
+    }
+    return found;
+}
+
+// Scan one repo for *_results folders using the recursive Git Trees API
+async function discoverRepoResults(repo, owner) {
+    const repoName = repo.name;
+    try {
+        const treeUrl = `https://api.github.com/repos/${owner}/${repoName}/git/trees/HEAD?recursive=1`;
+        const resp = await fetch(treeUrl);
+        if (!resp.ok) return null;
+        const data = await resp.json();
+        if (data.truncated) console.warn(`[Analysis] Tree truncated for ${repoName} — some files may be missing`);
+
+        // Keep only blobs inside any *_results/ folder with a displayable extension
+        const resultFiles = (data.tree || []).filter(item =>
+            item.type === 'blob' &&
+            /^[^/]+_results\//.test(item.path) &&
+            (item.path.endsWith('.parquet') || item.path.endsWith('.log'))
+        );
+
+        if (resultFiles.length === 0) return null;
+
+        const resultsDir = resultFiles[0].path.split('/')[0]; // e.g. "EV_results"
+        const updated = repo.updated || new Date().toISOString();
+        const folders = {};
+
+        for (const item of resultFiles) {
+            const parts = item.path.split('/');
+            const filename = parts[parts.length - 1];
+            const folderPath = parts.slice(1, -1).join('/');
+            if (!folders[folderPath]) folders[folderPath] = [];
+            folders[folderPath].push({
+                name: filename,
+                url: `https://raw.githubusercontent.com/${owner}/${repoName}/main/${item.path}`,
+                size: item.size || 0,
+                folderPath,
+                updated
+            });
+        }
+
+        return {
+            name: repoName,
+            owner,
+            description: repo.readme || repo.description || '',
+            resultsDir,
+            folders
+        };
+    } catch (err) {
+        console.warn(`[Analysis] Could not scan ${repoName}:`, err.message);
+        return null;
+    }
 }
 
 // Build a proper tree structure from flat folder-path -> files map
