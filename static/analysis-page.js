@@ -835,15 +835,23 @@ async function discoverRepoResults(repo, owner) {
             });
         }
 
-        // Also look for pipeline_trace.txt inside .bin/ under the results folder
-        const traceItem = (data.tree || []).find(item =>
-            item.type === 'blob' &&
-            item.path.startsWith(resultsDir + '/') &&
-            item.path.endsWith('pipeline_trace.txt')
-        );
-        const traceUrl = traceItem
-            ? `https://raw.githubusercontent.com/${owner}/${repoName}/main/${traceItem.path}`
-            : null;
+        // Find all pipeline_trace.txt files, keyed by their parent subfolder
+        // e.g. EV_results/study/.bin/pipeline_trace.txt  →  key = "study"
+        // e.g. EV_results/.bin/pipeline_trace.txt         →  key = "" (root)
+        const traceUrls = {}; // subfolderKey -> raw URL
+        for (const item of (data.tree || [])) {
+            if (item.type !== 'blob') continue;
+            if (!item.path.startsWith(resultsDir + '/')) continue;
+            if (!item.path.endsWith('pipeline_trace.txt')) continue;
+            // path after resultsDir: e.g. "study/.bin/pipeline_trace.txt"
+            const rel = item.path.slice(resultsDir.length + 1); // "study/.bin/pipeline_trace.txt"
+            const binIdx = rel.lastIndexOf('/.bin/');
+            const subKey = binIdx >= 0 ? rel.slice(0, binIdx) : ''; // "study" or ""
+            traceUrls[subKey] = `https://raw.githubusercontent.com/${owner}/${repoName}/main/${item.path}`;
+        }
+
+        // Legacy: single top-level traceUrl for backward compat
+        const traceUrl = Object.values(traceUrls)[0] || null;
 
         return {
             name: repoName,
@@ -851,7 +859,8 @@ async function discoverRepoResults(repo, owner) {
             description: repo.readme || repo.description || '',
             resultsDir,
             folders,
-            traceUrl
+            traceUrl,
+            traceUrls
         };
     } catch (err) {
         console.warn(`[Analysis] Could not scan ${repoName}:`, err.message);
@@ -860,14 +869,22 @@ async function discoverRepoResults(repo, owner) {
 }
 
 // Build a proper tree structure from flat folder-path -> files map
-function buildFolderTree(folders) {
-    const root = { children: {}, files: folders[''] || [] };
+// traceUrls: { subfolderKey -> url } e.g. { "study": "https://..." }
+function buildFolderTree(folders, traceUrls) {
+    const root = { children: {}, files: folders[''] || [], traceUrl: traceUrls?.[''] || null };
     for (const [folderPath, files] of Object.entries(folders)) {
         if (folderPath === '') continue;
         const parts = folderPath.split('/');
         let node = root;
+        let pathSoFar = '';
         for (const part of parts) {
-            if (!node.children[part]) node.children[part] = { children: {}, files: [] };
+            pathSoFar = pathSoFar ? pathSoFar + '/' + part : part;
+            if (!node.children[part]) {
+                node.children[part] = {
+                    children: {}, files: [],
+                    traceUrl: traceUrls?.[pathSoFar] || null
+                };
+            }
             node = node.children[part];
         }
         node.files = node.files.concat(files);
@@ -912,8 +929,13 @@ function renderTreeNode(node) {
     Object.keys(node.children).sort().forEach(name => {
         const child = node.children[name];
         const count = countTreeFiles(child);
-        html += `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false"><span class="tree-folder-icon">?</span><span>${name}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${count})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
+        html += `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false"><span class="tree-folder-icon">▶</span><span>${name}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${count})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
         html += renderTreeNode(child);
+        // Pipeline button at this subfolder level (sibling of participant folders)
+        if (child.traceUrl) {
+            const urlSafe = child.traceUrl.replace(/'/g, "\\'");
+            html += `<div class="tree-item" onclick="loadPipelineViz('${urlSafe}','${name}')" style="font-style:italic;color:#4fc3f7;font-size:0.82rem;cursor:pointer">📊 Pipeline</div>`;
+        }
         html += '</div>';
     });
     return html;
@@ -927,24 +949,12 @@ function renderFileTree(structure, append = false) {
     window._repoDescriptions = window._repoDescriptions || {};
     window._repoDescriptions[repoOwner + '/' + repoName] = description || '';
 
-    const tree = buildFolderTree(folders);
+    const tree = buildFolderTree(folders, structure.traceUrls || {});
     const totalFiles = countTreeFiles(tree);
-    const traceUrl = structure.traceUrl || null;
-    const traceUrlSafe = (traceUrl || '').replace(/'/g, "\\'");
-    const traceEntry = traceUrl
-        ? `<div class="tree-item" onclick="showPipelineTrace('${traceUrlSafe}','${repoOwner}','${repoName}')" style="font-style:italic;color:#4fc3f7;font-size:0.82rem;cursor:pointer">🔗 Pipeline Trace</div>`
-        : '';
 
     let html = `<div class="tree-folder" onclick="toggleFolder(this)" data-expanded="false" data-repo-owner="${repoOwner}" data-repo-name="${repoName}"><span class="tree-folder-icon">▶</span><span>${repoName}</span><span style="color:var(--text-muted,#999);font-size:0.85em;margin-left:5px">(${totalFiles})</span></div><div class="tree-folder-content" style="display:none;margin-left:10px">`;
     html += renderTreeNode(tree);
-    const _traceDownload = structure.traceUrl
-        ? `<div class="tree-item" style="display:flex;align-items:center;justify-content:space-between;font-style:italic;color:#4fc3f7;font-size:0.82rem">
-              <span style="opacity:0.8">🔗 pipeline_trace.txt</span>
-              <span onclick="window._directDownload('${(structure.traceUrl||'').replace(/'/g,"\\'")}','pipeline_trace.txt')"
-                  style="cursor:pointer;padding:0 4px;font-size:1em" title="Download pipeline_trace.txt">⤓</span>
-           </div>`
-        : '';
-    html += `<div class="tree-item" onclick="showRepoInfo('${repoOwner}','${repoName}')" style="font-style:italic;color:var(--accent-primary,#c9a227);font-size:0.82rem;cursor:pointer">📖 README</div>${_traceDownload}</div>`;
+    html += `<div class="tree-item" onclick="showRepoInfo('${repoOwner}','${repoName}')" style="font-style:italic;color:var(--accent-primary,#c9a227);font-size:0.82rem;cursor:pointer">📖 README</div></div>`;
 
     fileTree.innerHTML = append ? fileTree.innerHTML + html : html;
 
@@ -1511,47 +1521,19 @@ async function loadPipelineViz(traceUrl, repoName) {
             };
         }).filter(t => t.process);
 
+
+
+        // Build unique ordered process sequence (deduplicated, order-preserving)
         const processOrder = [...new Set(tasks.map(t => t.process))];
-        const processIndex = Object.fromEntries(processOrder.map((p, i) => [p, i]));
-        const colorMap = { COMPLETED: '#2ecc71', FAILED: '#ef5350', CACHED: '#4fc3f7' };
+        const taskCounts   = Object.fromEntries(
+            processOrder.map(p => [p, tasks.filter(t => t.process === p).length])
+        );
+        const failCounts   = Object.fromEntries(
+            processOrder.map(p => [p, tasks.filter(t => t.process === p && t.status !== 'COMPLETED').length])
+        );
 
-        const xs     = tasks.map((_, i) => i);
-        const ys     = tasks.map(t => processIndex[t.process]);
-        const colors = tasks.map(t => colorMap[t.status] || '#999');
-        const hovers = tasks.map(t =>
-            `<b>${t.process}</b><br>tag: ${t.tag}<br>status: ${t.status}<br>duration: ${t.duration}<br>start: ${t.start}`);
-
-        const cs = typeof getComputedStyle !== 'undefined' ? getComputedStyle(document.documentElement) : null;
-        const bgColor   = cs?.getPropertyValue('--bg-secondary').trim()  || '#161616';
-        const textColor = cs?.getPropertyValue('--text-primary').trim()  || '#e8e8e8';
-        const gridColor = cs?.getPropertyValue('--border-primary').trim()|| '#2a2a2a';
-
-        const plotSpec = {
-            data: [{
-                x: xs, y: ys,
-                mode: 'markers', type: 'scatter',
-                marker: { color: colors, size: 8, opacity: 0.85,
-                          line: { color: gridColor, width: 0.5 } },
-                text: hovers,
-                hovertemplate: '%{text}<extra></extra>',
-            }],
-            layout: {
-                title: { text: `${repoName} — Pipeline Execution (${tasks.length} tasks)`,
-                         font: { color: textColor, size: 15 } },
-                xaxis: { title: { text: 'Task sequence', font: { color: textColor } },
-                         tickfont: { color: textColor }, gridcolor: gridColor, linecolor: gridColor },
-                yaxis: {
-                    tickvals: processOrder.map((_, i) => i),
-                    ticktext: processOrder,
-                    tickfont: { color: textColor, size: 10 },
-                    gridcolor: gridColor, linecolor: gridColor, automargin: true,
-                },
-                paper_bgcolor: bgColor, plot_bgcolor: bgColor,
-                font: { color: textColor, family: "'JetBrains Mono', monospace" },
-                hovermode: 'closest',
-                margin: { t: 60, b: 60, l: 220, r: 30 },
-            },
-        };
+        // Layout: vertical chain — each node at y = index, x = 0, arrow to next
+        const n = processOrder.length;\n        const nodeX = processOrder.map(() => 0);\n        const nodeY = processOrder.map((_, i) => n - 1 - i); // top = first step\n\n        const cs = typeof getComputedStyle !== 'undefined' ? getComputedStyle(document.documentElement) : null;\n        const bgColor   = cs?.getPropertyValue('--bg-secondary').trim()  || '#161616';\n        const textColor = cs?.getPropertyValue('--text-primary').trim()  || '#e8e8e8';\n        const gridColor = cs?.getPropertyValue('--border-primary').trim()|| '#2a2a2a';\n        const textSec   = cs?.getPropertyValue('--text-secondary').trim()|| '#999';\n\n        // Arrow lines between consecutive steps\n        const arrowTraces = [];\n        for (let i = 0; i < n - 1; i++) {\n            arrowTraces.push({\n                x: [0, 0], y: [nodeY[i], nodeY[i + 1]],\n                mode: 'lines',\n                type: 'scatter',\n                line: { color: textSec, width: 1.5 },\n                showlegend: false,\n                hoverinfo: 'skip',\n            });\n        }\n\n        // Node markers\n        const nodeColors = processOrder.map(p => failCounts[p] > 0 ? '#ef5350' : '#2ecc71');\n        const nodeHovers = processOrder.map(p =>\n            `<b>${p}</b><br>Tasks: ${taskCounts[p]}${failCounts[p] ? `<br><span style="color:#ef5350">Failed: ${failCounts[p]}</span>` : ''}`);\n\n        const plotSpec = {\n            data: [\n                ...arrowTraces,\n                {\n                    x: nodeX, y: nodeY,\n                    mode: 'markers+text',\n                    type: 'scatter',\n                    marker: { color: nodeColors, size: 14,\n                              line: { color: bgColor, width: 2 } },\n                    text: processOrder.map(p => `  ${p.replace(/_/g, ' ')}  ×${taskCounts[p]}`),\n                    textposition: 'middle right',\n                    textfont: { color: textColor, size: 11, family: \"'JetBrains Mono', monospace\" },\n                    hovertext: nodeHovers,\n                    hovertemplate: '%{hovertext}<extra></extra>',\n                    showlegend: false,\n                },\n            ],\n            layout: {\n                title: { text: `${repoName} — Pipeline Structure (${n} steps)`,\n                         font: { color: textColor, size: 15 } },\n                xaxis: { visible: false, range: [-0.5, 4] },\n                yaxis: { visible: false, range: [-1, n] },\n                paper_bgcolor: bgColor, plot_bgcolor: bgColor,\n                font: { color: textColor, family: \"'JetBrains Mono', monospace\" },\n                hovermode: 'closest',\n                margin: { t: 60, b: 20, l: 20, r: 20 },\n            },\n        };
 
         await Plotly.newPlot(cid, plotSpec.data, plotSpec.layout, { responsive: true, displayModeBar: true });
         if (typeof resizeAnalysisLayout === 'function') resizeAnalysisLayout();
