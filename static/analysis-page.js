@@ -1037,7 +1037,8 @@ async function loadPlotFile(url, displayName, folderLabel) {
             return;
         }
         await Plotly.newPlot(cid, plotSpec.data, plotSpec.layout, { responsive: true, displayModeBar: true });
-        Plotly.Plots.resize(document.getElementById(cid)); // resize to fill the CSS-sized container
+        if (typeof resizeAnalysisLayout === 'function') resizeAnalysisLayout();
+        Plotly.Plots.resize(document.getElementById(cid));
     } catch (err) {
         document.getElementById(cid).innerHTML = `<div style="padding:2rem;color:#ef5350"><strong>Error:</strong> ${err.message}</div>`;
     }

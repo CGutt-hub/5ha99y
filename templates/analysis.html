@@ -3,30 +3,17 @@
 {% block content %}
 <style>
 /* Analysis Toolbox-inspired layout adapted for in-page use */
-/* Analysis page: full-viewport app layout, no footer */
-footer { display: none !important; }
-body {
-    overflow: hidden !important;
-    height: 100vh !important;
-}
+/* Analysis page: strip main padding/centering, keep footer visible */
 main {
     padding: 0 !important;
     max-width: none !important;
     margin: 0 !important;
     width: 100% !important;
-    flex: 1 !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
-    display: flex !important;
-    flex-direction: column !important;
 }
 
 .analysis-layout {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
     background: var(--bg-primary);
 }
 
@@ -59,9 +46,8 @@ main {
 
 .analysis-body {
     display: flex;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden; /* clip — children own their scroll */
+    /* height set by JS to viewport minus header */
+    overflow: hidden;
 }
 
 .analysis-sidebar {
@@ -73,6 +59,7 @@ main {
     flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
+    /* height inherits from .analysis-body */
 }
 
 .search-container {
@@ -273,26 +260,16 @@ main {
 
 .analysis-main {
     flex: 1;
-    display: flex;
-    flex-direction: column;
     padding: 2rem 3rem;
     background: var(--bg-primary);
-    overflow: hidden;
-    min-height: 0;
+    overflow-y: auto;
     min-width: 0;
     box-sizing: border-box;
 }
 
-#plot-displays {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
+#plot-displays {}
 
-#empty-state {
-    flex: 1;
-}
+#empty-state {}
 
 .empty-state {
     text-align: center;
@@ -355,14 +332,13 @@ main {
 }
 
 .plot-container {
-    flex: 1;           /* fill whatever space remains after header + export bar */
-    min-height: 0;     /* allow flex shrink */
     width: 100%;
+    /* height set dynamically by JS after render */
     background: var(--bg-secondary);
     border-radius: 8px;
     border: 1px solid var(--border-primary);
     padding: 15px;
-    overflow: hidden;  /* Plotly owns its own pan/zoom/table scroll */
+    overflow: hidden;  /* Plotly owns pan/zoom/scroll */
     box-sizing: border-box;
 }
 
@@ -653,6 +629,44 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 window.SITE_BASE_URL = "{{ config.base_url | safe }}";
 </script>
 <script src="{{ get_url(path='analysis-page.js') }}?v={{ now() | date(format='%s') }}"></script>
+<script>
+// Dynamically size the analysis body and plot container based on actual header height,
+// so the footer remains visible and the page can scroll naturally.
+function resizeAnalysisLayout() {
+    const header = document.querySelector('header');
+    const body   = document.querySelector('.analysis-body');
+    const topBar = document.querySelector('.analysis-top-bar');
+    if (!header || !body) return;
+
+    const headerH = header.getBoundingClientRect().height;
+    const topBarH = topBar ? topBar.getBoundingClientRect().height : 0;
+    // Body fills viewport minus the sticky header
+    const bodyH = window.innerHeight - headerH;
+    body.style.height = bodyH + 'px';
+
+    // Plot container gets viewport minus: header + top-bar + plot-header + export-bar + padding
+    const plotHeader = document.querySelector('.plot-header');
+    const exportBar  = document.querySelector('.export-bar');
+    const plotHeaderH = plotHeader ? plotHeader.getBoundingClientRect().height : 0;
+    const exportBarH  = exportBar  ? exportBar.getBoundingClientRect().height  : 0;
+    const mainPadding = 64; // 2rem top + 2rem bottom at 16px
+    const containerH = bodyH - topBarH - plotHeaderH - exportBarH - mainPadding;
+    document.querySelectorAll('.plot-container').forEach(el => {
+        el.style.height = Math.max(350, containerH) + 'px';
+    });
+
+    // Re-size any active Plotly chart to match
+    document.querySelectorAll('.plot-container [id]').forEach(el => {
+        if (window.Plotly && el.data) Plotly.Plots.resize(el);
+    });
+}
+
+resizeAnalysisLayout();
+window.addEventListener('resize', resizeAnalysisLayout);
+
+// Re-run after a file loads (plot header/export bar change height)
+const _origLoadPlotFile = window.loadPlotFile;
+</script>
 
 {% endblock content %}
 
