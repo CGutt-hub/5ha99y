@@ -67,6 +67,294 @@
     <div class="content">
         <p><em>Active development projects tracked via <a rel="external" href="https://github.com/CGutt-hub">GitHub</a>. My open backoffice for collaborative science.</em></p>
 <hr />
+<h3 id="surveyworkbench">surveyWorkbench</h3>
+<p><strong>Language:</strong> HTML<br />
+<strong>Last updated:</strong> 2026-06-30</p>
+<details>
+<summary>View README</summary>
+<h1 id="survey-workbench-v2-1">Survey Workbench v2.1</h1>
+<p>A comprehensive tool for managing participant folders and extracting survey data from PDF questionnaires with automated field mapping and Excel integration.</p>
+<h2 id="overview">Overview</h2>
+<p>Survey Workbench is designed to streamline the workflow of:</p>
+<ol>
+<li><strong>Generating</strong> standardized participant folders with multiple questionnaire types</li>
+<li><strong>Prefilling</strong> PDF forms with default values before participant handover</li>
+<li><strong>Extracting</strong> completed survey data directly into Excel/CSV masterfiles</li>
+<li><strong>Managing</strong> field mappings for user-friendly column names</li>
+</ol>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Dynamic Questionnaire Configuration</strong> — Support unlimited questionnaire types per participant</li>
+<li><strong>Auto-Generated Field Mapping</strong> — Automatically scans form templates and generates field mappings</li>
+<li><strong>Non-Participant-Specific Columns</strong> — Multiple participants in a single masterfile without naming conflicts</li>
+<li><strong>Grouped Checkboxes</strong> — Automatically collapses checkbox arrays (Check1_1, Check1_2, etc.) into single columns</li>
+<li><strong>Prefill Dialog</strong> — Populate PDF form fields before participant handover with a graphical interface</li>
+<li><strong>Multiple Export Formats</strong> — Support for CSV, XLS, and XLSX masterfiles</li>
+<li><strong>Configuration Persistence</strong> — Save and load complete project configurations including field mappings</li>
+<li><strong>Type-Safe Codebase</strong> — Full Python type hints for reliability and IDE support</li>
+</ul>
+<h2 id="system-requirements">System Requirements</h2>
+<ul>
+<li><strong>OS:</strong> Windows 10/11</li>
+<li><strong>Python:</strong> 3.10+ (if running from source)</li>
+<li><strong>Excel:</strong> Microsoft Excel (for XLS/XLSX export)</li>
+<li><strong>RAM:</strong> 2GB minimum</li>
+<li><strong>Storage:</strong> Sufficient space for participant folders and questionnaire PDFs</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<h3 id="using-the-executable">Using the Executable</h3>
+<ol>
+<li>Download <code>survey_workbench_v2.1.exe</code> from the <code>dist/</code> folder</li>
+<li>Run the executable — no installation needed</li>
+<li>The first launch will create a <code>config.ini</code> file in the same directory</li>
+</ol>
+<h3 id="from-source">From Source</h3>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Clone or extract the repository</span></span>
+<span class="giallo-l"><span style="color: #F38BA8;font-style: italic;">cd</span><span style="color: #A6E3A1;"> survey_workbench - v2.1</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Install dependencies</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install -r requirements.txt</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Run the application</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python</span><span style="color: #A6E3A1;"> survey_workbench_v2.1.py</span></span></code></pre>
+<p><strong>Dependencies:</strong></p>
+<ul>
+<li>PyQt5 (GUI framework)</li>
+<li>xlwings (Excel integration)</li>
+<li>pypdf (PDF processing)</li>
+</ul>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="1-generate-participant-folders">1. Generate Participant Folders</h3>
+<ol>
+<li>
+<p><strong>Configure Questionnaires</strong></p>
+<ul>
+<li>Enter participant ID (e.g., <code>P_001</code>)</li>
+<li>Select target folder for participant directories</li>
+<li>Add questionnaire types (name, PDF template, copy count)</li>
+</ul>
+</li>
+<li>
+<p><strong>Generate</strong></p>
+<ul>
+<li>Click "Generate Participant Folder"</li>
+<li>System creates organized folder structure</li>
+<li>Prefill dialog appears for optional value population</li>
+</ul>
+</li>
+<li>
+<p><strong>Prefill (Optional)</strong></p>
+<ul>
+<li>Edit field values in the dialog</li>
+<li>Check/uncheck options for checkboxes</li>
+<li>Click "Confirm" to save prefill values to PDFs</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-extract-survey-data">2. Extract Survey Data</h3>
+<ol>
+<li>
+<p><strong>Configure Extraction</strong></p>
+<ul>
+<li>Select source folder (contains completed participant folders)</li>
+<li>Select masterfile (CSV, XLS, or XLSX)</li>
+<li>Enter participant ID to extract</li>
+</ul>
+</li>
+<li>
+<p><strong>Extract</strong></p>
+<ul>
+<li>Click "Extract Data to Masterfile"</li>
+<li>System automatically detects file format</li>
+<li>Data is appended as new row with proper field mapping</li>
+</ul>
+</li>
+<li>
+<p><strong>Verify</strong></p>
+<ul>
+<li>Check masterfile for new row with mapped column names</li>
+<li>Checkpoint values appear as option numbers (1, 2, 3, etc.)</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-manage-field-mappings">3. Manage Field Mappings</h3>
+<ol>
+<li>
+<p><strong>Edit Field Mapping</strong></p>
+<ul>
+<li>Click "File → Save/Edit Field Mapping"</li>
+<li>System auto-scans form templates and shows detected fields</li>
+<li>Edit "Name" column to set user-friendly column headers</li>
+<li>Click "Save" to persist to project configuration</li>
+</ul>
+</li>
+<li>
+<p><strong>Save Configuration</strong></p>
+<ul>
+<li>Click "File → Save Configuration"</li>
+<li>Enter configuration name</li>
+<li>Settings, questionnaires, AND field mapping are saved together</li>
+</ul>
+</li>
+<li>
+<p><strong>Load Configuration</strong></p>
+<ul>
+<li>Click "File → Load Configuration" (from menu)</li>
+<li>Select previous configuration</li>
+<li>Everything restores: questionnaires, paths, AND field mapping</li>
+</ul>
+</li>
+</ol>
+<h2 id="data-organization">Data Organization</h2>
+<h3 id="column-naming">Column Naming</h3>
+<ul>
+<li><strong>Previous (v2.0):</strong> <code>P_001_Demographics_Age</code> (participant-specific)</li>
+<li><strong>Current (v2.1):</strong> <code>Age</code> (mapped friendly name) or <code>Demographics_Age</code> (system name)</li>
+<li><strong>Benefit:</strong> Multiple participants can coexist in one masterfile</li>
+</ul>
+<h3 id="checkbox-handling">Checkbox Handling</h3>
+<p>Checkboxes in PDFs use naming convention:</p>
+<ul>
+<li><code>Check1_1</code>, <code>Check1_2</code>, <code>Check1_3</code> (individual options)</li>
+<li>Grouped as: <code>Check1</code> (single column)</li>
+<li>Value: option number that was checked (e.g., <code>1</code>, <code>2</code>, or <code>3</code>)</li>
+<li>System translates to/from PDF values (<code>/Yes</code>, <code>/Off</code>, <code>/On</code>) automatically</li>
+</ul>
+<h3 id="example-data-row">Example Data Row</h3>
+<table><thead><tr><th>participant_id</th><th>Age</th><th>Gender</th><th>Mental_Demand</th><th>Score</th></tr></thead><tbody>
+<tr><td>P_001</td><td>28</td><td>1</td><td>7.5</td><td>68</td></tr>
+<tr><td>P_002</td><td>35</td><td>2</td><td>5.2</td><td>72</td></tr>
+</tbody></table>
+<h2 id="configuration-files">Configuration Files</h2>
+<h3 id="config-ini">config.ini</h3>
+<p>Stores all project configurations. Each <code>[section]</code> is a named configuration:</p>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="ini"><span class="giallo-l"><span style="color: #9399B2;">[</span><span style="color: #F9E2AF;">MyProject</span><span style="color: #9399B2;">]</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">target_path</span><span style="color: #94E2D5;"> =</span><span> C:\Studies\MyProject\Participants</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">source_path</span><span style="color: #94E2D5;"> =</span><span> C:\Studies\MyProject\Completed</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">excel_path</span><span style="color: #94E2D5;"> =</span><span> C:\Studies\MyProject\masterfile.xlsx</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">quest_count</span><span style="color: #94E2D5;"> =</span><span> 3</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">quest_0_name</span><span style="color: #94E2D5;"> =</span><span> Demographics</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">quest_0_path</span><span style="color: #94E2D5;"> =</span><span> C:\Templates\demographics.pdf</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">quest_0_count</span><span style="color: #94E2D5;"> =</span><span> 1</span></span>
+<span class="giallo-l"><span style="color: #89B4FA;">field_mapping_json</span><span style="color: #94E2D5;"> =</span><span> {</span><span style="color: #A6E3A1;">&quot;Demographics_Age&quot;</span><span>: </span><span style="color: #A6E3A1;">&quot;Age&quot;</span><span>, </span><span style="color: #A6E3A1;">&quot;Check1&quot;</span><span>: </span><span style="color: #A6E3A1;">&quot;Gender&quot;</span><span>}</span></span></code></pre>
+<p>Each configuration saves:</p>
+<ul>
+<li>Questionnaire setup (names, paths, counts)</li>
+<li>Source/target/excel paths</li>
+<li><strong>Field mapping</strong> (system names → friendly names)</li>
+</ul>
+<h2 id="workflow-example">Workflow Example</h2>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>1. Create configuration &quot;MyStudy_2026&quot;</span></span>
+<span class="giallo-l"><span>   ├─ Add questionnaires: demographics.pdf, survey-tlx.pdf</span></span>
+<span class="giallo-l"><span>   ├─ Set target folder: C:\Studies\MyStudy\Participants</span></span>
+<span class="giallo-l"><span>   └─ Save configuration</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>2. Generate participant folders</span></span>
+<span class="giallo-l"><span>   ├─ ID: P_001</span></span>
+<span class="giallo-l"><span>   ├─ Creates: P_001/</span></span>
+<span class="giallo-l"><span>   │   ├─ P_001_demographics.pdf</span></span>
+<span class="giallo-l"><span>   │   └─ P_001_survey-tlx.pdf</span></span>
+<span class="giallo-l"><span>   └─ Prefill optional values</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>3. Participant completes questionnaires</span></span>
+<span class="giallo-l"><span>   └─ Returns completed PDFs</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>4. Edit field mapping (optional)</span></span>
+<span class="giallo-l"><span>   ├─ &quot;Demographics_Age&quot; → &quot;Age&quot;</span></span>
+<span class="giallo-l"><span>   ├─ &quot;Check1&quot; → &quot;Gender&quot;</span></span>
+<span class="giallo-l"><span>   └─ Save to configuration</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>5. Extract data</span></span>
+<span class="giallo-l"><span>   ├─ Source: C:\Studies\MyStudy\Completed\P_001/</span></span>
+<span class="giallo-l"><span>   ├─ Masterfile: C:\Studies\MyStudy\masterfile.xlsx</span></span>
+<span class="giallo-l"><span>   └─ Appends row with mapped column names</span></span></code></pre><h2 id="menu-reference">Menu Reference</h2>
+<h3 id="file-menu">File Menu</h3>
+<ul>
+<li><strong>Save Configuration</strong> — Save current setup with field mappings</li>
+<li><strong>Load Configuration</strong> — Load previous project setup</li>
+<li><strong>Delete Configuration</strong> — Remove saved configuration</li>
+<li><strong>Save/Edit Field Mapping</strong> — Edit field-to-column-name mappings (auto-scans templates)</li>
+<li><strong>Exit</strong> — Close the application</li>
+</ul>
+<h3 id="generation-section">Generation Section</h3>
+<ul>
+<li><strong>Generate Participant Folder</strong> — Create folders with questionnaires and optional prefill</li>
+</ul>
+<h3 id="extraction-section">Extraction Section</h3>
+<ul>
+<li><strong>Extract Data to Masterfile</strong> — Append completed survey data to masterfile</li>
+</ul>
+<h2 id="technical-details">Technical Details</h2>
+<h3 id="version-2-1-june-2026">Version: 2.1 (June 2026)</h3>
+<p><strong>Changes from v2.0:</strong></p>
+<ul>
+<li>Field mapping auto-generated from form templates</li>
+<li>Non-participant-specific column names</li>
+<li>Integrated field mapping with project configuration</li>
+<li>Removed redundant load/delete field mapping operations</li>
+<li>Enhanced type hints and code quality</li>
+</ul>
+<h3 id="technology-stack">Technology Stack</h3>
+<ul>
+<li><strong>Python:</strong> 3.13.7</li>
+<li><strong>GUI:</strong> PyQt5 5.15.11</li>
+<li><strong>PDF Processing:</strong> pypdf 4.0+</li>
+<li><strong>Excel Integration:</strong> xlwings 0.33.20</li>
+<li><strong>Packaging:</strong> PyInstaller 6.14.2</li>
+</ul>
+<h3 id="supported-file-formats">Supported File Formats</h3>
+<ul>
+<li><strong>PDF:</strong> Standard AcroForm fields (text, checkboxes, radio buttons)</li>
+<li><strong>CSV:</strong> UTF-8 encoded, comma-delimited</li>
+<li><strong>Excel:</strong> XLS (2003), XLSX (2007+)</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="no-fields-found-in-configured-templates">"No fields found in configured templates"</h3>
+<ul>
+<li>Verify template PDF paths are correct</li>
+<li>Ensure PDFs have form fields (AcroForm structure)</li>
+<li>Check file permissions</li>
+</ul>
+<h3 id="field-mapping-does-not-match-configured-forms">"Field mapping does not match configured forms"</h3>
+<ul>
+<li>Forms have changed since configuration was created</li>
+<li>Click "Save/Edit Field Mapping" to regenerate from current templates</li>
+<li>Review and adjust friendly names, then save</li>
+</ul>
+<h3 id="excel-file-not-updating">Excel file not updating</h3>
+<ul>
+<li>Ensure masterfile is not open in Excel</li>
+<li>Verify path is correct and file is accessible</li>
+<li>Check that sheet named "Data" exists (or first sheet is used)</li>
+</ul>
+<h3 id="checkbox-values-not-appearing">Checkbox values not appearing</h3>
+<ul>
+<li>Verify checkbox field names follow pattern: <code>Check{N}_{option}</code></li>
+<li>Ensure option numbers are sequential (1, 2, 3...)</li>
+<li>Check that at least one checkbox is checked in the PDF</li>
+</ul>
+<h2 id="documentation">Documentation</h2>
+<ul>
+<li><strong>USER_MANUAL.pdf</strong> — Comprehensive user guide with screenshots and step-by-step instructions</li>
+<li><strong>README.md</strong> — This file, quick reference and overview</li>
+</ul>
+<h2 id="support">Support</h2>
+<p>For issues, feature requests, or questions:</p>
+<ol>
+<li>Check USER_MANUAL.pdf for detailed guidance</li>
+<li>Review configuration in config.ini</li>
+<li>Verify file paths and permissions</li>
+<li>Consult "Troubleshooting" section above</li>
+</ol>
+<h2 id="license">License</h2>
+<p>This project is licensed under the <strong>MIT License</strong> — See <a href="https://cgutt-hub.github.io/5ha99y/projects/LICENSE">LICENSE</a> file for details.</p>
+<p><strong>Copyright © 2026 Cagatay Özcan Jagiello Gutt (Original Creator and Developer)</strong></p>
+<p>The MIT License permits free use, modification, and distribution while preserving this copyright attribution. Your creative work and engineering effort are permanently credited as the original creator of this tool.</p>
+<hr />
+<p><strong>Survey Workbench v2.1</strong> | June 2026 | Open-Source PDF Form Extraction Tool</p>
+</details>
+<p><a rel="external" href="https://github.com/CGutt-hub/surveyWorkbench">View on GitHub →</a></p>
+<hr />
 <h3 id="emotiview">EmotiView</h3>
 <p><strong>Language:</strong> Jupyter Notebook<br />
 <strong>Last updated:</strong> 2026-06-30</p>
@@ -240,7 +528,7 @@
 <li><code>static/style.css</code> - Main stylesheet</li>
 <li><code>templates/</code> - HTML templates</li>
 </ul>
-<h2 id="troubleshooting">Troubleshooting</h2>
+<h2 id="troubleshooting-1">Troubleshooting</h2>
 <h3 id="website-not-updating">Website Not Updating?</h3>
 <ol>
 <li>Check <a rel="external" href="https://github.com/CGutt-hub/5ha99y/actions">Actions tab</a> - look for green checkmark ✓</li>
@@ -285,7 +573,7 @@
 <summary>View README</summary>
 <h1 id="analysistoolbox-1">AnalysisToolbox</h1>
 <p>A modular framework for automated data processing and statistical analysis pipelines. Built on <strong>Nextflow</strong> for scalable, reproducible workflows with automatic result synchronization.</p>
-<h2 id="overview">Overview</h2>
+<h2 id="overview-1">Overview</h2>
 <p>The AnalysisToolbox provides infrastructure for building data processing pipelines that:</p>
 <ul>
 <li><strong>Process multiple datasets</strong> in parallel with automatic participant discovery</li>
@@ -400,7 +688,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <li><strong>Model Call</strong>: Sends simplified question to chosen model (Mistral/Claude)</li>
 <li><strong>Final Report</strong>: Shows actual token usage and cost</li>
 </ol>
-<h2 id="license">License</h2>
+<h2 id="license-1">License</h2>
 <p>MIT License - see <a href="https://cgutt-hub.github.io/5ha99y/projects/LICENSE">LICENSE</a> file</p>
 </details>
 <p><a rel="external" href="https://github.com/CGutt-hub/continueAgent">View on GitHub →</a></p>
@@ -413,168 +701,6 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <h1 id="tvns-deviceplan-1">tVNS_deviceplan</h1>
 </details>
 <p><a rel="external" href="https://github.com/CGutt-hub/tVNS_deviceplan">View on GitHub →</a></p>
-<hr />
-<h3 id="surveyworkbench">surveyWorkbench</h3>
-<p><strong>Language:</strong> HTML<br />
-<strong>Last updated:</strong> 2026-05-07</p>
-<details>
-<summary>View README</summary>
-<h1 id="survey-workbench-v2-0">Survey Workbench v2.0</h1>
-<blockquote>
-<p>A comprehensive participant data management system for survey research with dynamic questionnaire configuration and batch processing capabilities.</p>
-</blockquote>
-<p><a rel="external" href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.8+-blue.svg" alt="Python" /></a>
-<a rel="external" href="https://www.riverbankcomputing.com/software/pyqt/"><img src="https://img.shields.io/badge/GUI-PyQt5-green.svg" alt="PyQt5" /></a>
-<img src="https://img.shields.io/badge/License-Internal_Use-red.svg" alt="License" /></p>
-<h2 id="overview-1">Overview</h2>
-<p>Survey Workbench is a desktop application designed to streamline the management of participant folders and extraction of survey data from questionnaires. Built with PyQt5, it provides an intuitive graphical interface for researchers and data managers to efficiently organize and process survey data.</p>
-<h3 id="key-features">Key Features</h3>
-<ul>
-<li><strong>🔧 Dynamic Questionnaire Configuration</strong>: Support for unlimited questionnaire types per participant with flexible template management</li>
-<li><strong>📦 Batch Processing</strong>: Generate and extract data for multiple participants simultaneously</li>
-<li><strong>📥 Participant Import</strong>: Import participant lists from .txt or .csv files</li>
-<li><strong>📋 Template Bundles</strong>: Create and reuse questionnaire configuration bundles across projects</li>
-<li><strong>🔍 Duplicate Detection</strong>: Automatic masterfile checking (supports CSV and Excel formats) to prevent duplicate entries</li>
-<li><strong>✅ Data Completeness Verification</strong>: Validate all required data before extraction</li>
-<li><strong>👁️ Preview Dialog</strong>: Review extracted data before finalizing</li>
-<li><strong>📊 Missing Data Report</strong>: Generate quality control reports for incomplete data</li>
-<li><strong>💾 Configuration Management</strong>: Save, load, and manage multiple configurations with an intuitive submenu interface</li>
-<li><strong>❓ Interactive Help System</strong>: Built-in tooltips and "What's This?" mode for user assistance</li>
-<li><strong>📑 Auto-Format Detection</strong>: Automatically detect masterfile format (CSV, XLS, XLSX)</li>
-</ul>
-<h2 id="system-requirements">System Requirements</h2>
-<ul>
-<li><strong>Operating System</strong>: Windows 10/11, macOS 10.14+, or Linux</li>
-<li><strong>Python</strong>: 3.8 or higher</li>
-<li><strong>Microsoft Excel</strong>: Required for Excel file operations (via xlwings)</li>
-<li><strong>Memory</strong>: 4GB RAM minimum (8GB recommended for large datasets)</li>
-<li><strong>Storage</strong>: 100MB free space minimum</li>
-</ul>
-<h2 id="installation">Installation</h2>
-<h3 id="prerequisites-1">Prerequisites</h3>
-<p>Ensure you have Python 3.8+ installed on your system. You can download it from <a rel="external" href="https://www.python.org/downloads/">python.org</a>.</p>
-<h3 id="install-dependencies">Install Dependencies</h3>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Clone the repository</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">git</span><span style="color: #A6E3A1;"> clone https://github.com/CGutt-hub/surveyWorkbench.git</span></span>
-<span class="giallo-l"><span style="color: #F38BA8;font-style: italic;">cd</span><span style="color: #A6E3A1;"> surveyWorkbench</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Install required Python packages</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install PyQt5 xlwings configparser</span></span></code></pre><h3 id="additional-setup">Additional Setup</h3>
-<p>For Excel integration (xlwings), you may need to install the Excel add-in:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">xlwings</span><span style="color: #A6E3A1;"> addin install</span></span></code></pre><h2 id="quick-start">Quick Start</h2>
-<h3 id="running-the-application">Running the Application</h3>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python</span><span style="color: #A6E3A1;"> survey_workbench.py</span></span></code></pre>
-<p>Or run the compiled executable (if available):</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">./survey_workbench_v2.0</span><span style="color: #9399B2;font-style: italic;">  # On Linux/macOS</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">survey_workbench_v2.0.exe</span><span style="color: #9399B2;font-style: italic;">  # On Windows</span></span></code></pre><h3 id="basic-workflow">Basic Workflow</h3>
-<ol>
-<li><strong>Configure Questionnaires</strong>: Set up your questionnaire templates and target folders</li>
-<li><strong>Generate Participant Folders</strong>: Create participant-specific folders with questionnaire templates</li>
-<li><strong>Fill Out Questionnaires</strong>: Have participants complete their questionnaires</li>
-<li><strong>Extract Data</strong>: Collect and consolidate data from completed questionnaires into a masterfile</li>
-</ol>
-<h2 id="usage-1">Usage</h2>
-<h3 id="generate-participant-folders">Generate Participant Folders</h3>
-<ol>
-<li>Select template files for each questionnaire type</li>
-<li>Specify the target folder where participant folders will be created</li>
-<li>Enter participant IDs (manual entry or import from file)</li>
-<li>Click "Generate Participant Folder" to create the folder structure</li>
-</ol>
-<p><strong>Batch Mode</strong>: Enable batch mode to process multiple participants at once by importing a list from .txt or .csv files.</p>
-<h3 id="extract-data">Extract Data</h3>
-<ol>
-<li>Select the source folder containing participant folders</li>
-<li>Choose the masterfile (CSV or Excel) where data will be extracted</li>
-<li>Configure questionnaire-specific extraction settings:
-<ul>
-<li>Excel sheet names</li>
-<li>Column filters</li>
-<li>Multiple questionnaire copies</li>
-</ul>
-</li>
-<li>Click "Extract Data" to consolidate participant data</li>
-</ol>
-<p><strong>Features</strong>:</p>
-<ul>
-<li><strong>Duplicate Detection</strong>: Automatically checks if participant data already exists in the masterfile</li>
-<li><strong>Data Completeness Check</strong>: Verifies all required questionnaires are present before extraction</li>
-<li><strong>Preview Dialog</strong>: Review data before final extraction</li>
-<li><strong>Missing Data Report</strong>: Generate reports for participants with incomplete data</li>
-</ul>
-<h3 id="configuration-management">Configuration Management</h3>
-<p>Save and load configurations to quickly switch between different project setups:</p>
-<ul>
-<li><strong>Save Configuration</strong>: Store your current questionnaire setup and settings</li>
-<li><strong>Load Configuration</strong>: Quickly restore a previously saved configuration</li>
-<li><strong>Delete Configuration</strong>: Remove outdated configurations</li>
-<li><strong>Recent Configurations</strong>: Access recently used configurations from the menu</li>
-</ul>
-<h3 id="template-bundles">Template Bundles</h3>
-<p>Create reusable template bundles for standardized project setups:</p>
-<ol>
-<li>Configure all questionnaires and settings</li>
-<li>Select "Save Template Bundle" from the menu</li>
-<li>Load the bundle in future projects to instantly apply the same configuration</li>
-</ol>
-<h2 id="file-structure">File Structure</h2>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>surveyWorkbench/</span></span>
-<span class="giallo-l"><span>├── survey_workbench.py      # Main application source code</span></span>
-<span class="giallo-l"><span>├── survey_workbench.spec    # PyInstaller build specification</span></span>
-<span class="giallo-l"><span>├── config.ini               # Configuration storage file</span></span>
-<span class="giallo-l"><span>├── USER_MANUAL.pdf          # Comprehensive user manual</span></span>
-<span class="giallo-l"><span>├── USER_MANUAL.tex          # LaTeX source for user manual</span></span>
-<span class="giallo-l"><span>└── README.md                # This file</span></span></code></pre><h2 id="technology-stack">Technology Stack</h2>
-<ul>
-<li><strong>GUI Framework</strong>: PyQt5 - Cross-platform graphical user interface</li>
-<li><strong>Excel Integration</strong>: xlwings - Python library for Excel automation</li>
-<li><strong>Configuration</strong>: ConfigParser - INI file handling for settings persistence</li>
-<li><strong>Build Tool</strong>: PyInstaller - Executable packaging (see survey_workbench.spec)</li>
-<li><strong>Type Hints</strong>: Full type annotation support for better code maintainability</li>
-</ul>
-<h2 id="documentation">Documentation</h2>
-<p>For detailed documentation, including screenshots and step-by-step guides, please refer to the <a href="https://cgutt-hub.github.io/5ha99y/projects/USER_MANUAL.pdf">USER_MANUAL.pdf</a> included in this repository.</p>
-<h2 id="troubleshooting-1">Troubleshooting</h2>
-<h3 id="common-issues">Common Issues</h3>
-<ul>
-<li><strong>Excel not found</strong>: Ensure Microsoft Excel is installed and xlwings is properly configured</li>
-<li><strong>Configuration not saving</strong>: Check write permissions for config.ini file</li>
-<li><strong>Import errors</strong>: Verify all dependencies are installed with <code>pip list</code></li>
-<li><strong>Template files not copying</strong>: Ensure source template files exist and have read permissions</li>
-</ul>
-<p>For more troubleshooting tips, consult the USER_MANUAL.pdf.</p>
-<h2 id="version-history">Version History</h2>
-<h3 id="version-2-0-february-2026">Version 2.0 (February 2026)</h3>
-<ul>
-<li>Dynamic questionnaire support with unlimited types</li>
-<li>Enhanced batch processing capabilities</li>
-<li>Template bundle system</li>
-<li>Improved duplicate detection</li>
-<li>Data completeness verification</li>
-<li>Preview dialog for data extraction</li>
-<li>Missing data reporting</li>
-<li>Interactive help system</li>
-</ul>
-<h3 id="version-1-0-april-2024">Version 1.0 (April 2024)</h3>
-<ul>
-<li>Initial release</li>
-<li>Basic participant folder generation</li>
-<li>Simple data extraction</li>
-</ul>
-<h2 id="author">Author</h2>
-<p><strong>Cagatay Gutt</strong></p>
-<ul>
-<li>Created: April 15, 2024</li>
-<li>Last Updated: February 4, 2026</li>
-</ul>
-<h2 id="license-1">License</h2>
-<p>This software is for internal use only. All rights reserved.</p>
-<h2 id="support">Support</h2>
-<p>For questions, issues, or feature requests, please contact the project maintainer or refer to the comprehensive USER_MANUAL.pdf for detailed guidance.</p>
-<hr />
-<p><em>Survey Workbench - Streamlining survey data management for research excellence.</em></p>
-</details>
-<p><a rel="external" href="https://github.com/CGutt-hub/surveyWorkbench">View on GitHub →</a></p>
 <hr />
 <h3 id="gitref">GitRef</h3>
 <p><strong>Language:</strong> Python<br />
@@ -591,7 +717,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <tr><td><strong>Windows</strong></td><td><code>gitref.exe</code></td><td>Move to a folder on your PATH, or run: <code>irm https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.ps1 | iex</code></td></tr>
 <tr><td><strong>Linux</strong></td><td><code>GitRef-x86_64.AppImage</code> or <code>gitref</code></td><td><code>chmod +x</code> and move to <code>/usr/local/bin/</code>, or run: <code>curl -fsSL https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.sh | bash</code></td></tr>
 </tbody></table>
-<h3 id="from-source">From source</h3>
+<h3 id="from-source-1">From source</h3>
 <pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install git+https://github.com/CGutt-hub/gitref.git</span></span></code></pre><h2 id="features-1">Features</h2>
 <ul>
 <li><strong>DOI / arXiv / ISBN lookup</strong> – paste an identifier, metadata is fetched automatically</li>
