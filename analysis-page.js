@@ -1280,8 +1280,9 @@ async function _renderStepsView(content, repoName, backBtn) {
     }
     const steps = _nav.traceCache[repoName];
 
+    const traceUrlSafe = repo?.traceUrl ? repo.traceUrl.replace(/'/g, "\\'") : '';
     const traceBtn = repo?.traceUrl
-        ? `<button onclick="window._directDownload('${repo.traceUrl.replace(/'/g,\"\\'\")  }','pipeline_trace.txt')" class="export-btn" style="font-size:0.7rem;padding:3px 8px" onmouseover="this.style.borderColor='#4fc3f7';this.style.color='#4fc3f7'" onmouseout="this.style.borderColor='';this.style.color=''">⤓ trace.txt</button>`
+        ? `<button onclick="window._directDownload('${traceUrlSafe}','pipeline_trace.txt')" class="export-btn" style="font-size:0.7rem;padding:3px 8px" onmouseover="this.style.borderColor='#4fc3f7';this.style.color='#4fc3f7'" onmouseout="this.style.borderColor='';this.style.color=''">⤓ trace.txt</button>`
         : '';
 
     if (!steps.length) {
@@ -1470,72 +1471,6 @@ async function loadPipelineViz(traceUrl, repoName) {
         };
 
         await Plotly.newPlot(cid, [trace], layout, { responsive: true, displayModeBar: true });
-        if (typeof resizeAnalysisLayout === 'function') resizeAnalysisLayout();
-        Plotly.Plots.resize(document.getElementById(cid));
-    } catch (err) {
-        document.getElementById(cid).innerHTML =
-            `<div style="padding:2rem;color:#ef5350"><strong>Error:</strong> ${err.message}</div>`;
-    }
-}
-
-// Load and render a Nextflow pipeline trace as an interactive Plotly timeline
-async function loadPipelineViz(traceUrl, repoName) {
-    const plotDisplays = document.getElementById('plot-displays');
-    const emptyState   = document.getElementById('empty-state');
-    if (!plotDisplays) return;
-    document.querySelectorAll('#file-tree .tree-item').forEach(i => i.classList.remove('active'));
-    if (emptyState) emptyState.style.display = 'none';
-
-    const cid = 'pipeline-viz';
-    const urlSafe  = traceUrl.replace(/'/g, "\\'");
-    const nameSafe = (repoName || 'pipeline').replace(/'/g, "\\'");
-    plotDisplays.innerHTML = `
-        <div class="export-bar">
-            <span class="plot-download-label">Download:</span>
-            <button class="export-btn" onclick="window._directDownload('${urlSafe}','pipeline_trace.txt')">⤓ .txt</button>
-            <button class="export-btn png" onclick="exportPlotAsPNG('${cid}','${nameSafe}_pipeline')">⤓ PNG</button>
-            <button class="export-btn pdf" onclick="exportPlotAsPDF('${cid}','${nameSafe}_pipeline')">⤓ PDF</button>
-        </div>
-        <div id="${cid}" class="plot-container">
-            <div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-secondary)">
-                <div style="text-align:center"><div style="width:32px;height:32px;border:3px solid var(--accent-primary);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div>Loading pipeline trace…</div>
-            </div>
-        </div>`;
-
-    try {
-        const resp = await fetch(traceUrl);
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const text = await resp.text();
-
-        const lines   = text.trim().split('\n');
-        const headers = lines[0].split('\t');
-        const idx = h => headers.indexOf(h);
-        const tasks = lines.slice(1).map(l => {
-            const c = l.split('\t');
-            return {
-                process:  c[idx('process')],
-                tag:      c[idx('tag')]      || '',
-                status:   c[idx('status')]   || 'COMPLETED',
-                duration: c[idx('realtime')] || '',
-                start:    c[idx('start')]    || '',
-            };
-        }).filter(t => t.process);
-
-
-
-        // Build unique ordered process sequence (deduplicated, order-preserving)
-        const processOrder = [...new Set(tasks.map(t => t.process))];
-        const taskCounts   = Object.fromEntries(
-            processOrder.map(p => [p, tasks.filter(t => t.process === p).length])
-        );
-        const failCounts   = Object.fromEntries(
-            processOrder.map(p => [p, tasks.filter(t => t.process === p && t.status !== 'COMPLETED').length])
-        );
-
-        // Layout: vertical chain — each node at y = index, x = 0, arrow to next
-        const n = processOrder.length;\n        const nodeX = processOrder.map(() => 0);\n        const nodeY = processOrder.map((_, i) => n - 1 - i); // top = first step\n\n        const cs = typeof getComputedStyle !== 'undefined' ? getComputedStyle(document.documentElement) : null;\n        const bgColor   = cs?.getPropertyValue('--bg-secondary').trim()  || '#161616';\n        const textColor = cs?.getPropertyValue('--text-primary').trim()  || '#e8e8e8';\n        const gridColor = cs?.getPropertyValue('--border-primary').trim()|| '#2a2a2a';\n        const textSec   = cs?.getPropertyValue('--text-secondary').trim()|| '#999';\n\n        // Arrow lines between consecutive steps\n        const arrowTraces = [];\n        for (let i = 0; i < n - 1; i++) {\n            arrowTraces.push({\n                x: [0, 0], y: [nodeY[i], nodeY[i + 1]],\n                mode: 'lines',\n                type: 'scatter',\n                line: { color: textSec, width: 1.5 },\n                showlegend: false,\n                hoverinfo: 'skip',\n            });\n        }\n\n        // Node markers\n        const nodeColors = processOrder.map(p => failCounts[p] > 0 ? '#ef5350' : '#2ecc71');\n        const nodeHovers = processOrder.map(p =>\n            `<b>${p}</b><br>Tasks: ${taskCounts[p]}${failCounts[p] ? `<br><span style="color:#ef5350">Failed: ${failCounts[p]}</span>` : ''}`);\n\n        const plotSpec = {\n            data: [\n                ...arrowTraces,\n                {\n                    x: nodeX, y: nodeY,\n                    mode: 'markers+text',\n                    type: 'scatter',\n                    marker: { color: nodeColors, size: 14,\n                              line: { color: bgColor, width: 2 } },\n                    text: processOrder.map(p => `  ${p.replace(/_/g, ' ')}  ×${taskCounts[p]}`),\n                    textposition: 'middle right',\n                    textfont: { color: textColor, size: 11, family: \"'JetBrains Mono', monospace\" },\n                    hovertext: nodeHovers,\n                    hovertemplate: '%{hovertext}<extra></extra>',\n                    showlegend: false,\n                },\n            ],\n            layout: {\n                title: { text: `${repoName} — Pipeline Structure (${n} steps)`,\n                         font: { color: textColor, size: 15 } },\n                xaxis: { visible: false, range: [-0.5, 4] },\n                yaxis: { visible: false, range: [-1, n] },\n                paper_bgcolor: bgColor, plot_bgcolor: bgColor,\n                font: { color: textColor, family: \"'JetBrains Mono', monospace\" },\n                hovermode: 'closest',\n                margin: { t: 60, b: 20, l: 20, r: 20 },\n            },\n        };
-
-        await Plotly.newPlot(cid, plotSpec.data, plotSpec.layout, { responsive: true, displayModeBar: true });
         if (typeof resizeAnalysisLayout === 'function') resizeAnalysisLayout();
         Plotly.Plots.resize(document.getElementById(cid));
     } catch (err) {
