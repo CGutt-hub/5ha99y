@@ -653,6 +653,7 @@ main {
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="{{ get_url(path='analysis-page.js') }}?v={{ now() | date(format='%s') }}"></script>
 <script>
 // Configure marked: open links in new tab
 const renderer = new marked.Renderer();
@@ -704,7 +705,6 @@ console.log('[Analysis] Plotly loaded:', typeof Plotly !== 'undefined');
 // Provide base URL to JS for asset resolution
 window.SITE_BASE_URL = "{{ config.base_url | safe }}";
 </script>
-<script src="{{ get_url(path='analysis-page.js') }}?v={{ now() | date(format='%s') }}"></script>
 <script>
 // Dynamically size the analysis body and plot container based on actual header height,
 // so the footer remains visible and the page can scroll naturally.
