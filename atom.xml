@@ -5,8 +5,124 @@
     <link rel="self" type="application/atom+xml" href="https://cgutt-hub.github.io/5ha99y/atom.xml"/>
     <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-06-25T00:00:00+00:00</updated>
+    <updated>2026-07-02T00:00:00+00:00</updated>
     <id>https://cgutt-hub.github.io/5ha99y/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Project Update: AnalysisToolbox</title>
+        <published>2026-07-02T00:00:00+00:00</published>
+        <updated>2026-07-02T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y/blog/update-analysistoolbox/"/>
+        <id>https://cgutt-hub.github.io/5ha99y/blog/update-analysistoolbox/</id>
+        
+        <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-analysistoolbox/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;AnalysisToolbox&quot;&gt;AnalysisToolbox&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;39c1301&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;ef7e256&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;63e8ec5&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;2e58e3a&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;6e0e006&lt;&#x2F;code&gt; Refactor spectrum analyzer and related processors&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;AnalysisToolbox&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Project Update: EmotiView</title>
+        <published>2026-07-02T00:00:00+00:00</published>
+        <updated>2026-07-02T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/"/>
+        <id>https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/</id>
+        
+        <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;EmotiView&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;af7470c&lt;&#x2F;code&gt; Deploy: Sync public files from private repository CGutt-hub&#x2F;EmotiViewPrivate@5af&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Project Update: surveyWorkbench</title>
+        <published>2026-07-02T00:00:00+00:00</published>
+        <updated>2026-07-02T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y/blog/update-surveyworkbench/"/>
+        <id>https://cgutt-hub.github.io/5ha99y/blog/update-surveyworkbench/</id>
+        
+        <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-surveyworkbench/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&quot;&gt;surveyWorkbench&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;01e0857&lt;&#x2F;code&gt; Add proper creator attribution: Cagatay Özcan Jagiello Gutt&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;d7ae93b&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;5521dc1&lt;&#x2F;code&gt; Make README and license generic and open-source&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;73c87ca&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;a090ef3&lt;&#x2F;code&gt; Replace minimal README with comprehensive v2.1 documentation&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Website Update</title>
+        <published>2026-07-02T00:00:00+00:00</published>
+        <updated>2026-07-02T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y/blog/website-update/"/>
+        <id>https://cgutt-hub.github.io/5ha99y/blog/website-update/</id>
+        
+        <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/website-update/">&lt;p&gt;This website has been updated with the following changes:&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;recent-changes&quot;&gt;Recent Changes&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;82c3329&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;5abd1c8&lt;&#x2F;code&gt; Updated&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;0ea2b01&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;aa2cd5f&lt;&#x2F;code&gt; fix&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;8528527&lt;&#x2F;code&gt; fix&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The site continues to sync automatically with GitHub (projects) and ORCID (publications).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;5ha99y&quot;&gt;View source on GitHub →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>New Project: continueAgent</title>
         <published>2026-06-25T00:00:00+00:00</published>
@@ -104,122 +220,6 @@
 &lt;p&gt;&lt;strong&gt;Language:&lt;&#x2F;strong&gt; Multiple languages&lt;&#x2F;p&gt;
 &lt;p&gt;This project contains analysis pipelines, data, and documentation following my commitment to open and transparent science.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;tVNS_deviceplan&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
-</content>
-        
-    </entry>
-    <entry xml:lang="en">
-        <title>Project Update: AnalysisToolbox</title>
-        <published>2026-06-25T00:00:00+00:00</published>
-        <updated>2026-06-25T00:00:00+00:00</updated>
-        
-        <author>
-          <name>
-            
-              Unknown
-            
-          </name>
-        </author>
-        
-        <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y/blog/update-analysistoolbox/"/>
-        <id>https://cgutt-hub.github.io/5ha99y/blog/update-analysistoolbox/</id>
-        
-        <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-analysistoolbox/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;AnalysisToolbox&quot;&gt;AnalysisToolbox&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;63e8ec5&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;2e58e3a&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;6e0e006&lt;&#x2F;code&gt; Refactor spectrum analyzer and related processors&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;a67e40d&lt;&#x2F;code&gt; feat: enhance bootstrap analysis to handle &#x27;auto_multi_by_col&#x27; and resolve signa&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;cafa496&lt;&#x2F;code&gt; fix: update condition to include table results in group processing&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;AnalysisToolbox&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
-</content>
-        
-    </entry>
-    <entry xml:lang="en">
-        <title>Project Update: EmotiView</title>
-        <published>2026-06-25T00:00:00+00:00</published>
-        <updated>2026-06-25T00:00:00+00:00</updated>
-        
-        <author>
-          <name>
-            
-              Unknown
-            
-          </name>
-        </author>
-        
-        <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/"/>
-        <id>https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/</id>
-        
-        <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-emotiview/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;EmotiView&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;ce17703&lt;&#x2F;code&gt; Deploy: Sync public files from private repository CGutt-hub&#x2F;EmotiViewPrivate@dd7&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;EmotiView&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
-</content>
-        
-    </entry>
-    <entry xml:lang="en">
-        <title>Project Update: surveyWorkbench</title>
-        <published>2026-06-25T00:00:00+00:00</published>
-        <updated>2026-06-25T00:00:00+00:00</updated>
-        
-        <author>
-          <name>
-            
-              Unknown
-            
-          </name>
-        </author>
-        
-        <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y/blog/update-surveyworkbench/"/>
-        <id>https://cgutt-hub.github.io/5ha99y/blog/update-surveyworkbench/</id>
-        
-        <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-surveyworkbench/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&quot;&gt;surveyWorkbench&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;790135e&lt;&#x2F;code&gt; Update USER_MANUAL files with latest build timestamps&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;1071529&lt;&#x2F;code&gt; Update survey workbench v2.0 binaries and warning log&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;fda7dc5&lt;&#x2F;code&gt; Derive target row from participant ID number (001-&amp;gt;row2, 023-&amp;gt;row24)&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;0e23800&lt;&#x2F;code&gt; Fix case-insensitive sheet lookup; keep workbook open after extraction&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;80fd4a1&lt;&#x2F;code&gt; Update binaries and fix warnings in survey_workbench_v2.0&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
-</content>
-        
-    </entry>
-    <entry xml:lang="en">
-        <title>Website Update</title>
-        <published>2026-06-25T00:00:00+00:00</published>
-        <updated>2026-06-25T00:00:00+00:00</updated>
-        
-        <author>
-          <name>
-            
-              Unknown
-            
-          </name>
-        </author>
-        
-        <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y/blog/website-update/"/>
-        <id>https://cgutt-hub.github.io/5ha99y/blog/website-update/</id>
-        
-        <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/website-update/">&lt;p&gt;This website has been updated with the following changes:&lt;&#x2F;p&gt;
-&lt;h2 id=&quot;recent-changes&quot;&gt;Recent Changes&lt;&#x2F;h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;366757c&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;7827448&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;b6465c3&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;8b3d4d1&lt;&#x2F;code&gt; Update&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;04ca147&lt;&#x2F;code&gt; Merge branch &#x27;main&#x27; of https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;5ha99y&lt;&#x2F;li&gt;
-&lt;&#x2F;ul&gt;
-&lt;p&gt;The site continues to sync automatically with GitHub (projects) and ORCID (publications).&lt;&#x2F;p&gt;
-&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;5ha99y&quot;&gt;View source on GitHub →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 </content>
         
     </entry>
