@@ -5,12 +5,12 @@
     <link rel="self" type="application/atom+xml" href="https://cgutt-hub.github.io/5ha99y/blog/atom.xml"/>
     <link rel="alternate" type="text/html" href="https://cgutt-hub.github.io/5ha99y/blog/"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-10-26T00:00:00+00:00</updated>
+    <updated>2026-10-27T00:00:00+00:00</updated>
     <id>https://cgutt-hub.github.io/5ha99y/blog/atom.xml</id>
     <entry xml:lang="en">
         <title>Project Update: AnalysisToolbox</title>
-        <published>2026-10-26T00:00:00+00:00</published>
-        <updated>2026-10-26T00:00:00+00:00</updated>
+        <published>2026-10-27T00:00:00+00:00</published>
+        <updated>2026-10-27T00:00:00+00:00</updated>
         
         <author>
           <name>
@@ -39,8 +39,8 @@
     </entry>
     <entry xml:lang="en">
         <title>Project Update: EmotiView</title>
-        <published>2026-10-26T00:00:00+00:00</published>
-        <updated>2026-10-26T00:00:00+00:00</updated>
+        <published>2026-10-27T00:00:00+00:00</published>
+        <updated>2026-10-27T00:00:00+00:00</updated>
         
         <author>
           <name>
@@ -65,8 +65,8 @@
     </entry>
     <entry xml:lang="en">
         <title>Project Update: surveyWorkbench</title>
-        <published>2026-10-26T00:00:00+00:00</published>
-        <updated>2026-10-26T00:00:00+00:00</updated>
+        <published>2026-10-27T00:00:00+00:00</published>
+        <updated>2026-10-27T00:00:00+00:00</updated>
         
         <author>
           <name>
@@ -82,11 +82,11 @@
         <content type="html" xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-surveyworkbench/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&quot;&gt;surveyWorkbench&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
 &lt;ul&gt;
+&lt;li&gt;&lt;code&gt;c84ccba&lt;&#x2F;code&gt; Merge branch &#x27;main&#x27; of https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;554e99a&lt;&#x2F;code&gt; Refactor README and Python code for improved clarity and functionality; enhance&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;ce4dc3a&lt;&#x2F;code&gt; Update README for Survey Workbench v2.2&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;d504af4&lt;&#x2F;code&gt; Refactor code structure for improved readability and maintainability&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;09a5ba5&lt;&#x2F;code&gt; Merge remote and local main branches&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;a12f291&lt;&#x2F;code&gt; Refactor code structure for improved readability and maintainability&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;01e0857&lt;&#x2F;code&gt; Add proper creator attribution: Cagatay Özcan Jagiello Gutt&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
@@ -95,8 +95,8 @@
     </entry>
     <entry xml:lang="en">
         <title>Website Update</title>
-        <published>2026-10-26T00:00:00+00:00</published>
-        <updated>2026-10-26T00:00:00+00:00</updated>
+        <published>2026-10-27T00:00:00+00:00</published>
+        <updated>2026-10-27T00:00:00+00:00</updated>
         
         <author>
           <name>
