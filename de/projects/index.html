@@ -141,289 +141,197 @@
 <hr />
 <h3 id="surveyworkbench">surveyWorkbench</h3>
 <p><strong>Sprache:</strong> Python<br />
-<strong>Zuletzt aktualisiert:</strong> 2026-10-27</p>
+<strong>Zuletzt aktualisiert:</strong> 2026-10-28</p>
 <details>
 <summary>README anzeigen</summary>
-<h1 id="survey-workbench-v2-1">Survey Workbench v2.1</h1>
-<p>A comprehensive tool for managing participant folders and extracting survey data from PDF questionnaires with automated field mapping and Excel integration.</p>
-<h2 id="overview">Overview</h2>
-<p>Survey Workbench is designed to streamline the workflow of:</p>
-<ol>
-<li><strong>Generating</strong> standardized participant folders with multiple questionnaire types</li>
-<li><strong>Prefilling</strong> PDF forms with default values before participant handover</li>
-<li><strong>Extracting</strong> completed survey data directly into Excel/CSV masterfiles</li>
-<li><strong>Managing</strong> field mappings for user-friendly column names</li>
-</ol>
-<h3 id="key-features">Key Features</h3>
-<ul>
-<li><strong>Dynamic Questionnaire Configuration</strong> — Support unlimited questionnaire types per participant</li>
-<li><strong>Auto-Generated Field Mapping</strong> — Automatically scans form templates and generates field mappings</li>
-<li><strong>Non-Participant-Specific Columns</strong> — Multiple participants in a single masterfile without naming conflicts</li>
-<li><strong>Grouped Checkboxes</strong> — Automatically collapses checkbox arrays (Check1_1, Check1_2, etc.) into single columns</li>
-<li><strong>Prefill Dialog</strong> — Populate PDF form fields before participant handover with a graphical interface</li>
-<li><strong>Multiple Export Formats</strong> — Support for CSV, XLS, and XLSX masterfiles</li>
-<li><strong>Configuration Persistence</strong> — Save and load complete project configurations including field mappings</li>
-<li><strong>Type-Safe Codebase</strong> — Full Python type hints for reliability and IDE support</li>
-</ul>
-<h2 id="system-requirements">System Requirements</h2>
-<ul>
-<li><strong>OS:</strong> Windows 10/11</li>
-<li><strong>Python:</strong> 3.10+ (if running from source)</li>
-<li><strong>Excel:</strong> Microsoft Excel (for XLS/XLSX export)</li>
-<li><strong>RAM:</strong> 2GB minimum</li>
-<li><strong>Storage:</strong> Sufficient space for participant folders and questionnaire PDFs</li>
-</ul>
-<h2 id="installation">Installation</h2>
-<h3 id="using-the-executable">Using the Executable</h3>
-<ol>
-<li>Download <code>survey_workbench_v2.1.exe</code> from the <code>dist/</code> folder</li>
-<li>Run the executable — no installation needed</li>
-<li>The first launch will create a <code>config.ini</code> file in the same directory</li>
-</ol>
-<h3 id="from-source">From Source</h3>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Clone or extract the repository</span></span>
-<span class="giallo-l"><span style="color: #F38BA8;font-style: italic;">cd</span><span style="color: #A6E3A1;"> survey_workbench - v2.1</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Install dependencies</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install -r requirements.txt</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Run the application</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python</span><span style="color: #A6E3A1;"> survey_workbench_v2.1.py</span></span></code></pre>
-<p><strong>Dependencies:</strong></p>
-<ul>
-<li>PyQt5 (GUI framework)</li>
-<li>xlwings (Excel integration)</li>
-<li>pypdf (PDF processing)</li>
-</ul>
-<h2 id="quick-start">Quick Start</h2>
-<h3 id="1-generate-participant-folders">1. Generate Participant Folders</h3>
-<ol>
-<li>
-<p><strong>Configure Questionnaires</strong></p>
-<ul>
-<li>Enter participant ID (e.g., <code>P_001</code>)</li>
-<li>Select target folder for participant directories</li>
-<li>Add questionnaire types (name, PDF template, copy count)</li>
-</ul>
-</li>
-<li>
-<p><strong>Generate</strong></p>
-<ul>
-<li>Click "Generate Participant Folder"</li>
-<li>System creates organized folder structure</li>
-<li>Prefill dialog appears for optional value population</li>
-</ul>
-</li>
-<li>
-<p><strong>Prefill (Optional)</strong></p>
-<ul>
-<li>Edit field values in the dialog</li>
-<li>Check/uncheck options for checkboxes</li>
-<li>Click "Confirm" to save prefill values to PDFs</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-extract-survey-data">2. Extract Survey Data</h3>
-<ol>
-<li>
-<p><strong>Configure Extraction</strong></p>
-<ul>
-<li>Select source folder (contains completed participant folders)</li>
-<li>Select masterfile (CSV, XLS, or XLSX)</li>
-<li>Enter participant ID to extract</li>
-</ul>
-</li>
-<li>
-<p><strong>Extract</strong></p>
-<ul>
-<li>Click "Extract Data to Masterfile"</li>
-<li>System automatically detects file format</li>
-<li>Data is appended as new row with proper field mapping</li>
-</ul>
-</li>
-<li>
-<p><strong>Verify</strong></p>
-<ul>
-<li>Check masterfile for new row with mapped column names</li>
-<li>Checkpoint values appear as option numbers (1, 2, 3, etc.)</li>
-</ul>
-</li>
-</ol>
-<h3 id="3-manage-field-mappings">3. Manage Field Mappings</h3>
-<ol>
-<li>
-<p><strong>Edit Field Mapping</strong></p>
-<ul>
-<li>Click "File → Save/Edit Field Mapping"</li>
-<li>System auto-scans form templates and shows detected fields</li>
-<li>Edit "Name" column to set user-friendly column headers</li>
-<li>Click "Save" to persist to project configuration</li>
-</ul>
-</li>
-<li>
-<p><strong>Save Configuration</strong></p>
-<ul>
-<li>Click "File → Save Configuration"</li>
-<li>Enter configuration name</li>
-<li>Settings, questionnaires, AND field mapping are saved together</li>
-</ul>
-</li>
-<li>
-<p><strong>Load Configuration</strong></p>
-<ul>
-<li>Click "File → Load Configuration" (from menu)</li>
-<li>Select previous configuration</li>
-<li>Everything restores: questionnaires, paths, AND field mapping</li>
-</ul>
-</li>
-</ol>
-<h2 id="data-organization">Data Organization</h2>
-<h3 id="column-naming">Column Naming</h3>
-<ul>
-<li><strong>Previous (v2.0):</strong> <code>P_001_Demographics_Age</code> (participant-specific)</li>
-<li><strong>Current (v2.1):</strong> <code>Age</code> (mapped friendly name) or <code>Demographics_Age</code> (system name)</li>
-<li><strong>Benefit:</strong> Multiple participants can coexist in one masterfile</li>
-</ul>
-<h3 id="checkbox-handling">Checkbox Handling</h3>
-<p>Checkboxes in PDFs use naming convention:</p>
-<ul>
-<li><code>Check1_1</code>, <code>Check1_2</code>, <code>Check1_3</code> (individual options)</li>
-<li>Grouped as: <code>Check1</code> (single column)</li>
-<li>Value: option number that was checked (e.g., <code>1</code>, <code>2</code>, or <code>3</code>)</li>
-<li>System translates to/from PDF values (<code>/Yes</code>, <code>/Off</code>, <code>/On</code>) automatically</li>
-</ul>
-<h3 id="example-data-row">Example Data Row</h3>
-<table><thead><tr><th>participant_id</th><th>Age</th><th>Gender</th><th>Mental_Demand</th><th>Score</th></tr></thead><tbody>
-<tr><td>P_001</td><td>28</td><td>1</td><td>7.5</td><td>68</td></tr>
-<tr><td>P_002</td><td>35</td><td>2</td><td>5.2</td><td>72</td></tr>
-</tbody></table>
-<h2 id="configuration-files">Configuration Files</h2>
-<h3 id="config-ini">config.ini</h3>
-<p>Stores all project configurations. Each <code>[section]</code> is a named configuration:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="ini"><span class="giallo-l"><span style="color: #9399B2;">[</span><span style="color: #F9E2AF;">MyProject</span><span style="color: #9399B2;">]</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">target_path</span><span style="color: #94E2D5;"> =</span><span> C:\Studies\MyProject\Participants</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">source_path</span><span style="color: #94E2D5;"> =</span><span> C:\Studies\MyProject\Completed</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">excel_path</span><span style="color: #94E2D5;"> =</span><span> C:\Studies\MyProject\masterfile.xlsx</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">quest_count</span><span style="color: #94E2D5;"> =</span><span> 3</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">quest_0_name</span><span style="color: #94E2D5;"> =</span><span> Demographics</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">quest_0_path</span><span style="color: #94E2D5;"> =</span><span> C:\Templates\demographics.pdf</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">quest_0_count</span><span style="color: #94E2D5;"> =</span><span> 1</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">field_mapping_json</span><span style="color: #94E2D5;"> =</span><span> {</span><span style="color: #A6E3A1;">&quot;Demographics_Age&quot;</span><span>: </span><span style="color: #A6E3A1;">&quot;Age&quot;</span><span>, </span><span style="color: #A6E3A1;">&quot;Check1&quot;</span><span>: </span><span style="color: #A6E3A1;">&quot;Gender&quot;</span><span>}</span></span></code></pre>
-<p>Each configuration saves:</p>
-<ul>
-<li>Questionnaire setup (names, paths, counts)</li>
-<li>Source/target/excel paths</li>
-<li><strong>Field mapping</strong> (system names → friendly names)</li>
-</ul>
-<h2 id="workflow-example">Workflow Example</h2>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>1. Create configuration &quot;MyStudy_2026&quot;</span></span>
-<span class="giallo-l"><span>   ├─ Add questionnaires: demographics.pdf, survey-tlx.pdf</span></span>
-<span class="giallo-l"><span>   ├─ Set target folder: C:\Studies\MyStudy\Participants</span></span>
-<span class="giallo-l"><span>   └─ Save configuration</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span>2. Generate participant folders</span></span>
-<span class="giallo-l"><span>   ├─ ID: P_001</span></span>
-<span class="giallo-l"><span>   ├─ Creates: P_001/</span></span>
-<span class="giallo-l"><span>   │   ├─ P_001_demographics.pdf</span></span>
-<span class="giallo-l"><span>   │   └─ P_001_survey-tlx.pdf</span></span>
-<span class="giallo-l"><span>   └─ Prefill optional values</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span>3. Participant completes questionnaires</span></span>
-<span class="giallo-l"><span>   └─ Returns completed PDFs</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span>4. Edit field mapping (optional)</span></span>
-<span class="giallo-l"><span>   ├─ &quot;Demographics_Age&quot; → &quot;Age&quot;</span></span>
-<span class="giallo-l"><span>   ├─ &quot;Check1&quot; → &quot;Gender&quot;</span></span>
-<span class="giallo-l"><span>   └─ Save to configuration</span></span>
-<span class="giallo-l"></span>
-<span class="giallo-l"><span>5. Extract data</span></span>
-<span class="giallo-l"><span>   ├─ Source: C:\Studies\MyStudy\Completed\P_001/</span></span>
-<span class="giallo-l"><span>   ├─ Masterfile: C:\Studies\MyStudy\masterfile.xlsx</span></span>
-<span class="giallo-l"><span>   └─ Appends row with mapped column names</span></span></code></pre><h2 id="menu-reference">Menu Reference</h2>
-<h3 id="file-menu">File Menu</h3>
-<ul>
-<li><strong>Save Configuration</strong> — Save current setup with field mappings</li>
-<li><strong>Load Configuration</strong> — Load previous project setup</li>
-<li><strong>Delete Configuration</strong> — Remove saved configuration</li>
-<li><strong>Save/Edit Field Mapping</strong> — Edit field-to-column-name mappings (auto-scans templates)</li>
-<li><strong>Exit</strong> — Close the application</li>
-</ul>
-<h3 id="generation-section">Generation Section</h3>
-<ul>
-<li><strong>Generate Participant Folder</strong> — Create folders with questionnaires and optional prefill</li>
-</ul>
-<h3 id="extraction-section">Extraction Section</h3>
-<ul>
-<li><strong>Extract Data to Masterfile</strong> — Append completed survey data to masterfile</li>
-</ul>
-<h2 id="technical-details">Technical Details</h2>
-<h3 id="version-2-1-june-2026">Version: 2.1 (June 2026)</h3>
-<p><strong>Changes from v2.0:</strong></p>
-<ul>
-<li>Field mapping auto-generated from form templates</li>
-<li>Non-participant-specific column names</li>
-<li>Integrated field mapping with project configuration</li>
-<li>Removed redundant load/delete field mapping operations</li>
-<li>Enhanced type hints and code quality</li>
-</ul>
-<h3 id="technology-stack">Technology Stack</h3>
-<ul>
-<li><strong>Python:</strong> 3.13.7</li>
-<li><strong>GUI:</strong> PyQt5 5.15.11</li>
-<li><strong>PDF Processing:</strong> pypdf 4.0+</li>
-<li><strong>Excel Integration:</strong> xlwings 0.33.20</li>
-<li><strong>Packaging:</strong> PyInstaller 6.14.2</li>
-</ul>
-<h3 id="supported-file-formats">Supported File Formats</h3>
-<ul>
-<li><strong>PDF:</strong> Standard AcroForm fields (text, checkboxes, radio buttons)</li>
-<li><strong>CSV:</strong> UTF-8 encoded, comma-delimited</li>
-<li><strong>Excel:</strong> XLS (2003), XLSX (2007+)</li>
-</ul>
-<h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="no-fields-found-in-configured-templates">"No fields found in configured templates"</h3>
-<ul>
-<li>Verify template PDF paths are correct</li>
-<li>Ensure PDFs have form fields (AcroForm structure)</li>
-<li>Check file permissions</li>
-</ul>
-<h3 id="field-mapping-does-not-match-configured-forms">"Field mapping does not match configured forms"</h3>
-<ul>
-<li>Forms have changed since configuration was created</li>
-<li>Click "Save/Edit Field Mapping" to regenerate from current templates</li>
-<li>Review and adjust friendly names, then save</li>
-</ul>
-<h3 id="excel-file-not-updating">Excel file not updating</h3>
-<ul>
-<li>Ensure masterfile is not open in Excel</li>
-<li>Verify path is correct and file is accessible</li>
-<li>Check that sheet named "Data" exists (or first sheet is used)</li>
-</ul>
-<h3 id="checkbox-values-not-appearing">Checkbox values not appearing</h3>
-<ul>
-<li>Verify checkbox field names follow pattern: <code>Check{N}_{option}</code></li>
-<li>Ensure option numbers are sequential (1, 2, 3...)</li>
-<li>Check that at least one checkbox is checked in the PDF</li>
-</ul>
-<h2 id="documentation">Documentation</h2>
-<ul>
-<li><strong>USER_MANUAL.pdf</strong> — Comprehensive user guide with screenshots and step-by-step instructions</li>
-<li><strong>README.md</strong> — This file, quick reference and overview</li>
-</ul>
-<h2 id="support">Support</h2>
-<p>For issues, feature requests, or questions:</p>
-<ol>
-<li>Check USER_MANUAL.pdf for detailed guidance</li>
-<li>Review configuration in config.ini</li>
-<li>Verify file paths and permissions</li>
-<li>Consult "Troubleshooting" section above</li>
-</ol>
-<h2 id="license">License</h2>
-<p>This project is licensed under the <strong>MIT License</strong>. See <a href="https://cgutt-hub.github.io/5ha99y/de/projects/LICENSE">LICENSE</a> file for full terms and conditions.</p>
-<p><strong>Copyright © 2026 Cagatay Özcan Jagiello Gutt, Survey Workbench Contributors</strong></p>
-<p>The MIT License permits free use, modification, and distribution, provided that copyright attribution is retained in all distributed copies and derivative works.</p>
+<h1 id="survey-workbench">Survey Workbench</h1>
+<p>A desktop workbench for study coordinators and researchers. Prepare standardized participant folders with fillable PDF questionnaires, prefill initial values, and extract completed survey answers directly into multi-sheet Excel workbooks or CSV files.</p>
 <hr />
-<p><strong>Survey Workbench v2.1</strong> | June 2026 | Open-Source PDF Form Extraction Tool</p>
+<h2 id="1-overview-key-features">1. Overview &amp; Key Features</h2>
+<ul>
+<li><strong>Collapsible Workspace:</strong> Curator settings stay tucked inside a collapsible drawer, leaving a clean, compact window for day-to-day folder generation and data extraction.</li>
+<li><strong>Dynamic Window Resizing:</strong> The window automatically expands or shrinks to snugly fit whatever content or questionnaire rows are active.</li>
+<li><strong>Multi-Survey &amp; Multi-Trial Support:</strong> Configure unlimited questionnaire types per study, with custom repeat copy counts per participant (e.g., Trial 1, Trial 2).</li>
+<li><strong>Consolidated Batch Processing:</strong> Enter single IDs, paste multiple IDs, or import participant lists from text or CSV files. Generate folders or extract data in a single pass.</li>
+<li><strong>Smart Checkbox &amp; Matrix Grouping:</strong> Automatically groups checkbox arrays (like Check1_1, Check1_2) into a single column (Check1) containing the selected option number.</li>
+<li><strong>Natural Alphanumeric Sorting:</strong> Columns and previews are sorted naturally (Text1, Text2, ..., Text10) instead of alphabetical order (Text1, Text10, Text2).</li>
+<li><strong>Dedicated Excel Sheets:</strong> In Excel masterfiles, each survey type automatically writes to its own tab, keeping Column A reserved for participant_id.</li>
+<li><strong>Friendly Column Mapping:</strong> Rename technical PDF identifiers (e.g., Text1 -&gt; Age) using an interactive visual editor.</li>
+<li><strong>Project Snapshotting:</strong> Save and reload complete project setups (paths, templates, copy counts, and custom column names) to and from config.ini.</li>
+<li><strong>Pre-Compiled &amp; Cross-Platform:</strong> Standalone Windows executable (.exe) ready to download without setup; native Linux binary easily built with Nuitka.</li>
+<li><strong>Built-in Interactive Help:</strong> Instant hover tooltips on every control, a "What's This?" interactive click mode, and an in-app viewer for this documentation.</li>
+</ul>
+<hr />
+<h2 id="2-quick-start-guide">2. Quick Start Guide</h2>
+<h3 id="step-1-declare-participant-s">Step 1: Declare Participant(s)</h3>
+<ul>
+<li><strong>Single participant:</strong> Type the identifier (e.g., P001) into the Participant ID(s) box.</li>
+<li><strong>Multiple participants:</strong> Check Batch Mode, then paste IDs (one per line or comma-separated) or click Import List... to load a .txt or .csv file.</li>
+</ul>
+<h3 id="step-2-configure-the-study-first-time-setup">Step 2: Configure the Study (First-Time Setup)</h3>
+<p>Click ▶ Configuration Settings to open the setup panels:</p>
+<ol>
+<li><strong>Target folder PATH:</strong> Choose where new participant folders will be created.</li>
+<li><strong>Questionnaires:</strong> Enter the number of survey types, click Confirm, then give each survey a name, select its PDF template, and specify how many copies each participant gets.</li>
+<li><strong>Source folder PATH:</strong> Choose where completed participant folders are saved.</li>
+<li><strong>Masterfile PATH:</strong> Choose your destination .xlsx, .xls, or .csv file.</li>
+</ol>
+<p>Tip: Go to File -&gt; Save Configuration to save this setup so you can reload it anytime without re-entering paths.</p>
+<h3 id="step-3-run-actions">Step 3: Run Actions</h3>
+<ul>
+<li><strong>Generate Participant Folder(s):</strong> Creates the folders, copies and renames the survey PDFs, and opens a review window to check prefilled values.</li>
+<li><strong>Extract Data to Masterfile:</strong> Scans completed PDFs from the source folder and writes all answers cleanly into your masterfile.</li>
+</ul>
+<hr />
+<h2 id="3-interactive-help-in-the-app">3. Interactive Help in the App</h2>
+<p>If you are ever unsure what a control does:</p>
+<ul>
+<li><strong>Hover:</strong> Move your mouse over any button or text box to see a brief tooltip.</li>
+<li><strong>What's This? Mode:</strong> Press Shift + F1 (or go to HELP -&gt; What's This?). Your mouse cursor turns into a question mark. Click any button, label, or input field to read a detailed explanation of its function.</li>
+<li><strong>Read Manual:</strong> Go to HELP -&gt; User Manual to open this documentation directly inside the program.</li>
+</ul>
+<hr />
+<h2 id="4-step-by-step-instructions">4. Step-by-Step Instructions</h2>
+<h3 id="4-1-generating-folders-prefilling-data">4.1 Generating Folders &amp; Prefilling Data</h3>
+<ol>
+<li>Enter your participant ID(s).</li>
+<li>Click Generate Participant Folder(s).</li>
+<li>A Batch Preview &amp; Generation table appears, listing all detected form fields across the templates.</li>
+<li>Any ID fields (such as participant_id or Text13_n) are automatically prefilled with the participant ID.</li>
+<li>Review or edit values directly in the table, then click Confirm and Generate All.</li>
+<li>Each participant will receive a dedicated folder containing the prepared PDFs ready for data collection.</li>
+</ol>
+<h3 id="4-2-extracting-data-to-masterfile">4.2 Extracting Data to Masterfile</h3>
+<ol>
+<li>Make sure your Source folder points to the completed participant folders.</li>
+<li>Make sure your Masterfile points to your target spreadsheet.</li>
+<li>Click Extract Data to Masterfile:
+<ul>
+<li>Single participant: A 4-column review dialog (Sheet, Field, Name, Data) allows you to inspect and modify extracted values before committing them.</li>
+<li>Batch mode: All participants are parsed in memory and written into the masterfile in a single session without repeated file-opening delays.</li>
+</ul>
+</li>
+<li>Excel exports create dedicated sheets per survey name, ensuring headers and schemas remain cleanly separated.</li>
+</ol>
+<h3 id="4-3-renaming-columns-field-mapping">4.3 Renaming Columns (Field Mapping)</h3>
+<p>To replace raw PDF identifiers with friendly column names:</p>
+<ol>
+<li>Open File -&gt; Save/Edit Field Mapping.</li>
+<li>Type custom titles into the Masterfile Column Name column (e.g., change Demographics_Text1 to Age).</li>
+<li>Click Save Field Mapping. The new names will be used on all subsequent data exports.</li>
+</ol>
+<h3 id="4-4-managing-study-profiles">4.4 Managing Study Profiles</h3>
+<ul>
+<li><strong>Save Configuration:</strong> Go to File -&gt; Save Configuration and choose a profile name. All paths, questionnaire templates, counts, and column renamings are saved to config.ini.</li>
+<li><strong>Load Configuration:</strong> Go to File -&gt; Load Configuration and click your saved profile name to restore everything instantly.</li>
+<li><strong>Delete Configuration:</strong> Go to File -&gt; Delete Configuration to remove obsolete profiles.</li>
+</ul>
+<hr />
+<h2 id="5-technical-specifications">5. Technical Specifications</h2>
+<table><thead><tr><th>Parameter</th><th>Specification</th></tr></thead><tbody>
+<tr><td>Supported OS</td><td>Windows 10/11, Linux (Ubuntu/Debian/Fedora/Arch), macOS</td></tr>
+<tr><td>Python Runtime</td><td>Python 3.9 through 3.13</td></tr>
+<tr><td>GUI Framework</td><td>PyQt5</td></tr>
+<tr><td>PDF Processing</td><td>pypdf (AcroForm, widget annotations, indirect object trees)</td></tr>
+<tr><td>Masterfile Formats</td><td>CSV (.csv), Excel (.xlsx, .xls)</td></tr>
+<tr><td>Standalone Builds</td><td>Nuitka (portable .exe on Windows / ELF binary on Linux)</td></tr>
+</tbody></table>
+<p>Note on Operating System Differences:</p>
+<ul>
+<li>CSV masterfiles work 100% natively on both Linux and Windows without requiring any external office suite.</li>
+<li>Excel masterfiles (.xlsx, .xls) automated via xlwings rely on Microsoft Excel (standard on Windows). On Linux systems without MS Excel, selecting .csv as the masterfile format is recommended.</li>
+</ul>
+<hr />
+<h2 id="6-download-installation">6. Download &amp; Installation</h2>
+<h3 id="6-1-windows-pre-compiled-executable">6.1 Windows (Pre-Compiled Executable)</h3>
+<p>Windows users do not need to install Python, Git, or any C compiler.
+The Windows edition is already compiled with Nuitka into a portable standalone executable:</p>
+<ol>
+<li>Download <code>survey_workbench.exe</code> directly from the repository / releases.</li>
+<li>Place it in your desired working directory and double-click to launch.
+All GUI modules, PDF engines, and this documentation are bundled inside.</li>
+</ol>
+<hr />
+<h3 id="6-2-linux-compilation-native-elf-binary">6.2 Linux Compilation (Native ELF Binary)</h3>
+<p>Linux users can compile a standalone native ELF binary directly from source using Nuitka:</p>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span># 1. Install build tools (Debian/Ubuntu)</span></span>
+<span class="giallo-l"><span>sudo apt update &amp;&amp; sudo apt install build-essential python3-dev -y</span></span>
+<span class="giallo-l"><span>pip install -r requirements.txt</span></span>
+<span class="giallo-l"><span>pip install nuitka zstandard</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span># 2. Compile native executable</span></span>
+<span class="giallo-l"><span>python3 -m nuitka --standalone --onefile --enable-plugin=pyqt5 --include-data-file=README.md=README.md --output-filename=survey_workbench survey_workbench_v2.2.py</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span># 3. Run</span></span>
+<span class="giallo-l"><span>chmod +x survey_workbench</span></span>
+<span class="giallo-l"><span>./survey_workbench</span></span></code></pre>
+<hr />
+<h3 id="6-3-running-from-source-development">6.3 Running from Source (Development)</h3>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span># 1. Clone repository</span></span>
+<span class="giallo-l"><span>git clone https://github.com/your-username/survey-workbench.git</span></span>
+<span class="giallo-l"><span>cd survey-workbench</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span># 2. Install dependencies</span></span>
+<span class="giallo-l"><span>pip install -r requirements.txt</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span># 3. Launch application</span></span>
+<span class="giallo-l"><span>python survey_workbench_v2.2.py</span></span></code></pre>
+<hr />
+<h2 id="7-version-history-changelog">7. Version History &amp; Changelog</h2>
+<h3 id="production-releases">Production Releases</h3>
+<h4 id="v2-2-current-edition-dynamic-layout-embedded-docs"><strong>v2.2 (Current Edition — Dynamic Layout &amp; Embedded Docs)</strong></h4>
+<ul>
+<li><strong>Pre-Compiled Windows Binary:</strong> Pre-built <code>survey_workbench.exe</code> compiled via Nuitka for immediate download and execution.</li>
+<li><strong>Collapsible Curator Workspace:</strong> Advanced configuration settings collapse into a hidden container by default, keeping the interface minimal for routine daily operations.</li>
+<li><strong>Dynamic Window Resizing:</strong> GUI dynamically calculates geometry and automatically adapts to shown/hidden elements.</li>
+<li><strong>Embedded In-App Manual:</strong> Integrated native Markdown renderer that displays README.md directly inside the app, removing external PDF reader dependencies and eliminating cross-platform OS crashes.</li>
+<li><strong>Single-Session Batch Engine:</strong> Extraction processes all participants in memory in a single Excel/CSV session, eliminating file-opening bottlenecks.</li>
+<li><strong>Fully-Qualified Field Keys:</strong> Prefixes column mapping keys ({survey}_{field}) to prevent cross-sheet column collisions in Excel.</li>
+<li><strong>Natural Alphanumeric Sorting:</strong> All table dialogs and spreadsheet columns sort naturally (Text1, Text2... Text10).</li>
+<li><strong>Interactive Help System:</strong> Added complete tooltip hover coverage and Qt "What's This?" interactive click inspection (Shift+F1) across every control.</li>
+<li><strong>Cross-Platform Compilation:</strong> Documented and verified standalone native builds via Nuitka for both Windows (.exe) and Linux (ELF binary).</li>
+</ul>
+<h4 id="v2-1-direct-pdf-extraction-field-mapping"><strong>v2.1 (Direct PDF Extraction &amp; Field Mapping)</strong></h4>
+<ul>
+<li><strong>Direct PDF Parsing:</strong> Removed reliance on third-party CSV extraction tools; reads AcroForm fields and widget annotations directly via pypdf.</li>
+<li><strong>Bidirectional PDF Prefilling:</strong> Added prefill dialog to populate fields (e.g., administrative participant IDs) directly back into PDF forms before participant handover.</li>
+<li><strong>Field Name Remapping:</strong> Introduced visual field-mapping interface to translate technical PDF identifiers into human-readable masterfile headers.</li>
+<li><strong>Checkbox Matrix Compression:</strong> Automatically collapses Check{X}_{Y} arrays into unified single columns (Check{X}) containing the selected option number.</li>
+</ul>
+<h4 id="v2-0-dynamic-multi-survey-architecture"><strong>v2.0 (Dynamic Multi-Survey Architecture)</strong></h4>
+<ul>
+<li><strong>Unlimited Questionnaire Configuration:</strong> Replaced static survey selections with dynamic questionnaire rows in a scrollable view.</li>
+<li><strong>Batch Processing:</strong> Added batch ID declaration text area and participant list importer (.txt and .csv).</li>
+<li><strong>Quality Control Safety Checks:</strong> Added masterfile duplicate detection and participant folder completeness verification with a Missing Data Report.</li>
+<li><strong>Multi-Format Masterfiles:</strong> Added support for CSV alongside Excel (.xls, .xlsx) masterfiles.</li>
+<li><strong>Template Bundles:</strong> Introduced reusable JSON-based survey template presets.</li>
+</ul>
+<h4 id="v1-0-v1-3-initial-stable-production-baseline"><strong>v1.0 – v1.3 (Initial Stable Production Baseline)</strong></h4>
+<ul>
+<li><strong>v1.3:</strong> Added diagnostic execution logger (debug_log.txt) inside participant directories and wrapped file operations in structured error handling.</li>
+<li><strong>v1.2:</strong> Corrected NASA-TLX subscale indexing and order concatenation across repeated blocks.</li>
+<li><strong>v1.1:</strong> Fixed condition key resolution and edge-case trailing indices during CSV readouts.</li>
+<li><strong>v1.0:</strong> Initial production release featuring automated folder copying and hardcoded Excel readout for Demographics and NASA-TLX forms.</li>
+</ul>
+<hr />
+<h3 id="historical-pre-alpha-versions-internal-prototypes-proof-of-concept">Historical Pre-Alpha Versions (Internal Prototypes &amp; Proof of Concept)</h3>
+<p><em>The v0.x releases were internal laboratory prototypes designed to evaluate automated folder generation and Excel automation before modular production implementation.</em></p>
+<ul>
+<li><strong>v0.2 (Pre-Alpha):</strong> Introduced first configuration persistence (config.ini) with SaveConfigWindow / LoadConfigWindow dialogs and path normalization.</li>
+<li><strong>v0.1 (Pre-Alpha):</strong> Initial feasibility proof of concept. Monolithic hardcoded GUI for NASA-TLX and Demographics with basic file generation and Excel extraction.</li>
+</ul>
+<hr />
+<h2 id="8-troubleshooting-faq">8. Troubleshooting FAQ</h2>
+<ul>
+<li><strong>Hovering doesn't show help:</strong> Ensure your window is active. Tooltips appear after holding the mouse stationary over a control for ~0.5 seconds.</li>
+<li><strong>"What's This?" mode doesn't open help on hover:</strong> "What's This?" is a click-based help mode. Press Shift + F1 (the cursor turns into a question mark), then click the widget you want explained.</li>
+<li><strong>Excel does not update on Windows:</strong> Ensure the masterfile is not currently locked or open in edit mode in another window.</li>
+<li><strong>Linux Excel error:</strong> On Linux systems without Microsoft Excel, use .csv files as your masterfile. The app will generate clean CSV tables per survey automatically.</li>
+<li><strong>Checkboxes not extracting:</strong> Ensure your PDF form uses standard naming conventions (e.g., Check1_1, Check1_2 for options in group 1).</li>
+</ul>
+<hr />
+<h2 id="9-license">9. License</h2>
+<p>This project is licensed under the <a href="https://cgutt-hub.github.io/5ha99y/de/projects/LICENSE">MIT License</a>.</p>
 </details>
 <p><a rel="external" href="https://github.com/CGutt-hub/surveyWorkbench">Auf GitHub ansehen →</a></p>
 <hr />
@@ -434,7 +342,7 @@
 <summary>README anzeigen</summary>
 <h1 id="analysistoolbox-1">AnalysisToolbox</h1>
 <p>A modular framework for automated data processing and statistical analysis pipelines. Built on <strong>Nextflow</strong> for scalable, reproducible workflows with automatic result synchronization.</p>
-<h2 id="overview-1">Overview</h2>
+<h2 id="overview">Overview</h2>
 <p>The AnalysisToolbox provides infrastructure for building data processing pipelines that:</p>
 <ul>
 <li><strong>Process multiple datasets</strong> in parallel with automatic participant discovery</li>
@@ -611,7 +519,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <li><code>static/style.css</code> - Main stylesheet</li>
 <li><code>templates/</code> - HTML templates</li>
 </ul>
-<h2 id="troubleshooting-1">Troubleshooting</h2>
+<h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="website-not-updating">Website Not Updating?</h3>
 <ol>
 <li>Check <a rel="external" href="https://github.com/CGutt-hub/5ha99y/actions">Actions tab</a> - look for green checkmark ✓</li>
@@ -688,7 +596,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <li><strong>Model Call</strong>: Sends simplified question to chosen model (Mistral/Claude)</li>
 <li><strong>Final Report</strong>: Shows actual token usage and cost</li>
 </ol>
-<h2 id="license-1">License</h2>
+<h2 id="license">License</h2>
 <p>MIT License - see <a href="https://cgutt-hub.github.io/5ha99y/de/projects/LICENSE">LICENSE</a> file</p>
 </details>
 <p><a rel="external" href="https://github.com/CGutt-hub/continueAgent">Auf GitHub ansehen →</a></p>
@@ -717,7 +625,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <tr><td><strong>Windows</strong></td><td><code>gitref.exe</code></td><td>Move to a folder on your PATH, or run: <code>irm https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.ps1 | iex</code></td></tr>
 <tr><td><strong>Linux</strong></td><td><code>GitRef-x86_64.AppImage</code> or <code>gitref</code></td><td><code>chmod +x</code> and move to <code>/usr/local/bin/</code>, or run: <code>curl -fsSL https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.sh | bash</code></td></tr>
 </tbody></table>
-<h3 id="from-source-1">From source</h3>
+<h3 id="from-source">From source</h3>
 <pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install git+https://github.com/CGutt-hub/gitref.git</span></span></code></pre><h2 id="features-1">Features</h2>
 <ul>
 <li><strong>DOI / arXiv / ISBN lookup</strong> – paste an identifier, metadata is fetched automatically</li>
@@ -730,7 +638,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <li><strong>Terminal UI</strong> – interactive browser with search, detail view, tagging</li>
 <li><strong>Browser extension</strong> – one-click save from any paper page (like Zotero Connector)</li>
 </ul>
-<h2 id="quick-start-1">Quick start</h2>
+<h2 id="quick-start">Quick start</h2>
 <pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #9399B2;font-style: italic;"># Initialise a new library</span></span>
 <span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">gitref</span><span style="color: #A6E3A1;"> init</span></span>
 <span class="giallo-l"></span>
