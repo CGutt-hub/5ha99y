@@ -141,7 +141,7 @@
 <hr />
 <h3 id="surveyworkbench">surveyWorkbench</h3>
 <p><strong>Language:</strong> Python<br />
-<strong>Last updated:</strong> 2026-10-29</p>
+<strong>Last updated:</strong> 2026-11-03</p>
 <details>
 <summary>View README</summary>
 <h1 id="survey-workbench">Survey Workbench</h1>
@@ -157,20 +157,63 @@
 <li><strong>Structured JSON (<code>.json</code>):</strong> Human-readable, structured data arrays.</li>
 </ul>
 </li>
+<li><strong>Canonical Grammar Consolidation:</strong> Automatically groups checkbox arrays (like <code>Check1_1</code>, <code>Check1_2</code>) into a single column (<code>Check1</code>) containing the chosen option identifier <code>n</code>.</li>
+<li><strong>Ignore / NOT Operator (<code>_</code>):</strong> Any field prefixed with an underscore is omitted from masterfile exports.</li>
 <li><strong>Consolidated Batch Processing:</strong> Enter single IDs, paste multiple IDs, or import participant lists from text or CSV files. Generate folders or extract data in a single pass.</li>
 <li><strong>Interactive Overwrite Resolution:</strong> If folders or masterfile records already exist, an interactive checklist lets you select exactly which participants to overwrite (with one-click <em>Select All</em> / <em>Deselect All</em>), avoiding accidental data loss.</li>
 <li><strong>Unified Batch Preview Table:</strong> Both folder generation and masterfile extraction open a single, consolidated table displaying all participants at once. Inspect and edit friendly header names and questionnaire answers before committing any changes.</li>
 <li><strong>Safe Staging:</strong> Prefill values and survey folders are validated in memory before any directory is modified on disk. If you cancel, nothing is touched.</li>
 <li><strong>Collapsible Workspace &amp; Dynamic Resizing:</strong> Curator settings stay tucked inside a collapsible drawer, leaving a clean, compact window that automatically resizes to fit active study configurations.</li>
 <li><strong>Cross-Project Field Mapping Import:</strong> Instantly copy friendly column header names from any previously saved study profile via the <code>File -&gt; Import Field Mapping</code> submenu.</li>
-<li><strong>Smart Checkbox &amp; Matrix Grouping:</strong> Automatically groups checkbox arrays (like Check1_1, Check1_2) into a single column (Check1) containing the selected option number.</li>
-<li><strong>Natural Alphanumeric Sorting:</strong> Columns and previews are sorted naturally (Text1, Text2, ..., Text10) instead of alphabetical order (Text1, Text10, Text2).</li>
+<li><strong>Natural Alphanumeric Sorting:</strong> Columns and previews are sorted naturally (<code>Text1</code>, <code>Text2</code>, ..., <code>Text10</code>) instead of alphabetical order (<code>Text1</code>, <code>Text10</code>, <code>Text2</code>).</li>
 <li><strong>Project Snapshotting:</strong> Save and reload complete project setups (paths, templates, copy counts, and custom column names) to and from <code>survey_workbench.config</code>.</li>
 <li><strong>Pre-Compiled &amp; Cross-Platform:</strong> Standalone Windows executable (.exe) ready to download without setup; native Linux binary easily built with Nuitka.</li>
 <li><strong>Built-in Interactive Help:</strong> Instant hover tooltips on every control, a "What's This?" interactive click mode, and an in-app viewer for this documentation.</li>
 </ul>
 <hr />
-<h2 id="2-quick-start-guide">2. Quick Start Guide</h2>
+<h2 id="2-canonical-form-field-grammar">2. Canonical Form Field Grammar</h2>
+<p>PDF form fields must adhere to the following mathematical specification:</p>
+<p>$$\mathbf{(_){Check, Text}i(_n)}$$</p>
+<h3 id="breakdown-of-grammar-elements">Breakdown of Grammar Elements:</h3>
+<table><thead><tr><th style="text-align: left">Element</th><th style="text-align: left">Description</th><th style="text-align: left">Masterfile &amp; Workflow Behavior</th></tr></thead><tbody>
+<tr><td style="text-align: left"><strong><code>_</code></strong></td><td style="text-align: left"><strong>NOT Operator</strong> (optional leading underscore)</td><td style="text-align: left">If present, the content of this field <strong>does NOT get exported into the masterfile</strong>. It simply gets ignored during extraction. Ideal for administrative cover-page notes, visual participant ID labels, or print-only metadata.</td></tr>
+<tr><td style="text-align: left"><strong><code>{Check, Text}</code></strong></td><td style="text-align: left"><strong>Entry Type</strong></td><td style="text-align: left">Declares the input type. <code>Text</code> fields capture verbatim strings. <code>Check</code> fields represent boolean, binary, or nominal selection controls.</td></tr>
+<tr><td style="text-align: left"><strong><code>i</code></strong></td><td style="text-align: left"><strong>Field / Question Index</strong></td><td style="text-align: left">Index number of the form question or condition. If option buttons belong to the same question, $i$ stays constant while $n$ changes.</td></tr>
+<tr><td style="text-align: left"><strong><code>_n</code></strong></td><td style="text-align: left"><strong>Option Identifier</strong> (optional)</td><td style="text-align: left">Specifies the choice identifier. In the masterfile, the cell shows <strong><code>n</code></strong> for column <code>Check&lt;i&gt;</code> if this option is chosen to be true.</td></tr>
+</tbody></table>
+<h3 id="concrete-examples">Concrete Examples:</h3>
+<ol>
+<li><strong>Nominal / Likert Scales (<code>Check1_1</code> to <code>Check1_5</code>):</strong>
+<ul>
+<li>Options are named <code>Check1_1</code>, <code>Check1_2</code>, <code>Check1_3</code>, <code>Check1_4</code>, <code>Check1_5</code>.</li>
+<li>If the participant selects the 3rd box (<code>Check1_3</code>), the masterfile stores <code>3</code> in the column <strong><code>Check1</code></strong>.</li>
+<li>No individual <code>Check1_1</code>, <code>Check1_2</code>, etc. columns clutter your masterfile.</li>
+</ul>
+</li>
+<li><strong>Binary Conditions (<code>Check2_0</code> and <code>Check2_1</code>):</strong>
+<ul>
+<li>Canonically, <code>0</code> represents False/No and <code>1</code> represents True/Yes.</li>
+<li>If the participant checks <code>Check2_0</code>, the masterfile records <strong><code>0</code></strong> in column <strong><code>Check2</code></strong>.</li>
+<li>If the participant checks <code>Check2_1</code>, the masterfile records <strong><code>1</code></strong> in column <strong><code>Check2</code></strong>.</li>
+</ul>
+</li>
+<li><strong>Standalone Checkbox (<code>Check3</code>):</strong>
+<ul>
+<li>A single boolean checkbox without an <code>_n</code> suffix.</li>
+<li>If checked, the cell records <strong><code>1</code></strong>; if unchecked, it records <strong><code>0</code></strong>.</li>
+</ul>
+</li>
+<li><strong>Ignored Cover Fields (<code>_Text13</code> or <code>_Check5_1</code>):</strong>
+<ul>
+<li>Prefixed with the leading <code>_</code> NOT operator.</li>
+<li>Can be prefilled with the participant ID during folder generation so that it is printed on the physical survey form, but is completely omitted during extraction into the masterfile.</li>
+</ul>
+</li>
+</ol>
+<h3 id="zero-redundancy-in-pop-up-tables">Zero-Redundancy in Pop-Up Tables:</h3>
+<p>All pop-up tables (Save/Edit Field Mapping, Batch Generation Prefill, and Extraction Review) automatically consolidate all <code>Check&lt;i&gt;_n</code> fields into a single <code>Check&lt;i&gt;</code> entry. Defining names or mappings for every individual option <code>n</code> is completely eliminated.</p>
+<hr />
+<h2 id="3-quick-start-guide">3. Quick Start Guide</h2>
 <h3 id="step-1-declare-participant-s">Step 1: Declare Participant(s)</h3>
 <ul>
 <li><strong>Single participant:</strong> Type the identifier (e.g., <code>P001</code>) into the Participant ID(s) box.</li>
@@ -191,54 +234,24 @@
 <li><strong>Extract Data to Masterfile:</strong> Checks for existing spreadsheet records, opens the consolidated extraction review table, and commits answers into your masterfile in one single pass.</li>
 </ul>
 <hr />
-<h2 id="3-interactive-help-in-the-app">3. Interactive Help in the App</h2>
-<p>If you are ever unsure what a control does:</p>
+<h2 id="4-interactive-help-in-the-app">4. Interactive Help in the App</h2>
 <ul>
 <li><strong>Hover:</strong> Move your mouse over any button or text box to see a brief tooltip.</li>
-<li><strong>What's This? Mode:</strong> Press Shift + F1 (or go to HELP -&gt; What's This?). Your mouse cursor turns into a question mark. Click any button, label, or input field to read a detailed explanation of its function.</li>
+<li><strong>What's This? Mode:</strong> Press Shift + F1 (or go to HELP -&gt; What's This?). Click any control to read a detailed explanation of its function.</li>
 <li><strong>Read Manual:</strong> Go to HELP -&gt; User Manual to open this documentation directly inside the program.</li>
 </ul>
 <hr />
-<h2 id="4-step-by-step-instructions">4. Step-by-Step Instructions</h2>
-<h3 id="4-1-generating-folders-prefilling-data">4.1 Generating Folders &amp; Prefilling Data</h3>
-<ol>
-<li>Enter your participant ID(s).</li>
-<li>Click <strong>Generate Participant Folder(s)</strong>.</li>
-<li><strong>Overwrite Check:</strong> If any participant folders already exist, a resolution window prompts you to tick which folders to overwrite (or skip).</li>
-<li><strong>Batch Prefill Table:</strong> A consolidated preview window displays all detected form fields across all participants. Any ID fields (such as <code>participant_id</code> or <code>Text13_n</code>) are automatically prefilled.</li>
-<li>Review or edit values directly in the table, then click <strong>Confirm and Generate All</strong>.</li>
-<li>Each participant receives a dedicated folder containing the prepared PDFs ready for data collection.</li>
-</ol>
-<h3 id="4-2-extracting-data-to-masterfile">4.2 Extracting Data to Masterfile</h3>
-<ol>
-<li>Ensure your <strong>Source folder</strong> points to the completed participant folders and <strong>Masterfile</strong> points to your target file (<code>.parquet</code>, <code>.xlsx</code>, <code>.csv</code>, <code>.tsv</code>, or <code>.json</code>).</li>
-<li>Click <strong>Extract Data to Masterfile</strong>:
-<ul>
-<li><strong>Overwrite Check:</strong> If any participant already exists in your masterfile, a pop-up checklist lets you choose which participant rows to update.</li>
-<li><strong>Batch Extraction Review Table:</strong> A consolidated table (<code>Participant ID</code>, <code>Sheet</code>, <code>Field</code>, <code>Column Name</code>, <code>Data</code>) opens with all participant data loaded into memory. You can inspect or correct values directly.</li>
-</ul>
-</li>
-<li>Click <strong>Confirm and Extract All</strong>. The masterfile is written in a single pass without repeatedly launching office applications.</li>
-</ol>
-<h3 id="4-3-output-file-partitioning">4.3 Output File Partitioning</h3>
+<h2 id="5-masterfile-formats-output-partitioning">5. Masterfile Formats &amp; Output Partitioning</h2>
 <ul>
 <li><strong>Excel (<code>.xlsx</code>, <code>.xls</code>):</strong> Each questionnaire type is saved as a dedicated worksheet / tab.</li>
 <li><strong>Parquet (<code>.parquet</code>):</strong> Automatically creates partitioned parquet tables named <code>&lt;masterfile&gt;_&lt;survey_name&gt;.parquet</code>.</li>
 <li><strong>CSV / TSV (<code>.csv</code>, <code>.tsv</code>):</strong> Automatically writes partitioned files named <code>&lt;masterfile&gt;_&lt;survey_name&gt;.csv</code> / <code>.tsv</code>.</li>
 <li><strong>JSON (<code>.json</code>):</strong> Automatically writes arrays named <code>&lt;masterfile&gt;_&lt;survey_name&gt;.json</code>.</li>
 </ul>
-<h3 id="4-4-renaming-columns-importing-field-mappings">4.4 Renaming Columns &amp; Importing Field Mappings</h3>
-<p>To replace raw PDF identifiers with friendly column names:</p>
-<ol>
-<li>Open <strong>File -&gt; Save/Edit Field Mapping</strong>.</li>
-<li>Type custom titles into the <em>Masterfile Column Name</em> column (e.g., change <code>Demographics_Text1</code> to <code>Age</code>).</li>
-<li>Click <strong>Save Field Mapping</strong>. The new names will be used on all subsequent data exports.</li>
-<li><strong>Importing Mappings from Another Project:</strong> Go to <strong>File -&gt; Import Field Mapping ▶</strong> and choose any saved configuration from the submenu list to borrow column names immediately.</li>
-</ol>
 <hr />
-<h2 id="5-technical-specifications-dependencies">5. Technical Specifications &amp; Dependencies</h2>
+<h2 id="6-technical-specifications-dependencies">6. Technical Specifications &amp; Dependencies</h2>
 <ul>
-<li><strong>Supported OS:</strong> Windows 10/11, Linux (Ubuntu/Debian/Fedora/Arch), macOS</li>
+<li><strong>Supported OS:</strong> Windows 10/11, Linux, macOS</li>
 <li><strong>Python Runtime:</strong> Python 3.9 through 3.13</li>
 <li><strong>GUI Framework:</strong> PyQt5</li>
 <li><strong>PDF Processing:</strong> pypdf (AcroForm, widget annotations, indirect object trees)</li>
@@ -247,10 +260,10 @@
 <li><strong>Configuration File:</strong> <code>survey_workbench.config</code> (stored in application root)</li>
 <li><strong>Standalone Builds:</strong> Nuitka (portable .exe on Windows / ELF binary on Linux)</li>
 </ul>
-<p>To install all supported format engines:</p>
+<p>To install all dependencies:</p>
 <pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install pyarrow xlwings pypdf PyQt5</span></span></code></pre>
 <hr />
-<h2 id="6-compilation-with-nuitka">6. Compilation with Nuitka</h2>
+<h2 id="7-compilation-with-nuitka">7. Compilation with Nuitka</h2>
 <h3 id="windows-build-command">Windows Build Command:</h3>
 <pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="vb"><span class="giallo-l"><span>python</span><span style="color: #94E2D5;"> -</span><span>m nuitka</span><span style="color: #94E2D5;"> --</span><span>standalone</span><span style="color: #94E2D5;"> --</span><span>onefile</span><span style="color: #94E2D5;"> --</span><span>enable</span><span style="color: #94E2D5;">-</span><span>plugin</span><span style="color: #94E2D5;">=</span><span>pyqt5</span><span style="color: #94E2D5;"> --</span><span>include</span><span style="color: #94E2D5;">-</span><span>data</span><span style="color: #94E2D5;">-</span><span>file</span><span style="color: #94E2D5;">=</span><span>README.md</span><span style="color: #94E2D5;">=</span><span>README.md</span><span style="color: #94E2D5;"> --</span><span>windows</span><span style="color: #94E2D5;">-</span><span>console</span><span style="color: #94E2D5;">-</span><span>mode</span><span style="color: #94E2D5;">=</span><span>disable</span><span style="color: #94E2D5;"> --</span><span>output</span><span style="color: #94E2D5;">-</span><span>filename</span><span style="color: #94E2D5;">=</span><span>survey_workbench.exe survey_workbench_v2</span><span style="color: #FAB387;">.2</span><span>.py</span></span></code></pre><h3 id="linux-build-command">Linux Build Command:</h3>
 <pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python3</span><span style="color: #A6E3A1;"> -m nuitka --standalone --onefile --enable-plugin=pyqt5 --include-data-file=README.md=README.md --output-filename=survey_workbench survey_workbench_v2.2.py</span></span></code></pre></details>
@@ -958,7 +971,7 @@ Jobs to Computerisation?</em> Oxford Martin School Working Paper.</li>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2026 Çağatay Özcan Jagiello Gutt</p>
-                <p class="footer-tech">Built with <a href="https://www.getzola.org/" target="_blank" rel="noopener">Zola</a> · Last build: 2026-11-01</p>
+                <p class="footer-tech">Built with <a href="https://www.getzola.org/" target="_blank" rel="noopener">Zola</a> · Last build: 2026-11-03</p>
             </div>
         </div>
     </footer>
