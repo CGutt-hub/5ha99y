@@ -173,12 +173,12 @@
 <hr />
 <h2 id="2-canonical-form-field-grammar">2. Canonical Form Field Grammar</h2>
 <p>PDF form fields must adhere to the following mathematical specification:</p>
-<p>$$\mathbf{(_){Check, Text}i(_n)}$$</p>
+<p>$$\mathbf{(_){Check, Text}<i>(_n)}$$</p>
 <h3 id="breakdown-of-grammar-elements">Breakdown of Grammar Elements:</h3>
 <table><thead><tr><th style="text-align: left">Element</th><th style="text-align: left">Description</th><th style="text-align: left">Masterfile &amp; Workflow Behavior</th></tr></thead><tbody>
 <tr><td style="text-align: left"><strong><code>_</code></strong></td><td style="text-align: left"><strong>NOT Operator</strong> (optional leading underscore)</td><td style="text-align: left">If present, the content of this field <strong>does NOT get exported into the masterfile</strong>. It simply gets ignored during extraction. Ideal for administrative cover-page notes, visual participant ID labels, or print-only metadata.</td></tr>
 <tr><td style="text-align: left"><strong><code>{Check, Text}</code></strong></td><td style="text-align: left"><strong>Entry Type</strong></td><td style="text-align: left">Declares the input type. <code>Text</code> fields capture verbatim strings. <code>Check</code> fields represent boolean, binary, or nominal selection controls.</td></tr>
-<tr><td style="text-align: left"><strong><code>i</code></strong></td><td style="text-align: left"><strong>Field / Question Index</strong></td><td style="text-align: left">Index number of the form question or condition. If option buttons belong to the same question, $i$ stays constant while $n$ changes.</td></tr>
+<tr><td style="text-align: left"><strong><code>&lt;i&gt;</code></strong></td><td style="text-align: left"><strong>Field / Question Index</strong></td><td style="text-align: left">Index number of the form question or condition. If option buttons belong to the same question, $i$ stays constant while $n$ changes.</td></tr>
 <tr><td style="text-align: left"><strong><code>_n</code></strong></td><td style="text-align: left"><strong>Option Identifier</strong> (optional)</td><td style="text-align: left">Specifies the choice identifier. In the masterfile, the cell shows <strong><code>n</code></strong> for column <code>Check&lt;i&gt;</code> if this option is chosen to be true.</td></tr>
 </tbody></table>
 <h3 id="concrete-examples">Concrete Examples:</h3>
