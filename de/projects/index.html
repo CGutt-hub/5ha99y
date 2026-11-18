@@ -240,9 +240,9 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <li><strong>Structured JSON (<code>.json</code>):</strong> Human-readable, structured data arrays.</li>
 </ul>
 </li>
-<li><strong>Canonical Grammar Consolidation:</strong> Automatically groups checkbox arrays (like <code>Check1_1</code>, <code>Check1_2</code>) into a single column (<code>Check1</code>) containing the chosen option identifier <code>n</code>.</li>
-<li><strong>Ignore / NOT Operator (<code>_</code>):</strong> Any field prefixed with an underscore is omitted from masterfile exports.</li>
-<li><strong>Condition Ordering (<code>con</code> Field):</strong> Supports counterbalanced / mixed-order repeated surveys via a dedicated <code>con</code> (or <code>_con</code>) PDF field and <strong>File -&gt; Save/Edit Condition Ordering</strong> (Numerical as standard, or custom mappings &amp; meanings saved to <code>survey_workbench.config</code>).</li>
+<li><strong>Canonical Grammar Consolidation:</strong> Automatically groups checkbox arrays (like <code>Check1_1</code>, <code>Check1_2</code>) into a single column (<code>Check1</code>) containing only the ticked option identifier(s), ignoring unticked states (<code>Off</code>, <code>False</code>, <code>0</code>, <code>No</code>, <code>Aus</code>, <code>Nein</code>, etc.) and respecting PDF <code>/NeedAppearances</code>.</li>
+<li><strong>Ignore / NOT Operator (<code>_</code> prefix or <code>_n</code> suffix):</strong> Any field prefixed with a leading <code>_</code> (e.g., <code>_Text13</code>) or suffixed with <code>_n</code> (e.g., <code>Text13_n</code>) is omitted from masterfile exports.</li>
+<li><strong>Condition Ordering (<code>con</code> Field):</strong> Supports counterbalanced / mixed-order repeated surveys via a dedicated <code>con</code> (or <code>_con</code> / <code>con_n</code>) PDF field and <strong>File -&gt; Save/Edit Condition Ordering</strong> (Numerical as standard, or custom mappings &amp; meanings saved to <code>survey_workbench.config</code>).</li>
 <li><strong>Filename-Driven Sheet Routing:</strong> Automatically derives the masterfile sheet name directly from the PDF filename (e.g., <code>WaS3_001_nasa_1.pdf</code> -&gt; <code>nasa</code>, <code>WaS3_002_you_are_an_idiot_34.pdf</code> -&gt; <code>you_are_an_idiot</code>) and appends numbered copies (<code>nasa_1</code>, <code>nasa_2</code>, <code>nasa_3</code>, ...) horizontally in the same participant row.</li>
 <li><strong>Preassigned Excel Row Placement (<code>x + 1</code>):</strong> In Excel sheets, participant <code>x</code> (e.g., <code>1</code>, <code>P001</code>, <code>WaS3_001</code>) is always placed in row <code>x + 1</code> (row 2 for participant 1, row 3 for participant 2, etc.) rather than simply appending to the bottom.</li>
 <li><strong>Consolidated Batch Processing &amp; Interactive Selection:</strong> Enter single IDs, paste multiple IDs, or import participant lists from text or CSV files. During extraction, an interactive checklist presents <strong>all</strong> participants in the batch (showing <code>New</code> vs <code>Already in Masterfile (will overwrite)</code>) so you can untick anyone you do not want to export.</li>
@@ -253,7 +253,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <li><strong>Natural Alphanumeric Sorting:</strong> Columns and previews are sorted naturally (<code>Text1</code>, <code>Text2</code>, ..., <code>Text10</code>) instead of alphabetical order (<code>Text1</code>, <code>Text10</code>, <code>Text2</code>).</li>
 <li><strong>Project Snapshotting:</strong> Save and reload complete project setups (paths, templates, copy counts, custom column names, and condition orderings) to and from <code>survey_workbench.config</code>.</li>
 <li><strong>Pre-Compiled &amp; Cross-Platform:</strong> Standalone Windows executable (.exe) ready to download without setup; native Linux binary easily built with Nuitka.</li>
-<li><strong>Built-in Interactive Help:</strong> Hover tooltips, a "What's This?" interactive click mode, and an in-app viewer for this documentation.</li>
+<li><strong>Built-in Interactive Help &amp; Diagnostics:</strong> Hover tooltips, "What's This?" click mode, an in-app viewer for this manual, and <strong>HELP -&gt; Inspect PDF Form Fields...</strong> to inspect raw PDF field states.</li>
 </ul>
 <hr />
 <h2 id="2-canonical-form-field-grammar">2. Canonical Form Field Grammar</h2>
@@ -261,11 +261,11 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <p><code>(_){Check, Text}&lt;i&gt;(_n)</code> and optionally <code>(_)con(_n)</code></p>
 <h3 id="breakdown-of-grammar-elements">Breakdown of Grammar Elements:</h3>
 <table><thead><tr><th style="text-align: left">Element</th><th style="text-align: left">Description</th><th style="text-align: left">Masterfile &amp; Workflow Behavior</th></tr></thead><tbody>
-<tr><td style="text-align: left"><strong><code>_</code></strong></td><td style="text-align: left"><strong>NOT Operator</strong> (optional leading underscore)</td><td style="text-align: left">If present, the content of this field <strong>does NOT get exported into the masterfile</strong>. Ideal for administrative cover-page notes, visual participant ID labels, print-only metadata, or routing-only <code>_con</code> fields.</td></tr>
+<tr><td style="text-align: left"><strong><code>_</code></strong> or <strong><code>_n</code></strong></td><td style="text-align: left"><strong>NOT Operator</strong> (leading <code>_</code> prefix or trailing <code>_n</code> suffix)</td><td style="text-align: left">If a field (or any segment in its hierarchy) starts with <code>_</code> or ends with <code>_n</code> (e.g., <code>_Text13</code>, <code>Text13_n</code>, <code>_Check5_1</code>, <code>Check5_n</code>), it <strong>does NOT get exported into the masterfile</strong>. Ideal for administrative cover-page notes, visual participant ID labels, print-only metadata, or routing-only <code>_con</code> / <code>con_n</code> fields.</td></tr>
 <tr><td style="text-align: left"><strong><code>{Check, Text}</code></strong></td><td style="text-align: left"><strong>Entry Type</strong></td><td style="text-align: left">Declares the input type. <code>Text</code> fields capture verbatim strings. <code>Check</code> fields represent boolean, binary, or nominal selection controls.</td></tr>
 <tr><td style="text-align: left"><strong><code>&lt;i&gt;</code></strong></td><td style="text-align: left"><strong>Field / Question Index</strong></td><td style="text-align: left">Index number of the form question or condition. If option buttons belong to the same question, <code>i</code> stays constant while <code>n</code> changes.</td></tr>
-<tr><td style="text-align: left"><strong><code>_n</code></strong></td><td style="text-align: left"><strong>Option Identifier</strong> (optional)</td><td style="text-align: left">Specifies the choice identifier. In the masterfile, the cell shows <strong><code>n</code></strong> for column <code>Check&lt;i&gt;</code> if this option is chosen to be true.</td></tr>
-<tr><td style="text-align: left"><strong><code>(_)con(_n)</code></strong></td><td style="text-align: left"><strong>Condition Field</strong> (optional, case-insensitive)</td><td style="text-align: left">Declares the experimental condition of a repeated survey (text field, dropdown, radio group, or <code>con_&lt;opt&gt;</code> checkboxes) so mixed-order PDFs align cleanly in the masterfile row. Use <code>_con</code> to route without exporting a <code>con</code> column, or <code>con</code> to both route and export <code>&lt;prefix&gt;con</code>.</td></tr>
+<tr><td style="text-align: left"><strong><code>_n</code> (numeric/option)</strong></td><td style="text-align: left"><strong>Option Identifier</strong> (on <code>Check&lt;i&gt;_1</code>, <code>Check&lt;i&gt;_2</code>, ...)</td><td style="text-align: left">Specifies the choice identifier. In the masterfile, the cell shows <strong><code>n</code></strong> for column <code>Check&lt;i&gt;</code> if that specific box is checked. (Note: literal <code>_n</code> at the end is treated as the NOT/ignore suffix.)</td></tr>
+<tr><td style="text-align: left"><strong><code>(_)con(_n)</code></strong></td><td style="text-align: left"><strong>Condition Field</strong> (optional, case-insensitive)</td><td style="text-align: left">Declares the experimental condition of a repeated survey (text field, dropdown, radio group, or <code>con_&lt;opt&gt;</code> checkboxes) so mixed-order PDFs align cleanly in the masterfile row. Use <code>_con</code> (or <code>con_n</code>) to route without exporting a <code>con</code> column, or <code>con</code> to both route and export <code>&lt;prefix&gt;con</code>.</td></tr>
 </tbody></table>
 <h3 id="concrete-examples">Concrete Examples:</h3>
 <ol>
@@ -273,7 +273,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <ul>
 <li>Options are named <code>Check1_1</code>, <code>Check1_2</code>, <code>Check1_3</code>, <code>Check1_4</code>, <code>Check1_5</code>.</li>
 <li>If the participant selects the 3rd box (<code>Check1_3</code>), the masterfile stores <code>3</code> in the column <strong><code>Check1</code></strong>.</li>
-<li>No individual <code>Check1_1</code>, <code>Check1_2</code>, etc. columns clutter your masterfile.</li>
+<li>Unticked boxes (<code>Off</code>, <code>False</code>, <code>No</code>, <code>0</code>, <code>Aus</code>, <code>Nein</code>, etc.) are ignored; no individual <code>Check1_1</code>, <code>Check1_2</code>, etc. columns clutter your masterfile.</li>
 </ul>
 </li>
 <li><strong>Binary Conditions (<code>Check2_0</code> and <code>Check2_1</code>):</strong>
@@ -285,26 +285,26 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 </li>
 <li><strong>Standalone Checkbox (<code>Check3</code>):</strong>
 <ul>
-<li>A single boolean checkbox without an <code>_n</code> suffix.</li>
+<li>A single boolean checkbox without an option suffix.</li>
 <li>If checked, the cell records <strong><code>1</code></strong>; if unchecked, it records <strong><code>0</code></strong>.</li>
 </ul>
 </li>
-<li><strong>Ignored Cover Fields (<code>_Text13</code> or <code>_Check5_1</code>):</strong>
+<li><strong>Ignored Cover Fields (<code>_Text13</code>, <code>Text13_n</code>, <code>_Check5_1</code>, <code>Check5_n</code>):</strong>
 <ul>
-<li>Prefixed with the leading <code>_</code> NOT operator.</li>
-<li>Can be prefilled with the participant ID during folder generation so that it is printed on the physical survey form, but is completely omitted during extraction into the masterfile.</li>
+<li>Marked with a leading <code>_</code> or trailing <code>_n</code>.</li>
+<li>Can still be prefilled with the participant ID during folder generation so that it appears on the PDF form, but is completely omitted during extraction into the masterfile.</li>
 </ul>
 </li>
 <li><strong>Counterbalanced Condition Routing (<code>con</code> / <code>_con</code> / <code>con_sf</code>):</strong>
 <ul>
 <li>Suppose Participant 1 receives <code>WaS3_001_nasa_1.pdf</code> (<code>con = 2</code> or <code>con = sf</code>) and <code>WaS3_001_nasa_2.pdf</code> (<code>con = 1</code> or <code>con = bl</code>).</li>
 <li>With numerical <code>con</code> (or <code>bl</code> = Order <code>1</code>, <code>sf</code> = Order <code>2</code> configured in <strong>File -&gt; Save/Edit Condition Ordering</strong>), <code>nasa_2.pdf</code> is routed into <code>nasa_1_*</code> (first block) and <code>nasa_1.pdf</code> is routed into <code>nasa_2_*</code> (second block), keeping every participant aligned by condition in the masterfile.</li>
-<li>If prefixed with <code>_</code> (<code>_con</code>), the field is used strictly for ordering and omitted from the exported columns.</li>
+<li>If marked as <code>_con</code> (or <code>con_n</code>), the field is used strictly for ordering and omitted from the exported columns.</li>
 </ul>
 </li>
 </ol>
 <h3 id="zero-redundancy-in-pop-up-tables">Zero-Redundancy in Pop-Up Tables:</h3>
-<p>All pop-up tables (Save/Edit Field Mapping, Batch Generation Prefill, and Extraction Review) automatically consolidate all <code>Check&lt;i&gt;_n</code> fields into a single <code>Check&lt;i&gt;</code> entry. Defining names or mappings for every individual option <code>n</code> is completely eliminated.</p>
+<p>All pop-up tables (Save/Edit Field Mapping, Batch Generation Prefill, and Extraction Review) automatically consolidate all <code>Check&lt;i&gt;_1..k</code> fields into a single <code>Check&lt;i&gt;</code> entry. Defining names or mappings for every individual option is completely eliminated.</p>
 <hr />
 <h2 id="3-quick-start-guide">3. Quick Start Guide</h2>
 <h3 id="step-1-declare-participant-s">Step 1: Declare Participant(s)</h3>
@@ -334,11 +334,12 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 </li>
 </ul>
 <hr />
-<h2 id="4-interactive-help-in-the-app">4. Interactive Help in the App</h2>
+<h2 id="4-interactive-help-diagnostics-in-the-app">4. Interactive Help &amp; Diagnostics in the App</h2>
 <ul>
 <li><strong>Hover:</strong> Move your mouse over a control to see its tooltip.</li>
 <li><strong>What's This? Mode:</strong> Press Shift + F1 (or go to HELP -&gt; What's This?). Click any control to read an explanation of its function.</li>
 <li><strong>Read Manual:</strong> Go to HELP -&gt; User Manual to open this documentation directly inside the program.</li>
+<li><strong>Inspect PDF Form Fields:</strong> Go to <strong>HELP -&gt; Inspect PDF Form Fields...</strong> to open any PDF and view each field's raw <code>/FT</code>, <code>/V</code>, <code>/AS</code>, <code>/AP /N</code> states, and extracted value.</li>
 </ul>
 <hr />
 <h2 id="5-masterfile-formats-sheet-naming-row-placement">5. Masterfile Formats, Sheet Naming &amp; Row Placement</h2>
@@ -356,24 +357,37 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <li><strong>JSON (<code>.json</code>):</strong> Automatically writes arrays named <code>&lt;masterfile&gt;_&lt;survey_name&gt;.json</code>.</li>
 </ul>
 <hr />
-<h2 id="6-technical-specifications-dependencies">6. Technical Specifications &amp; Dependencies</h2>
+<h2 id="6-technical-specifications-source-layout">6. Technical Specifications &amp; Source Layout</h2>
 <ul>
 <li><strong>Supported OS:</strong> Windows 10/11, Linux, macOS</li>
 <li><strong>Python Runtime:</strong> Python 3.9 through 3.13</li>
 <li><strong>GUI Framework:</strong> PyQt5</li>
-<li><strong>PDF Processing:</strong> pypdf (AcroForm, widget annotations, indirect object trees)</li>
+<li><strong>PDF Processing:</strong> pypdf (AcroForm, widget annotations, <code>/NeedAppearances</code>, indirect object trees)</li>
 <li><strong>Masterfile Formats:</strong> Apache Parquet (<code>.parquet</code>), Excel (<code>.xlsx</code>, <code>.xls</code>), CSV (<code>.csv</code>), TSV (<code>.tsv</code>), JSON (<code>.json</code>)</li>
 <li><strong>Parquet Engine:</strong> <code>pyarrow</code> (recommended) or <code>pandas</code></li>
 <li><strong>Configuration File:</strong> <code>survey_workbench.config</code> (stored in application root)</li>
 <li><strong>Standalone Builds:</strong> Nuitka (portable .exe on Windows / ELF binary on Linux)</li>
 </ul>
+<h3 id="source-modules-all-in-the-same-folder">Source Modules (all in the same folder):</h3>
+<ul>
+<li><code>survey_workbench.py</code> — Main application window and entry point (<code>python survey_workbench.py</code>)</li>
+<li><code>study_workflows.py</code> — Folder generation, extraction, and configuration snapshotting workflows</li>
+<li><code>data_extraction.py</code> — Canonical grammar parsing, <code>con</code> slot routing, and export row building</li>
+<li><code>pdf_handler.py</code> — PDF form reading, writing, and raw field inspection</li>
+<li><code>exporters.py</code> — Excel (<code>x + 1</code> row placement), Parquet, CSV/TSV, and JSON batch writers</li>
+<li><code>dialogs.py</code> — Manual viewer, overwrite/batch selection checklists, config save dialog, and PDF inspector</li>
+<li><code>mapping_dialogs.py</code> — Field mapping and condition ordering editors</li>
+<li><code>preview_dialogs.py</code> — Consolidated batch generation prefill and extraction preview dialogs</li>
+<li><code>config_utils.py</code> — Shared patterns, config I/O, sorting, and path helpers</li>
+</ul>
 <p>To install all dependencies:</p>
 <pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install pyarrow xlwings pypdf PyQt5</span></span></code></pre>
 <hr />
 <h2 id="7-compilation-with-nuitka">7. Compilation with Nuitka</h2>
+<p>Run from the folder containing <code>survey_workbench.py</code>, its companion <code>.py</code> modules, and <code>README.md</code> (Nuitka automatically bundles all imported local modules):</p>
 <h3 id="windows-build-command">Windows Build Command:</h3>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="vb"><span class="giallo-l"><span>python</span><span style="color: #94E2D5;"> -</span><span>m nuitka</span><span style="color: #94E2D5;"> --</span><span>standalone</span><span style="color: #94E2D5;"> --</span><span>onefile</span><span style="color: #94E2D5;"> --</span><span>enable</span><span style="color: #94E2D5;">-</span><span>plugin</span><span style="color: #94E2D5;">=</span><span>pyqt5</span><span style="color: #94E2D5;"> --</span><span>include</span><span style="color: #94E2D5;">-</span><span>data</span><span style="color: #94E2D5;">-</span><span>file</span><span style="color: #94E2D5;">=</span><span>README.md</span><span style="color: #94E2D5;">=</span><span>README.md</span><span style="color: #94E2D5;"> --</span><span>windows</span><span style="color: #94E2D5;">-</span><span>console</span><span style="color: #94E2D5;">-</span><span>mode</span><span style="color: #94E2D5;">=</span><span>disable</span><span style="color: #94E2D5;"> --</span><span>output</span><span style="color: #94E2D5;">-</span><span>filename</span><span style="color: #94E2D5;">=</span><span>survey_workbench.exe survey_workbench_v2</span><span style="color: #FAB387;">.2</span><span>.py</span></span></code></pre><h3 id="linux-build-command">Linux Build Command:</h3>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python3</span><span style="color: #A6E3A1;"> -m nuitka --standalone --onefile --enable-plugin=pyqt5 --include-data-file=README.md=README.md --output-filename=survey_workbench survey_workbench_v2.2.py</span></span></code></pre></details>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="vb"><span class="giallo-l"><span>python</span><span style="color: #94E2D5;"> -</span><span>m nuitka</span><span style="color: #94E2D5;"> --</span><span>standalone</span><span style="color: #94E2D5;"> --</span><span>onefile</span><span style="color: #94E2D5;"> --</span><span>enable</span><span style="color: #94E2D5;">-</span><span>plugin</span><span style="color: #94E2D5;">=</span><span>pyqt5</span><span style="color: #94E2D5;"> --</span><span>include</span><span style="color: #94E2D5;">-</span><span>data</span><span style="color: #94E2D5;">-</span><span>file</span><span style="color: #94E2D5;">=</span><span>README.md</span><span style="color: #94E2D5;">=</span><span>README.md</span><span style="color: #94E2D5;"> --</span><span>windows</span><span style="color: #94E2D5;">-</span><span>console</span><span style="color: #94E2D5;">-</span><span>mode</span><span style="color: #94E2D5;">=</span><span>disable</span><span style="color: #94E2D5;"> --</span><span>output</span><span style="color: #94E2D5;">-</span><span>filename</span><span style="color: #94E2D5;">=</span><span>survey_workbench.exe survey_workbench.py</span></span></code></pre><h3 id="linux-build-command">Linux Build Command:</h3>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python</span><span style="color: #A6E3A1;"> -m nuitka --standalone --onefile --enable-plugin=pyqt5 --include-data-file=README.md=README.md --output-filename=survey_workbench survey_workbench.py</span></span></code></pre></details>
 <p><a rel="external" href="https://github.com/CGutt-hub/surveyWorkbench">Auf GitHub ansehen →</a></p>
 <hr />
 <h3 id="5ha99y">5ha99y</h3>
