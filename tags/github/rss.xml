@@ -51,11 +51,11 @@
           <description xml:base="https://cgutt-hub.github.io/5ha99y/blog/update-surveyworkbench/">&lt;p&gt;Recent activity in &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&quot;&gt;surveyWorkbench&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;recent-commits&quot;&gt;Recent Commits&lt;&#x2F;h2&gt;
 &lt;ul&gt;
+&lt;li&gt;&lt;code&gt;c12837d&lt;&#x2F;code&gt; feat: Enhance PDF form field extraction and validation; improve ignored field ha&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;9bd1285&lt;&#x2F;code&gt; Add main application logic for Survey Workbench with GUI components&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;973d999&lt;&#x2F;code&gt; feat: Enhance PDF form field handling with ignored field checks and unchecked bu&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;1375b74&lt;&#x2F;code&gt; feat: Add condition ordering management and batch participant selection dialog&lt;&#x2F;li&gt;
 &lt;li&gt;&lt;code&gt;48b6ba6&lt;&#x2F;code&gt; Add sheet name sanitization for Excel export; ensure compliance with naming rule&lt;&#x2F;li&gt;
-&lt;li&gt;&lt;code&gt;7db5dd8&lt;&#x2F;code&gt; Refactor code structure for improved readability and maintainability&lt;&#x2F;li&gt;
 &lt;&#x2F;ul&gt;
 &lt;p&gt;This project is actively maintained as part of my commitment to open and transparent science.&lt;&#x2F;p&gt;
 &lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;CGutt-hub&#x2F;surveyWorkbench&quot;&gt;View on GitHub →&lt;&#x2F;a&gt; | &lt;a href=&quot;&#x2F;projects&#x2F;&quot;&gt;See all projects →&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
