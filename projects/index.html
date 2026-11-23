@@ -139,6 +139,154 @@
 </details>
 <p><a rel="external" href="https://github.com/CGutt-hub/EmotiView">View on GitHub →</a></p>
 <hr />
+<h3 id="distillwire">distillwire</h3>
+<p><strong>Language:</strong> Python<br />
+<strong>Last updated:</strong> 2026-11-23</p>
+<details>
+<summary>View README</summary>
+<h1 id="ambient-news-ticker-forecast-salience-monitor">Ambient News Ticker — Forecast &amp; Salience Monitor</h1>
+<p>An ambient signal-monitoring and probabilistic forecasting application built with Python and PyQt5. It ingests headlines and claims from RSS/Atom feeds, web/index discovery, and optional RF/SDR/teletext routes, partitions observations into dynamic topic clusters, updates event probabilities over time, and surfaces high-signal alerts on a scrolling marquee ticker.</p>
+<p>Rather than ranking observations by engagement or conflating repetition with evidential support, the system maintains a Fermi-decomposed probabilistic forecast per cluster and decouples <strong>cross-channel salience</strong> from <strong>independent corroboration confidence</strong>, emitting excerpt-grounded alerts only when multi-signal <strong>Power Level</strong> or surge criteria are satisfied.</p>
+<hr />
+<h2 id="key-capabilities">Key Capabilities</h2>
+<ul>
+<li><strong>Multi-Stream Acquisition &amp; Auto-Discovery:</strong> Polls configured RSS/Atom feeds, web/teletext/radio URLs, and RF/SDR callbacks or endpoints across route modes (<code>auto</code>, <code>rf_and_web</code>, <code>web_only</code>, <code>rf_only</code>), with automatic network/RF probing, background web/RSS crawling (<code>scrape_web_for_news_sources</code>), and domain/URL approval or blocklists persisted in JSON.</li>
+<li><strong>Duplicate &amp; Echo Suppression:</strong> Detects redundant or echoed reports via lexical sequence similarity (<code>&gt;= 0.72</code>) and token cosine similarity (<code>&gt;= 0.78</code>), discounting echo evidential weight (<code>0.15x</code>) while preserving visibility in channel-spread metrics.</li>
+<li><strong>Fermi Decomposition &amp; Log-Odds Bayesian Updating:</strong> Synthesizes initial forecast probabilities across weighted conditional Fermi drivers and optional reference-class base rates in log-odds space (<code>ForecastQuestion.compute_fermi_prior</code>), applying sequential log-odds updates with <code>step_gain = 0.55</code> and archiving probability snapshots.</li>
+<li><strong>Dual-Signal Gating, Shadow Logging &amp; Calibration:</strong> Separates broadcast <strong>Salience ($S$)</strong> from <strong>Corroboration Confidence ($C$)</strong>, modulates impact via a continuous <code>InterestProfile</code> multiplier, logs evaluations to SQLite (<code>newsticker_shadow.sqlite</code>) with <strong>Shadow Mode</strong> support, and computes post-resolution <strong>Brier scores</strong>.</li>
+<li><strong>Interactive PyQt5 Monitor &amp; Dynamic TTL Marquee:</strong> Provides real-time inspection of topic clusters, provenance states, evaluated items, and grounded excerpts alongside a continuous marquee strip (<code>TickerMarqueeWidget</code>) with queue-pressure and signal-strength-modulated time-to-live (TTL) expiration.</li>
+</ul>
+<hr />
+<h2 id="repository-layout">Repository Layout</h2>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="plain"><span class="giallo-l"><span>├── Newsticker.py            # Core claim/echo engine, Fermi/log-odds updater, source crawler, SQLite logger</span></span>
+<span class="giallo-l"><span>├── NewsTickerGui_2.py       # PyQt5 monitor UI, dynamic TTL marquee widget, source &amp; Fermi dialogs</span></span>
+<span class="giallo-l"><span>├── newsticker_registry.json # Persisted source config, crawl settings, candidate pool, and approval/block state</span></span>
+<span class="giallo-l"><span>└── newsticker_shadow.sqlite # SQLite audit log of evaluations, probabilities, and alert/shadow status</span></span>
+<span class="giallo-l"></span></code></pre>
+<hr />
+<h2 id="installation-execution">Installation &amp; Execution</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Python 3.9+</li>
+<li><code>PyQt5</code> (required for <code>NewsTickerGui_2.py</code>; <code>Newsticker.py</code> uses the Python standard library)</li>
+</ul>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install PyQt5</span></span>
+<span class="giallo-l"></span></code></pre><h3 id="launching-the-monitor">Launching the Monitor</h3>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python</span><span style="color: #A6E3A1;"> NewsTickerGui_2.py</span></span>
+<span class="giallo-l"></span></code></pre>
+<p>To syntax-check both modules without launching the GUI:</p>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python</span><span style="color: #A6E3A1;"> -m py_compile Newsticker.py NewsTickerGui_2.py</span></span>
+<span class="giallo-l"></span></code></pre>
+<p>At startup, <code>NewsTickerGui_2.py</code> probes network and RF/antenna availability, enables auto-crawl/auto-approve on the source registry, runs an initial web/RSS discovery pass when online and not in <code>rf_only</code> mode, and starts background polling (<code>15s</code> interval) alongside manual claim ingestion and <code>poll now</code> triggers.</p>
+<hr />
+<h2 id="1-architecture-modeling-principles">1. Architecture &amp; Modeling Principles</h2>
+<p>The system transforms an asynchronous stream of textual observations into auditable, excerpt-grounded ticker alerts through five stages:</p>
+<ol>
+<li><strong>Provenance-Preserving Ingestion:</strong> Each observation records item ID, channel identity, frequency/transmission band, source reliability weight, transcription confidence, timestamp, payload text, and optional metadata.</li>
+<li><strong>Claim Parsing &amp; Echo Attribution:</strong> <code>default_claim_parser</code> extracts certainty, directional signal, normalized tokens, and top topics, while <code>_detect_echo</code> checks prior cluster evidence to distinguish novel origins from echoes.</li>
+<li><strong>Dynamic Topic Clustering:</strong> <code>_match_or_create_cluster</code> matches claims against existing clusters via token cosine similarity (<code>&gt;= 0.24</code>) or creates a new cluster with inferred domain (<code>maritime</code>, <code>infrastructure</code>, <code>geopolitics</code>, <code>general</code>) and regime (<code>baseline</code>, <code>elevated</code>) tags and an attached <code>ForecastQuestion</code>.</li>
+<li><strong>Fermi Prior &amp; Log-Odds Sequential Updating:</strong> Active forecast questions combine conditional driver probabilities and optional base rates in log-odds space and update sequentially (<code>step_gain = 0.55</code>) as weighted directional evidence arrives.</li>
+<li><strong>Dual-Signal Evaluation &amp; Gated Emission:</strong> Salience, unexpectedness, time-decayed accumulation, and corroboration confidence are computed independently, modulated by <code>InterestProfile</code> relevance, and gated by cooldown windows, alert thresholds, and Shadow Mode.</li>
+</ol>
+<hr />
+<h2 id="2-formal-notation-observation-model">2. Formal Notation &amp; Observation Model</h2>
+<p>Consider a temporally ordered sequence of observations arriving at timestamps $t_1 \le t_2 \le \dots \le t_n$, where observation $i$ is defined as:</p>
+<p>$$x_i = \big(c_i,, b_i,, w^{\text{src}}_i,, t_i,, \tau_i,, \gamma_i\big)$$</p>
+<ul>
+<li>$c_i \in \mathcal{C}$: channel or source identifier, with $|\mathcal{C}| = N_c$ total monitored channels (<code>8</code> in <code>build_production_engine()</code>).</li>
+<li>$b_i$: transmission band or medium (e.g., <code>shortwave</code>, <code>teletext</code>, <code>rss</code>, <code>vhf</code>, <code>navtex</code>, <code>web-sdr</code>).</li>
+<li>$w^{\text{src}}_i \in [0.05, 0.95]$: reliability weight assigned to channel $c_i$.</li>
+<li>$t_i$: observation timestamp.</li>
+<li>$\tau_i \in [0, 1]$: transcription or optical/speech recognition confidence ($\tau_i = 1.0$ for direct manual text).</li>
+<li>$\gamma_i$: raw text string.</li>
+</ul>
+<p>From $\gamma_i$, <code>default_claim_parser</code> produces:</p>
+<ul>
+<li>Certainty category $\kappa_i \in {\text{confirmed}, \text{reported}, \text{speculative}}$ with multiplier $\mu_{\text{cert}}(\kappa_i) \in {1.00, 0.78, 0.45}$.</li>
+<li>Directional signal $d_i \in [-1, 1]$, computed from positive escalation/disruption indicators (<code>+0.45</code> each) minus negative de-escalation/restoration indicators (<code>-0.45</code> each), clamped to $[-1.0, 1.0]$.</li>
+<li>Verbatim/truncated excerpt $e_i$ (up to 180 characters), token <code>Counter</code>, and extracted topic keywords.</li>
+</ul>
+<hr />
+<h2 id="3-echo-detection-evidential-weighting">3. Echo Detection &amp; Evidential Weighting</h2>
+<h3 id="3-1-echo-criterion">3.1 Echo Criterion</h3>
+<p>For an observation $i$ assigned to cluster $k$ with prior evidence set $\mathcal{E}<em>k$, pairwise lexical sequence similarity <code>SequenceMatcher</code> ratio $r</em>{\text{seq}}(\gamma_i, \gamma_j)$ (on the first 240 lowercase characters) and token cosine similarity $s_{\cos}(\mathbf{v}_i, \mathbf{v}_j)$ are evaluated against $j \in \mathcal{E}<em>k$. Observation $i$ is classified as an echo ($\mathbb{I}</em>{\text{echo}}(i) = 1$) if:</p>
+<p>$$\max_{j \in \mathcal{E}<em>k} r</em>{\text{seq}}(\gamma_i, \gamma_j) \ge 0.72 \quad \lor \quad \max_{j \in \mathcal{E}<em>k} s</em>{\cos}(\mathbf{v}_i, \mathbf{v}_j) \ge 0.78$$</p>
+<p>When $\mathbb{I}<em>{\text{echo}}(i) = 1$, item $i$ inherits the origin identifier $o_i = o</em>{j^*}$ of its closest match; otherwise $o_i = i$. The independence multiplier is:</p>
+<p>$$\mu_{\text{indep}}(i) = \begin{cases} 0.15, &amp; \text{if } \mathbb{I}_{\text{echo}}(i) = 1 \ 1.00, &amp; \text{otherwise.} \end{cases}$$</p>
+<h3 id="3-2-evidential-weight">3.2 Evidential Weight</h3>
+<p>The evidential weight $W_i \ge 0$ of observation $i$ is:</p>
+<p>$$W_i = w^{\text{src}}<em>i \cdot \tau_i \cdot \mu</em>{\text{cert}}(\kappa_i) \cdot \mu_{\text{indep}}(i)$$</p>
+<p>Discounting echoed text in $W_i$ prevents near-duplicate rebroadcasts from inflating independent corroboration while preserving their contribution to cross-channel salience.</p>
+<hr />
+<h2 id="4-fermi-decomposition-log-odds-forecast-updating">4. Fermi Decomposition &amp; Log-Odds Forecast Updating</h2>
+<h3 id="4-1-fermi-driver-aggregation-base-rate-blending">4.1 Fermi Driver Aggregation &amp; Base-Rate Blending</h3>
+<p>For a cluster $k$ with an attached <code>ForecastQuestion</code> (impact $I_k \in [0.10, 1.00]$) and $M$ conditional Fermi drivers ($m = 1, \dots, M$), each with probability $p_m \in [0.01, 0.99]$ and weight $\omega_m \ge 0$:</p>
+<p>$$z^{\text{drv}}<em>k = \sum</em>{m=1}^{M} \tilde{\omega}_m \operatorname{logit}(p_m), \qquad \tilde{\omega}<em>m = \frac{\omega_m}{\sum</em>{r=1}^{M} \omega_r}$$</p>
+<p>(If total driver weight is zero, <code>compute_fermi_prior()</code> averages driver probabilities directly; if there are no drivers, it defaults to <code>0.45</code>.)</p>
+<p>When a reference-class base rate $p^{\text{base}}<em>k \in [0.01, 0.99]$ is set with weight $w</em>{\text{base}} \in [0, 0.90]$, the Fermi prior blends base rate and driver log-odds:</p>
+<p>$$p^{(0)}<em>k = \operatorname{clip}!\Big(\sigma!\big(w</em>{\text{base}} \operatorname{logit}(p^{\text{base}}<em>k) + (1 - w</em>{\text{base}}) z^{\text{drv}}_k\big),, 0.01,, 0.99\Big)$$</p>
+<p>In <code>NewsTickerGui_2.py</code>, saving changes in <code>FermiForecastDialog</code> resets probability to the new Fermi prior only when the cluster has no stored evidence yet (<code>reset_probability=not has_evidence</code>), preserving prior evidence updates on active clusters.</p>
+<h3 id="4-2-sequential-log-odds-update">4.2 Sequential Log-Odds Update</h3>
+<p>When an unresolved forecast is attached at timestamp $t_i$, the pre-update probability $p^{\text{prior}}_k \in [0.01, 0.99]$ is recorded and updated with <code>step_gain</code> $\alpha = 0.55$:</p>
+<p>$$z^{\text{post}}_k = \operatorname{logit}(p^{\text{prior}}_k) + \alpha , d_i , W_i$$</p>
+<p>$$p^{\text{post}}_k = \operatorname{clip}!\big(\sigma(z^{\text{post}}_k),, 0.01,, 0.99\big)$$</p>
+<p>Each update appends a <code>ForecastSnapshot</code> to <code>fc.history</code>.</p>
+<hr />
+<h2 id="5-diagnostic-signals-composite-power">5. Diagnostic Signals &amp; Composite Power</h2>
+<p>All quantities below are computed at observation timestamp $t = t_i$.</p>
+<h3 id="5-1-salience-s">5.1 Salience ($S$)</h3>
+<p>Let $\mathcal{C}<em>{6\text{h}}(k, t)$ and $\mathcal{C}</em>{1\text{h}}(k, t)$ denote the sets of unique channels with evidence in cluster $k$ during $[t - 6\text{h}, t]$ and $[t - 1\text{h}, t]$:</p>
+<p>$$S(k, t) = \operatorname{clip}!\left(0.55 \frac{|\mathcal{C}<em>{6\text{h}}(k, t)|}{N_c} + 0.65 \frac{|\mathcal{C}</em>{1\text{h}}(k, t)|}{N_c},; 0.0,; 1.0\right)$$</p>
+<h3 id="5-2-unexpectedness-u">5.2 Unexpectedness ($U$)</h3>
+<p>Unexpectedness scales the single-step probability shift relative to <code>0.20</code>:</p>
+<p>$$U_i = \begin{cases} \operatorname{clip}!\left(\dfrac{|p^{\text{post}}_k - p^{\text{prior}}_k|}{0.20},; 0.0,; 1.0\right), &amp; \text{if } p^{\text{prior}}_k \text{ and } p^{\text{post}}_k \text{ exist} \ 0.0, &amp; \text{otherwise.} \end{cases}$$</p>
+<h3 id="5-3-time-decayed-accumulation-a">5.3 Time-Decayed Accumulation ($A$)</h3>
+<p>Define outcome openness $\mathcal{O}_k(p) = 1.0$ if $p$ is <code>None</code> or $0.03 &lt; p &lt; 0.97$, and $0.25$ otherwise. With a $36\text{-hour}$ exponential decay constant and saturation denominator <code>1.4</code>:</p>
+<p>$$A(k, t) = \operatorname{clip}!\left(\mathcal{O}<em>k(p) \left[1 - \exp!\left(-\frac{1}{1.4} \sum</em>{j \in \mathcal{E}_k,, t_j \le t} W_j \exp!\left(-\frac{\max(0, t - t_j)}{36\text{h}}\right)\right)\right],; 0.0,; 1.0\right)$$</p>
+<h3 id="5-4-corroboration-confidence-c-provenance-classification">5.4 Corroboration Confidence ($C$) &amp; Provenance Classification</h3>
+<p>Let $\mathcal{I}_k \subseteq \mathcal{E}_k$ denote non-echo origin items (<code>not ev.is_echo</code>) with $W_j \ge 0.20$, and let $\bar{q}_k$ be the mean of $\operatorname{clamp}(w^{\text{src}}_j, 0.05, 0.95) \cdot \operatorname{clamp}(\tau_j, 0.0, 1.0)$ over $j \in \mathcal{I}_k$ (or <code>0.10</code> if $\mathcal{I}_k$ is empty). Confidence is:</p>
+<p>$$C(k, t) = \operatorname{clip}!\left(\big(1 - e^{-|\mathcal{I}_k|/2}\big)\big(0.40 + 0.60,\bar{q}_k\big),; 0.0,; 1.0\right)$$</p>
+<p>Provenance classification (<code>_compute_confidence</code>) assigns one of five labels based on origin count, quality, directional disagreement ($d_j &gt; 0.2$ and $d_m &lt; -0.2$ among origins with $|\mathcal{I}_k| \ge 2$), confidence, and surge threshold $\theta_S$:</p>
+<ul>
+<li><strong>DISPUTED:</strong> Opposing directional signals across $|\mathcal{I}_k| \ge 2$ origin items.</li>
+<li><strong>CORROBORATED:</strong> $|\mathcal{I}_k| \ge 2$ origin items with $C \ge 0.45$ and no dispute.</li>
+<li><strong>OBSERVED:</strong> $|\mathcal{I}_k| = 1$ origin item with $\bar{q}_k \ge 0.60$.</li>
+<li><strong>CIRCULATING / SURGING:</strong> Salience satisfies $S \ge \theta_S$ without corroborated or observed status.</li>
+<li><strong>UNVERIFIED / CIRCULATING:</strong> Claims below surge and corroboration criteria.</li>
+</ul>
+<h3 id="5-5-interest-modulation-power-level-psi">5.5 Interest Modulation &amp; Power Level ($\Psi$)</h3>
+<p>For interest score $\eta_i \in [0, 1]$ from <code>InterestProfile.score_text</code>:</p>
+<p>$$\mu_{\text{int}}(\eta_i) = \begin{cases} 1.0 - (1.0 - m_{\text{out}}),\operatorname{clip}!\big(2(0.50 - \eta_i),, 0.0,, 1.0\big), &amp; \text{if } \eta_i &lt; 0.50 \ 1.0 + (m_{\text{in}} - 1.0),\operatorname{clip}!\big(2(\eta_i - 0.50),, 0.0,, 1.0\big), &amp; \text{if } \eta_i \ge 0.50. \end{cases}$$</p>
+<p>With effective impact $I^{\text{eff}}<em>{k,i} = I_k \cdot \mu</em>{\text{int}}(\eta_i)$ (default impact <code>0.45</code> if no forecast is attached), composite <strong>Power Level</strong> is:</p>
+<p>$$\Psi_i = I^{\text{eff}}_{k,i} \Big(0.45,S(k, t_i) + 0.55,U_i,C(k, t_i) + 0.45,A(k, t_i),C(k, t_i)\Big)$$</p>
+<hr />
+<h2 id="6-alert-gating-dynamic-ttl-shadow-logging-calibration">6. Alert Gating, Dynamic TTL, Shadow Logging &amp; Calibration</h2>
+<h3 id="6-1-trigger-set-cooldown-emission-rule">6.1 Trigger Set, Cooldown &amp; Emission Rule</h3>
+<p>Three trigger conditions are checked at each ingestion:</p>
+<ul>
+<li><code>rapid_broadcast_surge</code>: $S \ge \theta_S$ (<code>0.62</code> default)</li>
+<li><code>unexpected_development</code>: $U_i,C(k, t_i) \ge 0.18$</li>
+<li><code>sustained_accumulation</code>: $A(k, t_i),C(k, t_i) \ge 0.28$</li>
+</ul>
+<p>A cooldown window of <code>cooldown_sec = 120.0s</code> since <code>cluster.last_alert_at</code> suppresses repeated alerts unless <code>rapid_broadcast_surge</code> or <code>unexpected_development</code> is triggered. Outside cooldown (or when overridden), an alert is emitted when $\Psi_i \ge \theta_{\Psi}$ (<code>0.36</code> default), <code>rapid_broadcast_surge</code> is triggered, or <code>unexpected_development</code> is triggered—provided <code>shadow_mode</code> is <code>False</code>. Emitted alerts format as:</p>
+<p><code>[{provenance_tag} · Ψ={power_level:.2f} P={posterior_prob:.0%}] {excerpt}</code></p>
+<h3 id="6-2-dynamic-marquee-time-to-live-ttl">6.2 Dynamic Marquee Time-to-Live (TTL)</h3>
+<p>In <code>TickerMarqueeWidget</code>, queued alerts expire dynamically according to queue length $Q$, alert power $\Psi_i$, and surge flag $\mathbb{I}<em>{\text{surge}}$, clamped to $[\text{TTL}</em>{\min}, \text{TTL}<em>{\max}] = [180\text{s}, 10800\text{s}]$ around $\text{TTL}</em>{\text{base}} = 1800\text{s}$:</p>
+<p>$$\text{TTL}<em>i = \operatorname{clip}!\left(\text{TTL}</em>{\text{base}} \cdot \frac{1}{1 + 0.15\max(0, Q - 1)} \cdot \Big(0.75 + \min(0.65,, 0.70,\Psi_i) + 0.20,\mathbb{I}<em>{\text{surge}}\Big),; \text{TTL}</em>{\min},; \text{TTL}_{\max}\right)$$</p>
+<p>Users can click the marquee or use <code>pause scroll</code>, <code>prev</code>, and <code>next</code> to inspect items interactively.</p>
+<h3 id="6-3-shadow-mode-brier-score-calibration">6.3 Shadow Mode &amp; Brier Score Calibration</h3>
+<p>When <code>shadow_mode</code> is enabled, evaluations are written to the <code>evaluations</code> table in <code>newsticker_shadow.sqlite</code> without emitting live ticker alerts. Resolving a cluster's forecast question (<code>YES</code> / <code>NO</code> in <code>FermiForecastDialog</code> or <code>engine.resolve_question</code>) computes its <strong>Brier score</strong> and updates the window's <code>mean brier</code> readout:</p>
+<p>$$\text{BS} = (p - y)^2 \in [0, 1], \qquad y \in {0, 1}$$</p>
+<hr />
+<h2 id="7-extensions-methodological-refinements">7. Extensions &amp; Methodological Refinements</h2>
+<ul>
+<li><strong>Structured Claim Extraction:</strong> Replace keyword/regex heuristics in <code>default_claim_parser</code> with typed schema extraction (e.g., BAML or structured LLM outputs) or specialized domain lexicons.</li>
+<li><strong>Dense Semantic Representation:</strong> Augment token cosine similarity and <code>SequenceMatcher</code> ratios in <code>_match_or_create_cluster</code> and <code>_detect_echo</code> with dense embeddings for stronger paraphrase and cross-lingual matching.</li>
+<li><strong>Empirical Calibration:</strong> Tune source weights, Fermi priors/base rates, decay constants, and alert thresholds $(\theta_{\Psi}, \theta_S)$ using logged SQLite evaluations and resolved Brier scores.</li>
+</ul>
+</details>
+<p><a rel="external" href="https://github.com/CGutt-hub/distillwire">View on GitHub →</a></p>
+<hr />
 <h3 id="analysistoolbox">AnalysisToolbox</h3>
 <p><strong>Language:</strong> Python<br />
 <strong>Last updated:</strong> 2026-11-12</p>
@@ -165,7 +313,7 @@
 <span class="giallo-l"><span>├── pyproject.toml</span></span>
 <span class="giallo-l"><span>└── README.md</span></span></code></pre>
 <p>On first run <code>gitatbx</code> creates a <strong>symlink</strong> <code>~/Documents/GitAtbxModules</code> → <code>&lt;site-packages&gt;/gitatbx/modules/</code>. The symlink always reflects the live installed version — upgrading via <code>pip install --upgrade GitAtbx</code> automatically shows updated modules through the same symlink path.</p>
-<h2 id="prerequisites">Prerequisites</h2>
+<h2 id="prerequisites-1">Prerequisites</h2>
 <h3 id="java-runtime-required-by-nextflow">Java Runtime (required by Nextflow)</h3>
 <pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">sudo</span><span style="color: #A6E3A1;"> apt update</span><span style="color: #9399B2;"> &amp;&amp;</span><span style="color: #89B4FA;font-style: italic;"> sudo</span><span style="color: #A6E3A1;"> apt install default-jre</span></span>
 <span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">java</span><span style="color: #A6E3A1;"> -version</span></span></code></pre><h3 id="nextflow">Nextflow</h3>
