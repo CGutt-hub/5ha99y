@@ -52,19 +52,8 @@
       "language": "JavaScript",
       "stars": 0,
       "updated": "2026-07-02T14:42:08Z",
-      "pushed_at": "2026-11-23T11:47:44Z",
+      "pushed_at": "2026-11-23T12:10:10Z",
       "commits_url": "https://api.github.com/repos/CGutt-hub/5ha99y/commits"
-    },
-    {
-      "name": "continueAgent",
-      "description": "No description",
-      "readme": "# ContinueAutomation Agent\n\nIntelligent token optimization agent for VS Code Continue extension. Automatically selects between Mistral and Claude based on question complexity, simplifies queries, and tracks costs in real-time.\n\n## Features\n\n- **Smart Model Selection**: Analyzes question complexity and auto-switches between Mistral (simple) and Claude (complex)\n- **Query Simplification**: Reduces token usage by simplifying questions while preserving meaning\n- **Cost Tracking**: Real-time token and cost estimation before and after each query\n- **Auto-Install**: One-command installation that runs as background service on startup\n- **Prompt Caching**: Caches frequently used prompts for efficiency\n\n## Installation from GitHub\n\n```bash\ngit clone https://github.com/yourusername/continueAgent.git\ncd continueAgent\npython install_service.py\n```\n\nThis will:\n- Install dependencies (Flask, PyYAML, requests)\n- Create startup service (auto-starts on login)\n- Start API server on http://localhost:5001\n\n## Configure Continue\n\nAdd to `~/.continue/config.yaml`:\n\n```yaml\n- name: ContinueAutomation\n  provider: openai\n  model: continue-automation\n  apiBase: http://localhost:5001/v1\n  apiKey: dummy\n```\n\nRestart VS Code and select \"ContinueAutomation\" from the model dropdown.\n\n## How It Works\n\n1. **Initial Assessment**: Analyzes question, decides model, simplifies query, shows estimated cost\n2. **Model Call**: Sends simplified question to chosen model (Mistral/Claude)\n3. **Final Report**: Shows actual token usage and cost\n\n## License\n\nMIT License - see [LICENSE](LICENSE) file",
-      "url": "https://github.com/CGutt-hub/continueAgent",
-      "language": "Python",
-      "stars": 0,
-      "updated": "2026-06-25T12:11:26Z",
-      "pushed_at": "2026-06-25T12:11:16Z",
-      "commits_url": "https://api.github.com/repos/CGutt-hub/continueAgent/commits"
     },
     {
       "name": "tVNS_deviceplan",

@@ -677,50 +677,6 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 </details>
 <p><a rel="external" href="https://github.com/CGutt-hub/5ha99y">Auf GitHub ansehen →</a></p>
 <hr />
-<h3 id="continueagent">continueAgent</h3>
-<p><strong>Sprache:</strong> Python<br />
-<strong>Zuletzt aktualisiert:</strong> 2026-06-25</p>
-<details>
-<summary>README anzeigen</summary>
-<h1 id="continueautomation-agent">ContinueAutomation Agent</h1>
-<p>Intelligent token optimization agent for VS Code Continue extension. Automatically selects between Mistral and Claude based on question complexity, simplifies queries, and tracks costs in real-time.</p>
-<h2 id="features">Features</h2>
-<ul>
-<li><strong>Smart Model Selection</strong>: Analyzes question complexity and auto-switches between Mistral (simple) and Claude (complex)</li>
-<li><strong>Query Simplification</strong>: Reduces token usage by simplifying questions while preserving meaning</li>
-<li><strong>Cost Tracking</strong>: Real-time token and cost estimation before and after each query</li>
-<li><strong>Auto-Install</strong>: One-command installation that runs as background service on startup</li>
-<li><strong>Prompt Caching</strong>: Caches frequently used prompts for efficiency</li>
-</ul>
-<h2 id="installation-from-github">Installation from GitHub</h2>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">git</span><span style="color: #A6E3A1;"> clone https://github.com/yourusername/continueAgent.git</span></span>
-<span class="giallo-l"><span style="color: #F38BA8;font-style: italic;">cd</span><span style="color: #A6E3A1;"> continueAgent</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">python</span><span style="color: #A6E3A1;"> install_service.py</span></span></code></pre>
-<p>This will:</p>
-<ul>
-<li>Install dependencies (Flask, PyYAML, requests)</li>
-<li>Create startup service (auto-starts on login)</li>
-<li>Start API server on http://localhost:5001</li>
-</ul>
-<h2 id="configure-continue">Configure Continue</h2>
-<p>Add to <code>~/.continue/config.yaml</code>:</p>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="yaml"><span class="giallo-l"><span style="color: #9399B2;">-</span><span style="color: #89B4FA;"> name</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> ContinueAutomation</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">  provider</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> openai</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">  model</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> continue-automation</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">  apiBase</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> http://localhost:5001/v1</span></span>
-<span class="giallo-l"><span style="color: #89B4FA;">  apiKey</span><span style="color: #94E2D5;">:</span><span style="color: #A6E3A1;"> dummy</span></span></code></pre>
-<p>Restart VS Code and select "ContinueAutomation" from the model dropdown.</p>
-<h2 id="how-it-works-1">How It Works</h2>
-<ol>
-<li><strong>Initial Assessment</strong>: Analyzes question, decides model, simplifies query, shows estimated cost</li>
-<li><strong>Model Call</strong>: Sends simplified question to chosen model (Mistral/Claude)</li>
-<li><strong>Final Report</strong>: Shows actual token usage and cost</li>
-</ol>
-<h2 id="license">License</h2>
-<p>MIT License - see <a href="https://cgutt-hub.github.io/5ha99y/de/projects/LICENSE">LICENSE</a> file</p>
-</details>
-<p><a rel="external" href="https://github.com/CGutt-hub/continueAgent">Auf GitHub ansehen →</a></p>
-<hr />
 <h3 id="tvns-deviceplan">tVNS_deviceplan</h3>
 <p><strong>Sprache:</strong> Unbekannt<br />
 <strong>Zuletzt aktualisiert:</strong> 2026-06-10</p>
@@ -746,7 +702,7 @@ ORCID: https://orcid.org/0000-0002-1774-532X</p>
 <tr><td><strong>Linux</strong></td><td><code>GitRef-x86_64.AppImage</code> or <code>gitref</code></td><td><code>chmod +x</code> and move to <code>/usr/local/bin/</code>, or run: <code>curl -fsSL https://raw.githubusercontent.com/CGutt-hub/gitref/main/install.sh | bash</code></td></tr>
 </tbody></table>
 <h3 id="from-source">From source</h3>
-<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install git+https://github.com/CGutt-hub/gitref.git</span></span></code></pre><h2 id="features-1">Features</h2>
+<pre class="giallo" style="color: #CDD6F4; background-color: #1E1E2E;"><code data-lang="shellscript"><span class="giallo-l"><span style="color: #89B4FA;font-style: italic;">pip</span><span style="color: #A6E3A1;"> install git+https://github.com/CGutt-hub/gitref.git</span></span></code></pre><h2 id="features">Features</h2>
 <ul>
 <li><strong>DOI / arXiv / ISBN lookup</strong> – paste an identifier, metadata is fetched automatically</li>
 <li><strong>PDF download</strong> – auto-downloads from arXiv or DOI resolvers</li>
